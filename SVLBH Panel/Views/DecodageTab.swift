@@ -52,7 +52,22 @@ struct DecodageTab: View {
                         GenerationRow(g: g)
                         Divider().padding(.leading, 16)
                     }
-                    Spacer().frame(height: 80)
+                    // ── Footer ORCID ──
+                    VStack(spacing: 4) {
+                        Divider().padding(.horizontal, 40)
+                        Text("Digital Shaman Lab · vlbh.energy")
+                            .font(.caption2).foregroundColor(.secondary)
+                        Link(destination: URL(string: "https://orcid.org/0009-0007-9183-8018")!) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "person.text.rectangle")
+                                    .font(.system(size: 10))
+                                Text("ORCID 0009-0007-9183-8018")
+                                    .font(.system(size: 10, design: .monospaced))
+                            }
+                            .foregroundColor(Color(hex: "#1D9E75"))
+                        }
+                    }
+                    .padding(.top, 20).padding(.bottom, 80)
                 }
             }
             .navigationTitle("Décodage G.")

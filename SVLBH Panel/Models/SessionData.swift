@@ -105,6 +105,35 @@ enum PractitionerTier: String, Codable, CaseIterable {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// MARK: - Programmes shamane (Planche Tactique)
+// ═══════════════════════════════════════════════════════════════════
+
+enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
+    case aucun      = "aucun"
+    case protection = "protection"
+    case mySha      = "mySha"
+    case myShaFa    = "myShaFa"
+
+    var label: String {
+        switch self {
+        case .aucun:      return "Aucun"
+        case .protection: return "Programme de Protection de la Sur-Âme"
+        case .mySha:      return "mySha"
+        case .myShaFa:    return "MyShaFa"
+        }
+    }
+
+    var badgeColor: String {
+        switch self {
+        case .aucun:      return "#999999"
+        case .protection: return "#5B2C8E"
+        case .mySha:      return "#2E6CB5"
+        case .myShaFa:    return "#1A8A6E"
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // MARK: - Module Shamane minimum
 // ═══════════════════════════════════════════════════════════════════
 
@@ -121,6 +150,7 @@ struct ShamaneProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var zones: [String] = []             // max 5 zones texte libre
     var photoSetId: String? = nil       // lien vers ReferenceImageSet.id
     var sephirothCodes: [String] = []   // max 5 codes séphirothiques
+    var programme: ShamaneProgramme = .aucun
 
     var tier: PractitionerTier { PractitionerTier.from(code: Int(code) ?? 0) }
 

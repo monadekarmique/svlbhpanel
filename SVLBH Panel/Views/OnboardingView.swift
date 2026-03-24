@@ -102,9 +102,20 @@ struct OnboardingView: View {
 
             Spacer()
 
-            Text("Digital Shaman Lab · vlbh.energy")
-                .font(.caption2).foregroundColor(.secondary)
-                .padding(.bottom, 20)
+            VStack(spacing: 4) {
+                Text("Digital Shaman Lab · vlbh.energy")
+                    .font(.caption2).foregroundColor(.secondary)
+                Link(destination: URL(string: "https://orcid.org/0009-0007-9183-8018")!) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.text.rectangle")
+                            .font(.system(size: 10))
+                        Text("ORCID 0009-0007-9183-8018")
+                            .font(.system(size: 10, design: .monospaced))
+                    }
+                    .foregroundColor(Color(hex: "#1D9E75"))
+                }
+            }
+            .padding(.bottom, 20)
         }
         .background(
             LinearGradient(colors: [Color(hex: "#F5EDE4"), Color(hex: "#C27894").opacity(0.3)],

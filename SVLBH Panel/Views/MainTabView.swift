@@ -36,6 +36,9 @@ struct MainTabView: View {
                 LeadBubbleTab()
                     .tabItem { Label("Lead", systemImage: "person.wave.2") }
                     .tag(5)
+                PlancheTactiqueTab()
+                    .tabItem { Label("Planche", systemImage: "rectangle.on.rectangle.angled") }
+                    .tag(6)
             }
             .modifier(TabBarOnlyModifier())
             .environmentObject(session)
