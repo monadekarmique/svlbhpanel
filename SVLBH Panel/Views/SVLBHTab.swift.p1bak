@@ -1,0 +1,192 @@
+// SVLBHPanel — Views/SVLBHTab.swift
+// v0.1.0 — Onglet intro VLBH + KPIs
+
+import SwiftUI
+
+struct SVLBHTab: View {
+    @EnvironmentObject var session: SessionState
+    @EnvironmentObject var sync: MakeSyncService
+    @Environment(\.colorScheme) var colorScheme
+    @State private var showSessionEdit = false
+    @State private var showPasteImport = false
+    @State private var patientIdDraft = ""
+    @State private var sessionNumDraft = ""
+
+    var slaEstimate: Int {
+        let n = session.validatedCount
+        return n == 0 ? 89 : max(30, 89 - n * 4)
+    }
+    var dominantGu: GuType? {
+        var c: [GuType: Int] = [:]
+        for g in session.generations { for gu in g.gu { c[gu, default: 0] += 1 } }
+        return c.max(by: { $0.value < $1.value })?.key
+    }
+    var meridianDominant: (Meridian, Int)? {
+        var c: [Meridian: Int] = [:]
+        for g in session.generations where g.validated { for m in g.meridiens { c[m, default: 0] += 1 } }
+        return c.max(by: { $0.value < $1.value }).map { ($0.key, $0.value) }
+    }
+    var hasFork: Bool {
+        session.generations.filter { $0.meridiens.contains(.KI) || $0.meridiens.contains(.GB) }.count > 3
+    }
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    VStack(spacing: 3) {
+                        Text("◈ SVLBH Panel")
+                            .font(.title2.bold()).foregroundColor(Color(hex: "#8B3A62"))
+                        Text("hDOM · Corps de Lumière")
+                            .font(.caption).foregroundColor(.secondary)
+                    }
+                    .padding(.top, 14)
+
+                    // Carte session décomposée
+                    Button {
+                        patientIdDraft = session.patientId
+                        sessionNumDraft = session.sessionNum
+                        showSessionEdit = true
+                    } label: {
+                        HStack(spacing: 0) {
+                            // Patient
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Patient").font(.caption2).foregroundColor(.secondary)
+                                Text(session.patientId)
+                                    .font(.headline.bold()).foregroundColor(Color(hex: "#8B3A62"))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Divider().frame(height: 28).padding(.horizontal, 8)
+
+                            // Séance
+                            VStack(alignment: .center, spacing: 2) {
+                                Text("Séance").font(.caption2).foregroundColor(.secondary)
+                                Text(session.sessionNum)
+                                    .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            Divider().frame(height: 28).padding(.horizontal, 8)
+
+                            // Code praticien (auto)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("Code").font(.caption2).foregroundColor(.secondary)
+                                Text(session.role.code)
+                                    .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+
+                            Image(systemName: "pencil.circle")
+                                .foregroundColor(Color(hex: "#C27894"))
+                                .padding(.leading, 8)
+                        }
+                        .padding(12)
+                        .background(Color(hex: "#8B3A62").opacity(colorScheme == .dark ? 0.2 : 0.08))
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 16)
+
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                        KPICard(icon: "✓", label: "Générations",
+                                value: "\(session.validatedCount)/15", color: Color(hex: "#1D9E75"))
+                        KPICard(icon: "◈", label: "SLA estimé",
+                                value: "\(slaEstimate)%", color: slaColor(slaEstimate))
+                        KPICard(icon: "◆", label: "Pierres",
+                                value: "\(session.selectedPierresCount)", color: Color(hex: "#8B3A62"))
+                        KPICard(icon: "○", label: "Chakras",
+                                value: "\(session.cleanedChakrasCount)/\(session.totalChakras)",
+                                color: Color(hex: "#185FA5"))
+                    }
+                    .padding(.horizontal, 16)
+
+                    VStack(spacing: 8) {
+                        if let gu = dominantGu {
+                            InfoRow(label: "Gui 鬼 dominant", value: gu.rawValue, color: Color(hex: "#D4537E"))
+                        }
+                        InfoRow(label: "Fork galactique",
+                                value: hasFork ? "Fork 3.5 Ga détecté" : "Pas de fork majeur",
+                                color: hasFork ? Color(hex: "#E24B4A") : Color(hex: "#1D9E75"))
+                        if let (m, n) = meridianDominant {
+                            InfoRow(label: "Méridien dominant",
+                                    value: "\(m.rawValue) ×\(n)",
+                                    color: Color(hex: m.color))
+                        }
+                    }
+                    .padding(.horizontal, 16)
+
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(sync.isSending || sync.isReceiving
+                                  ? Color(hex: "#BA7517") : Color(hex: "#1D9E75"))
+                            .frame(width: 7, height: 7)
+                        Text(sync.isSending ? "Envoi…" : sync.isReceiving ? "Réception…" : "Sync prêt")
+                            .font(.caption).foregroundColor(.secondary)
+                        if let err = sync.lastError {
+                            Text("⚠ \(err)").font(.caption2).foregroundColor(.red)
+                        }
+                    }
+                    .padding(.horizontal, 16).padding(.bottom, 80)
+                }
+            }
+            .navigationTitle("SVLBH")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showPasteImport = true
+                    } label: {
+                        Image(systemName: "doc.on.clipboard")
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                    }
+                }
+            }
+            .sheet(isPresented: $showPasteImport) {
+                PasteImportView()
+                    .environmentObject(session)
+                    .environmentObject(sync)
+            }
+        }
+        .navigationViewStyle(.stack)
+        .alert("Identifier la session", isPresented: $showSessionEdit) {
+            TextField("Patient (ex: 14968)", text: $patientIdDraft)
+                .keyboardType(.numberPad)
+            TextField("Séance (ex: 001)", text: $sessionNumDraft)
+                .keyboardType(.numberPad)
+            Button("OK") {
+                if !patientIdDraft.isEmpty { session.patientId = patientIdDraft }
+                if !sessionNumDraft.isEmpty { session.sessionNum = sessionNumDraft }
+            }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Code praticien \(session.role.code) (\(session.role.displayName)) — automatique")
+        }
+    }
+}
+
+struct KPICard: View {
+    let icon: String; let label: String; let value: String; let color: Color
+    @Environment(\.colorScheme) var colorScheme
+    var body: some View {
+        VStack(spacing: 5) {
+            Text(icon).font(.title2)
+            Text(value).font(.title3.bold()).foregroundColor(color)
+            Text(label).font(.caption2).foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(12)
+        .background(color.opacity(colorScheme == .dark ? 0.2 : 0.08))
+        .cornerRadius(10)
+    }
+}
+
+struct InfoRow: View {
+    let label: String; let value: String; let color: Color
+    var body: some View {
+        HStack {
+            Text(label).font(.caption).foregroundColor(.secondary)
+            Spacer()
+            Text(value).font(.caption.bold()).foregroundColor(color)
+        }
+    }
+}

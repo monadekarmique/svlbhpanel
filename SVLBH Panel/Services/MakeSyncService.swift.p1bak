@@ -1,0 +1,209 @@
+// SVLBHPanel — Services/MakeSyncService.swift
+// v0.1.0 — PUSH/PULL via Make.com webhooks
+
+import Foundation
+
+class MakeSyncService: ObservableObject {
+    static let pushURL = URL(string: "https://hook.eu2.make.com/1xhfk4o1l5pu4h23m0x26zql6oe8c3ns")!
+    static let pullURL = URL(string: "https://hook.eu2.make.com/n00qt5bxbemy49l3woix0xaopltg8sas")!
+
+    @Published var isSending = false
+    @Published var isReceiving = false
+    @Published var lastError: String?
+    @Published var lastPin: String?
+    @Published var diffLog: [String] = []
+    @Published var diffs: TabDiffs = TabDiffs()
+
+    struct TabDiffs {
+        var decode: Int = 0
+        var pierres: Int = 0
+        var chakras: Int = 0
+        var total: Int { decode + pierres + chakras }
+    }
+
+    // MARK: - PUSH
+    func push(session: SessionState) async -> Bool {
+        await MainActor.run { isSending = true; lastError = nil }
+        var pin = ""
+        var payload = serializeSession(session)
+        if session.role == .patrick {
+            pin = String(format: "%04d", Int.random(in: 1000...9999))
+            payload = "PIN:\(pin)\n" + payload
+        }
+        let body: [String: String] = ["session_id": session.pushKey, "payload": payload]
+        do {
+            var req = URLRequest(url: Self.pushURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let ok = (response as? HTTPURLResponse)?.statusCode == 200
+            let finalPin = pin  // capture before MainActor hop
+            await MainActor.run {
+                isSending = false
+                if ok && !finalPin.isEmpty { lastPin = finalPin }
+            }
+            return ok
+        } catch {
+            await MainActor.run { isSending = false; lastError = error.localizedDescription }
+            return false
+        }
+    }
+
+    // MARK: - PULL
+    func pull(session: SessionState, manual: Bool = true) async -> String? {
+        await MainActor.run { isReceiving = true; lastError = nil }
+        let body: [String: String] = ["session_id": session.pullKey]
+        do {
+            var req = URLRequest(url: Self.pullURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            let (data, _) = try await URLSession.shared.data(for: req)
+            let text = String(data: data, encoding: .utf8) ?? ""
+            await MainActor.run { isReceiving = false }
+            guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+            var lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+            var detectedPin: String?
+            if let first = lines.first, first.hasPrefix("PIN:") {
+                detectedPin = String(first.dropFirst(4)).trimmingCharacters(in: .whitespaces)
+                lines.removeFirst()
+            }
+            if detectedPin != nil && !manual { return "PIN_PENDING" }
+            if let pin = detectedPin, manual {
+                return "PIN:\(pin)\n" + lines.joined(separator: "\n")
+            }
+            return lines.joined(separator: "\n")
+        } catch {
+            await MainActor.run { isReceiving = false; lastError = error.localizedDescription }
+            return nil
+        }
+    }
+
+    // MARK: - Sérialisation
+    func serializeSession(_ s: SessionState) -> String {
+        var lines: [String] = []
+        let df = DateFormatter(); df.dateFormat = "dd.MM.yyyy HH:mm:ss"
+        lines.append("SVLBH·hDOM·P\(s.patientId)·S\(s.sessionNum)·\(s.role.displayName)·\(df.string(from: Date()))")
+        for g in s.generations.sorted(by: { $0.id > $1.id }) {
+            let v = g.validated ? "✓" : "○"
+            let ph = g.phases.sorted(by: { $0.rawValue < $1.rawValue }).map(\.label).joined(separator: "+")
+            let gu = g.gu.map(\.rawValue).joined(separator: ",")
+            let mt = g.meridiens.map(\.rawValue).joined(separator: " ")
+            let st = g.statuts.map(\.rawValue).joined(separator: "+")
+            lines.append("G\(g.id)|\(v)|ab:\(g.abLabel)|vi:\(g.viLabel)|ph:\(ph)|gu:\(gu)|mt:\(mt)|st:\(st)")
+        }
+        for p in s.pierres where p.selected {
+            let v = p.validated ? "✓" : "○"
+            let dur = "\(p.durationMin) min + \(p.durationDays) j"
+            lines.append("P|\(v)|\(p.spec.nom)|\(p.volume)\(p.unit)|\(dur)")
+        }
+        for (key, done) in s.chakraStates.sorted(by: { $0.key < $1.key }) where done {
+            let parts = key.split(separator: "_")
+            if parts.count == 2 {
+                let dNum = parts[0].replacingOccurrences(of: "d", with: "")
+                let cNum = String(parts[1])
+                let nm = chakraName(forKey: key) ?? "?"
+                lines.append("C|D\(dNum)|C\(cNum)|\(nm)")
+            }
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    // MARK: - Apply received payload
+    func applyPayload(_ text: String, to session: SessionState) {
+        var log: [String] = []
+        let sender = session.role.isPatrick ? session.role.displayName : "🔬 Patrick"
+        let df = DateFormatter(); df.dateFormat = "HH:mm:ss"
+        log.append("📥 Réception de \(sender) · \(df.string(from: Date()))")
+
+        // Snapshot diff
+        let snapGen = session.generations.map {
+            ($0.id, $0.abuseur, $0.victime, $0.phases, $0.gu, $0.meridiens, $0.statuts, $0.validated)
+        }
+        let snapPierres = session.pierres.map { ($0.spec.id, $0.selected, $0.validated, $0.volume, $0.unit) }
+        let snapChakras = session.chakraStates
+
+        // Reset
+        session.generations.forEach { g in
+            g.abuseur=""; g.victime=""; g.phases=[]; g.gu=[]; g.meridiens=[]; g.statuts=[]; g.validated=false
+        }
+        session.pierres.forEach { p in p.selected=false; p.validated=false }
+        session.chakraStates.keys.forEach { session.chakraStates[$0] = false }
+
+        for line in text.split(separator: "\n").map(String.init) {
+            if line.hasPrefix("SVLBH") { log.append("⏱ \(line)"); continue }
+            _ = parseGeneration(line, session: session)
+            _ = parsePierre(line, session: session)
+            _ = parseChakra(line, session: session)
+        }
+
+        // Calc diffs
+        var d = TabDiffs()
+        for (i, snap) in snapGen.enumerated() {
+            let g = session.generations[i]
+            if snap.1 != g.abuseur || snap.2 != g.victime || snap.3 != g.phases
+                || snap.4 != g.gu || snap.5 != g.meridiens || snap.6 != g.statuts
+                || snap.7 != g.validated { d.decode += 1 }
+        }
+        for (i, snap) in snapPierres.enumerated() {
+            let p = session.pierres[i]
+            if snap.1 != p.selected || snap.2 != p.validated || snap.3 != p.volume || snap.4 != p.unit { d.pierres += 1 }
+        }
+        for (key, was) in snapChakras {
+            if was != (session.chakraStates[key] ?? false) { d.chakras += 1 }
+        }
+
+        log.append("─── \(session.validatedCount)/15 gén · \(session.selectedPierresCount) pierres · \(session.cleanedChakrasCount)/\(session.totalChakras) chakras ───")
+        if d.total > 0 {
+            log.append("🔀 \(d.total) modification(s) — Décodage: \(d.decode) · Pierres: \(d.pierres) · Chakras: \(d.chakras)")
+        } else {
+            log.append("✅ Aucune modification détectée")
+        }
+        DispatchQueue.main.async { self.diffs = d; self.diffLog = log }
+    }
+
+    // MARK: - Parsers
+    private func parseGeneration(_ line: String, session: SessionState) -> Bool {
+        guard line.hasPrefix("G") else { return false }
+        let parts = line.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count >= 8 else { return false }
+        let nStr = parts[0].replacingOccurrences(of: "G", with: "")
+        guard let n = Int(nStr), let g = session.generations.first(where: { $0.id == n }) else { return false }
+        g.validated = parts[1] == "✓"
+        let ab = parts[2].replacingOccurrences(of: "ab:", with: "")
+        let vi = parts[3].replacingOccurrences(of: "vi:", with: "")
+        if !ab.isEmpty { for cat in roueDesBesoins where cat.items.contains(ab) { g.abuseur = "\(cat.id)|\(ab)"; break } }
+        if !vi.isEmpty { for cat in roueDesBesoins where cat.items.contains(vi) { g.victime = "\(cat.id)|\(vi)"; break } }
+        let phStr = parts[4].replacingOccurrences(of: "ph:", with: "")
+        g.phases = Set(phStr.split(separator: "+").compactMap { p in Phase.allCases.first { $0.label == String(p) } })
+        let guStr = parts[5].replacingOccurrences(of: "gu:", with: "")
+        g.gu = Set(guStr.split(separator: ",").compactMap { GuType(rawValue: String($0).trimmingCharacters(in: .whitespaces)) })
+        let mtStr = parts[6].replacingOccurrences(of: "mt:", with: "")
+        g.meridiens = Set(mtStr.split(separator: " ").compactMap { Meridian(rawValue: String($0)) })
+        let stStr = parts[7].replacingOccurrences(of: "st:", with: "")
+        g.statuts = Set(stStr.split(separator: "+").compactMap { Statut(rawValue: String($0)) })
+        return true
+    }
+
+    private func parsePierre(_ line: String, session: SessionState) -> Bool {
+        guard line.hasPrefix("P|") else { return false }
+        let parts = line.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count >= 5, let p = session.pierres.first(where: { $0.spec.nom == parts[2] }) else { return false }
+        p.selected = true; p.validated = parts[1] == "✓"
+        let volStr = parts[3]
+        if volStr.hasSuffix("t") { p.unit = "t"; p.volume = Int(volStr.dropLast()) ?? 1 }
+        else { p.unit = "kg"; p.volume = Int(volStr.replacingOccurrences(of: "kg", with: "")) ?? 1 }
+        return true
+    }
+
+    private func parseChakra(_ line: String, session: SessionState) -> Bool {
+        guard line.hasPrefix("C|") else { return false }
+        let parts = line.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count >= 4 else { return false }
+        let dNum = parts[1].replacingOccurrences(of: "D", with: "")
+        let cNum = parts[2].replacingOccurrences(of: "C", with: "")
+        session.chakraStates["d\(dNum)_\(cNum)"] = true
+        return true
+    }
+}

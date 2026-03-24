@@ -1,0 +1,215 @@
+// SVLBHPanel — Models/SessionData.swift
+// v0.1.0 — Data models mirroring panel.js state
+
+import Foundation
+
+// MARK: - Rôle praticien
+enum PractitionerRole: String, Codable, CaseIterable {
+    case cornelia, anne, flavia, patrick
+
+    var displayName: String {
+        switch self {
+        case .cornelia: return "🐱 Cornelia"
+        case .anne:     return "🌸 Anne"
+        case .flavia:   return "✨ Flavia"
+        case .patrick:  return "🔬 Patrick"
+        }
+    }
+
+    /// Code numérique praticien — intégré dans la clé datastore
+    /// Format clé : {patientId}-{sessionNum}-{code}
+    var code: String {
+        switch self {
+        case .patrick:  return "01"
+        case .cornelia: return "25"
+        case .anne:     return "26"  // provisoire
+        case .flavia:   return "27"  // provisoire
+        }
+    }
+
+    var isPatrick: Bool { self == .patrick }
+}
+
+// MARK: - Phase transgénérationnelle
+enum Phase: Int, Codable, CaseIterable, Identifiable {
+    case survie = 0, pouvoir, expression, deconnexion
+    var id: Int { rawValue }
+    var label: String { ["Survie","Pouvoir","Expression","Déconnexion"][rawValue] }
+    var color: String { ["#185FA5","#BA7517","#D4537E","#5F5E5A"][rawValue] }
+}
+
+// MARK: - Statut OART
+enum Statut: String, Codable, CaseIterable {
+    case O, A, R, T
+    var label: String { ["Origine","Accumulation","Réduction","Transmission"][["O","A","R","T"].firstIndex(of: rawValue)!] }
+}
+
+// MARK: - Gu 鬼 types
+enum GuType: String, Codable, CaseIterable, Identifiable {
+    case coreWound = "Core Wound"
+    case inLimbo = "In Limbo"
+    case energeticRope = "Energetic Rope"
+    case abuseEnergy = "Abuse Energy"
+    case sabotageEnergy = "Sabotage Energy"
+    case archonReptilian = "Archon/Reptilian"
+    case spell = "Spell"
+    case blackMagick = "Black Magick"
+    case stain = "Stain"
+    case bitchEnergy = "Bitch Energy"
+    case incubusSuccubus = "Incubus/Succubus"
+    case entityOnHeart = "Entity on Heart"
+    case biblicalDarkEntity = "Biblical Dark Entity"
+    case anchorsChains = "Anchors/Chains"
+    case impersonationEnergy = "Impersonation Energy"
+    var id: String { rawValue }
+}
+
+// MARK: - Méridiens
+enum Meridian: String, Codable, CaseIterable, Identifiable {
+    case SP, KI, LR, HT, PC, LU, GB, ST, LI, GV, CV, TE, BL
+    var id: String { rawValue }
+    var color: String {
+        switch self {
+        case .SP: return "#BA7517"; case .KI: return "#185FA5"; case .LR: return "#3B6D11"
+        case .HT: return "#E24B4A"; case .PC: return "#D4537E"; case .LU: return "#888780"
+        case .GB: return "#7F77DD"; case .ST: return "#639922"; case .LI: return "#1D9E75"
+        case .GV: return "#BA7517"; case .CV: return "#185FA5"; case .TE: return "#D4537E"
+        case .BL: return "#3B6D11"
+        }
+    }
+    static let observed: [Meridian] = [.SP, .KI, .LR, .HT, .PC, .LU, .GB]
+}
+
+// MARK: - Roue des besoins
+struct RoueCategory: Identifiable {
+    let id: String
+    let label: String
+    let items: [String]
+}
+
+let roueDesBesoins: [RoueCategory] = [
+    RoueCategory(id: "s", label: "Sécurité / Paix", items: ["Câlins","Calme","Amour","Soutien","Intimité","Empathie","Écoute","Sécurité","Paix intérieure"]),
+    RoueCategory(id: "a", label: "Autonomie", items: ["Choix de mes rêves","Choix de mes actions","Temps libre","Faire moi-même","Apprendre","Découvrir","Comprendre","Besoin de clarté","Besoin de justice"]),
+    RoueCategory(id: "e", label: "Expression", items: ["Dire ce que je pense","Exprimer mes émotions","Créativité","Être entendu(e)","Authenticité"]),
+    RoueCategory(id: "r", label: "Respect", items: ["Respect pour mon corps","Respect pour mes idées","Respect pour mes efforts","Dignité"]),
+    RoueCategory(id: "k", label: "Acceptation / Groupe", items: ["Acceptation tel que je suis","Appartenance","Amitié","Partage","Aide et aider","Honnêteté","Fêter / célébrer","Attention"]),
+    RoueCategory(id: "j", label: "Jeu / Créa", items: ["Amuser","Créer quelque chose","Rire","Me détendre","Jouer","Légèreté"]),
+    RoueCategory(id: "c", label: "Corps", items: ["Manger","Dormir","Respirer","Bouger","Boire","Toucher sain"])
+]
+
+// MARK: - Génération
+class Generation: ObservableObject, Identifiable {
+    let id: Int // 1-15
+    @Published var abuseur: String = ""   // "catKey|item"
+    @Published var victime: String = ""
+    @Published var phases: Set<Phase> = []
+    @Published var gu: Set<GuType> = []
+    @Published var meridiens: Set<Meridian> = []
+    @Published var statuts: Set<Statut> = []
+    @Published var validated: Bool = false
+
+    init(n: Int) { self.id = n }
+
+    var abLabel: String { abuseur.split(separator: "|").last.map(String.init) ?? "" }
+    var viLabel: String { victime.split(separator: "|").last.map(String.init) ?? "" }
+}
+
+// MARK: - Pierre de protection
+struct PierreSpec: Identifiable {
+    let id: String
+    let nom: String
+    let latin: String
+    let tags: [String]
+    let role: String
+    let placement: String
+    let purification: String
+    let icon: String
+}
+
+let pierresReference: [PierreSpec] = [
+    PierreSpec(id:"tourm", nom:"Tourmaline noire", latin:"Schorl", tags:["ent","abus","cord"], role:"Bouclier n°1 · Gui 鬼 et Abuse Energy · 15 générations.", placement:"Périmètre cabinet + sous la table", purification:"Eau salée 12 h · Soleil 4 h", icon:"◼"),
+    PierreSpec(id:"obsid", nom:"Obsidienne noire", latin:"SiO₂", tags:["cord","abus","anc"], role:"Cordages Abuseur→Consultant.e · Black Magick G-4.", placement:"Mains du consultant.e ou CV1", purification:"Eau froide 1 h · Pleine lune", icon:"◉"),
+    PierreSpec(id:"nuum", nom:"Nuummite (3.5 Ga)", latin:"Amphibolite", tags:["anc","jing","cord"], role:"Fork guerres galactiques C12 · Jing pré-biologique.", placement:"GV4 Mingmen ou KI1", purification:"Pleine lune uniquement. Pas d'eau.", icon:"◈"),
+    PierreSpec(id:"shung", nom:"Shungite élite I", latin:"C>98%", tags:["ent","prat"], role:"Incubus/Succubus G-1 · Spell G-8 · Protection praticien.", placement:"Poche praticien + coins cabinet", purification:"Eau froide 30 min hebdo", icon:"◆"),
+    PierreSpec(id:"aegir", nom:"Aegyrine", latin:"NaFe³⁺Si₂O₆", tags:["ent","abus"], role:"Archon/Reptilian G-10 · CUBE non-hermétique.", placement:"Grille 4 pointes autour de la table", purification:"Salvia 10 min · Pleine lune. Fragile.", icon:"◇"),
+    PierreSpec(id:"apache", nom:"Apache Tears", latin:"Perlite volcanique", tags:["anc","cord"], role:"In Limbo ×3 · Psychopompe · Deuil femmes victimes.", placement:"Cercle autour du consultant.e", purification:"Enterrer 48 h dans la terre après usage", icon:"○"),
+    PierreSpec(id:"labra", nom:"Labradorite", latin:"(Ca,Na)(Si,Al)₄O₈", tags:["prat","ent"], role:"Aura praticien · Stern-Tetraeder · Pemphigus 15 G.", placement:"Portée praticien (cou ou poche)", purification:"Pleine lune mensuelle · Eau froide brève", icon:"◐"),
+    PierreSpec(id:"kyani", nom:"Kyanite noire", latin:"Al₂SiO₅", tags:["cord","jing"], role:"Tuyau masculin Adam→Consultant.e · Zéro rétention.", placement:"Tuyau Jing GV4↔KI3", purification:"Aucune purification nécessaire.", icon:"◁")
+]
+
+class PierreState: ObservableObject, Identifiable {
+    let spec: PierreSpec
+    var id: String { spec.id }
+    @Published var selected: Bool = false
+    @Published var validated: Bool = false
+    @Published var volume: Int = 1
+    @Published var unit: String = "kg"
+    @Published var durationMin: Int = 30
+    @Published var durationDays: Int = 7
+    init(spec: PierreSpec) { self.spec = spec }
+}
+
+// MARK: - Dimension & Chakra (structs pour compatibilité DimensionsData)
+struct ChakraSpec: Identifiable {
+    let num: Int?
+    let icon: String
+    let nom: String
+    let issues: [(label: String, sla: Int)]
+    let hasCIM: Bool
+    var id: String { "\(num ?? 0)_\(nom)" }
+}
+
+struct DimensionSpec: Identifiable {
+    let id: String
+    let num: Int
+    let label: String
+    let description: String
+    let cssClass: String
+    let chakras: [ChakraSpec]
+}
+
+// MARK: - Session complète
+class SessionState: ObservableObject {
+    /// Identifiant patient (ex: "14968")
+    @Published var patientId: String = "14968"
+    /// Numéro de séance du patient (ex: "001")
+    @Published var sessionNum: String = "001"
+    /// Code praticien auto depuis le rôle sélectionné
+    /// Clé datastore complète : {patientId}-{sessionNum}-{role.code}
+    var sessionId: String { "\(patientId)-\(sessionNum)-\(role.code)" }
+
+    @Published var role: PractitionerRole = .cornelia
+    /// Source choisie par Patrick pour son PULL
+    @Published var pullSource: PractitionerRole = .cornelia
+
+    @Published var generations: [Generation] = (1...15).reversed().map { Generation(n: $0) }
+    @Published var pierres: [PierreState] = pierresReference.map { PierreState(spec: $0) }
+    @Published var chakraStates: [String: Bool] = [:]
+    @Published var syncStatus: String = "🔴 Off"
+    @Published var lastPin: String = ""
+
+    init() { chakraStates = initialChakraStates() }
+
+    /// Clé PUSH : {patientId}-{sessionNum}-{role.code}
+    /// Le code identifie le praticien → pas de préfixe role.rawValue nécessaire
+    var pushKey: String { sessionId }
+
+    /// Clé PULL :
+    /// - Shamanes tirent depuis la clé Patrick : {patientId}-{sessionNum}-01
+    /// - Patrick tire depuis la clé de pullSource : {patientId}-{sessionNum}-{pullSource.code}
+    var pullKey: String {
+        if role.isPatrick {
+            return "\(patientId)-\(sessionNum)-\(pullSource.code)"
+        } else {
+            return "\(patientId)-\(sessionNum)-\(PractitionerRole.patrick.code)"
+        }
+    }
+
+    /// Rôles Shamanes (tout sauf Patrick)
+    static let shamanes: [PractitionerRole] = PractitionerRole.allCases.filter { !$0.isPatrick }
+
+    var validatedCount: Int { generations.filter(\.validated).count }
+    var selectedPierresCount: Int { pierres.filter(\.selected).count }
+    var cleanedChakrasCount: Int { chakraStates.values.filter { $0 }.count }
+    var totalChakras: Int { allDimensions.flatMap(\.chakras).count }
+}

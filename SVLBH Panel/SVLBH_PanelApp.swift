@@ -1,20 +1,3 @@
-//
-//  SVLBH_PanelApp.swift
-//  SVLBH Panel
-//
-//  Created by Patrick Bays on 21.03.26.
-//
-
-import SwiftUI
-
-@main
-struct SVLBH_PanelApp: App {
-    let persistenceController = PersistenceController.shared
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
-        }
-    }
-}
+// SVLBH_PanelApp.swift — fichier conservé pour compatibilité projet Xcode
+// @main retiré — entry point dans SVLBHPanelApp.swift
+// v0.1.0

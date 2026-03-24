@@ -1,0 +1,78 @@
+// SVLBHPanel — Views/MainTabView.swift
+// v0.1.0 — TabView 4 onglets avec badges diff
+
+import SwiftUI
+
+struct MainTabView: View {
+    @EnvironmentObject var session: SessionState
+    @EnvironmentObject var sync: MakeSyncService
+    @State private var selectedTab = 0
+    @State private var showDiffLog = false
+    @State private var showPINAlert = false
+    @State private var pinInput = ""
+    @State private var pendingPayload = ""
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            TabView(selection: $selectedTab) {
+                SVLBHTab()
+                    .tabItem { Label("SVLBH", systemImage: "atom") }
+                    .tag(0)
+                DecodageTab()
+                    .tabItem { Label("Décodage G.", systemImage: "list.bullet.rectangle") }
+                    .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
+                    .tag(1)
+                PierresTab()
+                    .tabItem { Label("Pierres", systemImage: "diamond") }
+                    .badge(sync.diffs.pierres > 0 ? sync.diffs.pierres : 0)
+                    .tag(2)
+                ChakrasTab()
+                    .tabItem { Label("Chakras", systemImage: "circle.hexagongrid") }
+                    .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
+                    .tag(3)
+            }
+            .environmentObject(session)
+            .environmentObject(sync)
+            .onChange(of: selectedTab) { tab in
+                switch tab {
+                case 1: sync.diffs.decode = 0
+                case 2: sync.diffs.pierres = 0
+                case 3: sync.diffs.chakras = 0
+                default: break
+                }
+            }
+
+            VStack(spacing: 0) {
+                SyncBar(showDiffLog: $showDiffLog,
+                        showPINAlert: $showPINAlert,
+                        pendingPayload: $pendingPayload)
+                    .environmentObject(session)
+                    .environmentObject(sync)
+                Spacer().frame(height: 49)
+            }
+        }
+        .sheet(isPresented: $showDiffLog) {
+            DiffLogView().environmentObject(sync)
+        }
+        .alert("🔐 PIN requis", isPresented: $showPINAlert) {
+            TextField("PIN 4 chiffres", text: $pinInput).keyboardType(.numberPad)
+            Button("Valider") { validatePIN() }
+            Button("Annuler", role: .cancel) { pendingPayload = ""; pinInput = "" }
+        } message: {
+            Text("Patrick a envoyé des données. Entrez le PIN reçu par iMessage.")
+        }
+    }
+
+    private func validatePIN() {
+        let lines = pendingPayload.split(separator: "\n").map(String.init)
+        if let first = lines.first, first.hasPrefix("PIN:") {
+            let expected = String(first.dropFirst(4)).trimmingCharacters(in: .whitespaces)
+            if pinInput == expected {
+                let payload = lines.dropFirst().joined(separator: "\n")
+                sync.applyPayload(payload, to: session)
+                showDiffLog = true
+            }
+        }
+        pendingPayload = ""; pinInput = ""
+    }
+}

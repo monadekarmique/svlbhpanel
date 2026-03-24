@@ -1,0 +1,54 @@
+# .gitignore SVLBHPanel
+
+# ── Xcode ──────────────────────────────────────
+*.xcarchive
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.pbxproj
+
+# ── Build outputs ──────────────────────────────
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ── SPM ────────────────────────────────────────
+.build/
+.swiftpm/
+Packages/
+
+# ── macOS ──────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Données sensibles (JAMAIS dans Git) ────────
+# Clés API, tokens, credentials
+*.p8
+*.pem
+AuthKey_*.p8
+GoogleService-Info.plist
+secrets.xcconfig
+Config.xcconfig
+
+# Données patients/VIFA → Make.com datastore uniquement
+# NE PAS committer de payloads ou exports de sessions
+
+# ── Méthodologie propriétaire VLBH ─────────────
+# → repo privé séparé : patrickbaysvlbh/svlbhpanel-private
+"SVLBH Panel"/Models/DimensionsData.swift
+"SVLBH Panel"/Skills/
+
+# ── Exports temporaires ────────────────────────
+/tmp/
+*.zip

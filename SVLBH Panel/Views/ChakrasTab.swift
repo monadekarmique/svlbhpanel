@@ -1,0 +1,235 @@
+// SVLBHPanel — Views/ChakrasTab.swift
+// v0.1.3 — SLA→SLM · CIM-11 codes affichés · 46 chakras
+
+import SwiftUI
+
+struct ChakrasTab: View {
+    @EnvironmentObject var session: SessionState
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 0) {
+                    VStack(spacing: 4) {
+                        HStack {
+                            Text("Chakras nettoyés")
+                                .font(.caption).foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(session.cleanedChakrasCount) / \(session.totalChakras)")
+                                .font(.caption.bold()).foregroundColor(Color(hex: "#8B3A62"))
+                        }
+                        ProgressView(value: Double(session.cleanedChakrasCount),
+                                     total: Double(max(1, session.totalChakras)))
+                            .tint(Color(hex: "#8B3A62"))
+                    }
+                    .padding(.horizontal, 16).padding(.vertical, 12)
+
+                    Divider()
+
+                    ForEach(allDimensions) { dim in
+                        DimensionSection(dim: dim)
+                            .environmentObject(session)
+                    }
+                    Spacer().frame(height: 80)
+                }
+            }
+            .navigationTitle("Chakras")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .navigationViewStyle(.stack)
+    }
+}
+
+struct DimensionSection: View {
+    @EnvironmentObject var session: SessionState
+    let dim: DimensionInfo
+    @State private var expanded: Bool
+
+    init(dim: DimensionInfo) {
+        self.dim = dim
+        _expanded = State(initialValue: !dim.defaultCollapsed)
+    }
+
+    var cleanedInDim: Int { dim.allKeys.filter { session.chakraStates[$0] == true }.count }
+    var sugInDim: Int { dim.allKeys.filter { session.sugChakraStates[$0] == true && session.chakraStates[$0] != true }.count }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() }
+            } label: {
+                HStack(spacing: 8) {
+                    Text(expanded ? "▼" : "▶")
+                        .font(.caption2).foregroundColor(Color(hex: "#8B3A62"))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(dim.label).font(.subheadline.bold()).foregroundColor(.primary)
+                        Text(dim.description).font(.caption2).foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    if cleanedInDim > 0 {
+                        Text("\(cleanedInDim)/\(dim.chakras.count)")
+                            .font(.caption2.bold())
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Color(hex: "#1D9E75"))
+                            .cornerRadius(8)
+                    }
+                    if sugInDim > 0 {
+                        Text("🔬 \(sugInDim)")
+                            .font(.caption2.bold())
+                            .foregroundColor(Color(hex: "#185FA5"))
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(Color(hex: "#185FA5").opacity(0.12))
+                            .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal, 16).padding(.vertical, 10)
+                .background(Color(hex: "#8B3A62").opacity(0.05))
+            }
+            .buttonStyle(.plain)
+
+            if expanded {
+                ForEach(dim.chakras) { c in
+                    ChakraRow(dim: dim, chakra: c)
+                        .environmentObject(session)
+                }
+            }
+            Divider()
+        }
+    }
+}
+
+struct ChakraRow: View {
+    @EnvironmentObject var session: SessionState
+    let dim: DimensionInfo
+    let chakra: ChakraInfo
+
+    var key: String { dim.chakraKey(chakra) }
+    var isDone: Bool { session.chakraStates[key] ?? false }
+    var isSuggested: Bool { session.sugChakraStates[key] == true && !isDone }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            // Checkbox
+            Button {
+                session.chakraStates[key] = !isDone
+                if isDone { session.sugChakraStates.removeValue(forKey: key) }
+            } label: {
+                Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isDone ? Color(hex: "#1D9E75") : .secondary)
+                    .font(.title3)
+            }
+            .buttonStyle(.plain)
+
+            // 🔬 Suggestion badge
+            if isSuggested {
+                Button {
+                    session.chakraStates[key] = true
+                    session.sugChakraStates.removeValue(forKey: key)
+                } label: {
+                    HStack(spacing: 2) {
+                        Text("🔬").font(.system(size: 9))
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 10))
+                            .foregroundColor(Color(hex: "#185FA5"))
+                    }
+                    .padding(3)
+                    .background(Color(hex: "#185FA5").opacity(0.10))
+                    .cornerRadius(5)
+                }
+                .buttonStyle(.plain)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                // Ligne titre
+                HStack(spacing: 4) {
+                    Text(chakra.icon).font(.caption)
+                    if let n = chakra.num {
+                        Text("C\(n)").font(.caption2.bold())
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                    }
+                    Text(chakra.nom).font(.caption)
+                    if chakra.hasCIM {
+                        Text("CIM-11").font(.caption2)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 4).padding(.vertical, 1)
+                            .background(Color(hex: "#185FA5"))
+                            .cornerRadius(3)
+                    }
+                }
+
+                // Issues — SLM (remplace SLA)
+                ForEach(chakra.issues, id: \.label) { issue in
+                    HStack(spacing: 4) {
+                        Text(issue.label).font(.caption2).foregroundColor(.secondary)
+                        Text("SLM \(issue.sla)%").font(.caption2.bold())
+                            .foregroundColor(slaColor(issue.sla))
+                    }
+                }
+
+                // F16/F30 — Codes CIM-11 toggles (clé fixée au chakra)
+                if !chakra.cimCodes.isEmpty {
+                    CIMToggleGroup(chakraKey: key, codes: chakra.cimCodes)
+                        .environmentObject(session)
+                }
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 16).padding(.vertical, 6)
+        .background(isDone ? Color(hex: "#1D9E75").opacity(0.06)
+                    : isSuggested ? Color(hex: "#185FA5").opacity(0.06)
+                    : Color.clear)
+    }
+}
+
+// F30 — CIM toggles isolés dans leur propre View pour éviter le bug d'indexation
+struct CIMToggleGroup: View {
+    @EnvironmentObject var session: SessionState
+    let chakraKey: String
+    let codes: [(code: String, label: String)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            ForEach(codes, id: \.code) { entry in
+                CIMToggleRow(chakraKey: chakraKey, code: entry.code, label: entry.label)
+                    .environmentObject(session)
+            }
+        }
+        .padding(.top, 2)
+    }
+}
+
+struct CIMToggleRow: View {
+    @EnvironmentObject var session: SessionState
+    let chakraKey: String
+    let code: String
+    let label: String
+
+    private var isOn: Bool {
+        session.selectedCIM[chakraKey]?.contains(code) ?? false
+    }
+
+    var body: some View {
+        Button {
+            var s = session.selectedCIM[chakraKey] ?? []
+            if isOn { s.remove(code) } else { s.insert(code) }
+            session.selectedCIM[chakraKey] = s
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .font(.caption2)
+                    .foregroundColor(isOn ? Color(hex: "#185FA5") : .secondary)
+                Text(code)
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 5).padding(.vertical, 2)
+                    .background(isOn ? Color(hex: "#185FA5") : Color(hex: "#185FA5").opacity(0.5))
+                    .cornerRadius(4)
+                Text(label)
+                    .font(.caption2)
+                    .foregroundColor(isOn ? Color(hex: "#185FA5") : .secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}

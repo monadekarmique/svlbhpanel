@@ -1,0 +1,119 @@
+// SVLBHPanel — Views/SyncBar.swift
+// v0.1.0 — Barre PUSH/PULL + rôle + PIN
+
+import SwiftUI
+
+struct SyncBar: View {
+    @EnvironmentObject var session: SessionState
+    @EnvironmentObject var sync: MakeSyncService
+    @Binding var showDiffLog: Bool
+    @Binding var showPINAlert: Bool
+    @Binding var pendingPayload: String
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(spacing: 8) {
+                // Rôle — Menu compact (4 rôles)
+                Menu {
+                    ForEach(PractitionerRole.allCases, id: \.self) { r in
+                        Button(r.displayName) { session.role = r }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(session.role.displayName)
+                            .font(.caption.bold())
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 9))
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                    }
+                    .padding(.horizontal, 9).padding(.vertical, 6)
+                    .background(Color(hex: "#8B3A62").opacity(0.10))
+                    .cornerRadius(7)
+                }
+
+                // Source PULL — visible uniquement pour Patrick
+                if session.role.isPatrick {
+                    Menu {
+                        ForEach(SessionState.shamanes, id: \.self) { r in
+                            Button {
+                                session.pullSource = r
+                            } label: {
+                                HStack {
+                                    Text("\(r.displayName) ·\(r.code)")
+                                    if session.pullSource == r {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text("← \(session.pullSource.displayName) ·\(session.pullSource.code)")
+                                .font(.caption2.bold())
+                                .foregroundColor(Color(hex: "#185FA5"))
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 8))
+                                .foregroundColor(Color(hex: "#185FA5"))
+                        }
+                        .padding(.horizontal, 7).padding(.vertical, 5)
+                        .background(Color(hex: "#185FA5").opacity(0.10))
+                        .cornerRadius(6)
+                    }
+                }
+
+                Spacer()
+
+                if let pin = sync.lastPin, !pin.isEmpty {
+                    Text("📌 \(pin)")
+                        .font(.caption.bold())
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 7).padding(.vertical, 3)
+                        .background(Color(hex: "#8B3A62"))
+                        .cornerRadius(5)
+                }
+
+                Button { Task { await doPull() } } label: {
+                    HStack(spacing: 3) {
+                        if sync.isReceiving { ProgressView().scaleEffect(0.65) }
+                        else { Text("📥") }
+                        Text("Recevoir").font(.caption.bold())
+                    }
+                    .foregroundColor(Color(hex: "#8B3A62"))
+                    .padding(.horizontal, 9).padding(.vertical, 6)
+                    .overlay(RoundedRectangle(cornerRadius: 7)
+                        .stroke(Color(hex: "#8B3A62"), lineWidth: 1.5))
+                }
+                .disabled(sync.isReceiving || sync.isSending)
+
+                Button { Task { await doPush() } } label: {
+                    HStack(spacing: 3) {
+                        if sync.isSending { ProgressView().scaleEffect(0.65) }
+                        else { Text("📤") }
+                        Text("Envoyer").font(.caption.bold())
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 9).padding(.vertical, 6)
+                    .background(Color(hex: "#8B3A62"))
+                    .cornerRadius(7)
+                }
+                .disabled(sync.isSending || sync.isReceiving)
+            }
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(Color(UIColor.systemBackground))
+        }
+    }
+
+    private func doPush() async { _ = await sync.push(session: session) }
+
+    private func doPull() async {
+        guard let raw = await sync.pull(session: session, manual: true) else { return }
+        if raw == "PIN_PENDING" { return }
+        if raw.hasPrefix("PIN:") {
+            await MainActor.run { pendingPayload = raw; showPINAlert = true }
+        } else {
+            await MainActor.run { sync.applyPayload(raw, to: session); showDiffLog = true }
+        }
+    }
+}

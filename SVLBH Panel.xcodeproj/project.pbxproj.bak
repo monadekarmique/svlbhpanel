@@ -7,32 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07BC6F608F514688855FAE54 /* PasteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51514D0E567348A2BB0BBE53 /* PasteParser.swift */; };
-		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
-		4C3372F287014F868EA82C30 /* MakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A33667F10A749C2B23E1403 /* MakeSyncService.swift */; };
-		82A46D9D05844DBE9D122144 /* PierresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C8036B3674B24AA785EC0 /* PierresTab.swift */; };
-		856FF56CE14749B8A1930003 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3751FB08544D692E1C695 /* MainTabView.swift */; };
-		8E4D14352F6E9E0900F9996A /* SLMTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4D14342F6E9E0900F9996A /* SLMTab.swift */; };
 		8E7964C92F6E4D110051060A /* SVLBH_PanelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964C82F6E4D110051060A /* SVLBH_PanelApp.swift */; };
+		8E7964CB2F6E4D110051060A /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964CA2F6E4D110051060A /* Persistence.swift */; };
+		8E7964CE2F6E4D110051060A /* SVLBH_Panel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964CC2F6E4D110051060A /* SVLBH_Panel.xcdatamodeld */; };
+		8E7964D02F6E4D110051060A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964CF2F6E4D110051060A /* ContentView.swift */; };
 		8E7964D22F6E4D120051060A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E7964D12F6E4D120051060A /* Assets.xcassets */; };
 		8E7964D62F6E4D120051060A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E7964D52F6E4D120051060A /* Preview Assets.xcassets */; };
 		8E7964E02F6E4D120051060A /* SVLBH_PanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964DF2F6E4D120051060A /* SVLBH_PanelTests.swift */; };
 		8E7964EA2F6E4D120051060A /* SVLBH_PanelUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964E92F6E4D120051060A /* SVLBH_PanelUITests.swift */; };
 		8E7964EC2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7964EB2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift */; };
-		913D0B0F8A6A45E1A742C1FC /* DiffLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */; };
-		LEAD0001AAAA00000001AAAA /* LeadBubbleTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = LEAD0001BBBB00000001BBBB /* LeadBubbleTab.swift */; };
-		ONBO0001AAAA00000001AAAA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBO0001BBBB00000001BBBB /* OnboardingView.swift */; };
 		96FA78B46A38496C93D6083B /* SVLBHPanelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398A95DE26124552B401B80A /* SVLBHPanelApp.swift */; };
 		BE256CD665AC4C8BBC60C795 /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42822705CB334E3795AE1648 /* SessionData.swift */; };
-		C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CF5DB221742EFABD40371 /* ChakrasTab.swift */; };
 		C8AA840C76844930B7546E39 /* DimensionsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */; };
-		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
+		4C3372F287014F868EA82C30 /* MakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A33667F10A749C2B23E1403 /* MakeSyncService.swift */; };
+		07BC6F608F514688855FAE54 /* PasteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51514D0E567348A2BB0BBE53 /* PasteParser.swift */; };
+		856FF56CE14749B8A1930003 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3751FB08544D692E1C695 /* MainTabView.swift */; };
 		DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D118F80AA4F347F0A9F10053 /* SyncBar.swift */; };
+		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
+		913D0B0F8A6A45E1A742C1FC /* DiffLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */; };
+		C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CF5DB221742EFABD40371 /* ChakrasTab.swift */; };
+		82A46D9D05844DBE9D122144 /* PierresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C8036B3674B24AA785EC0 /* PierresTab.swift */; };
+		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
 		FA496127934948D69587803F /* PasteImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */; };
-		E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A70032EXPORT0141BCCF02 /* ExportView.swift */; };
-		CE016A20B4C74FA8B1234567 /* SessionExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE016A20B4C74FA8B7654321 /* SessionExporter.swift */; };
-		D15TR1B0VIEW00010000001 /* DistributionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15TR1B0VIEW00010000002 /* DistributionView.swift */; };
-		R3F5Y5T3M0VIEW0000001 /* ReferenceSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,17 +49,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsData.swift; sourceTree = "<group>"; };
-		2CC3751FB08544D692E1C695 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		3900240D6A13450BA9326F25 /* DecodageTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodageTab.swift; sourceTree = "<group>"; };
-		398A95DE26124552B401B80A /* SVLBHPanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHPanelApp.swift; sourceTree = "<group>"; };
-		3A33667F10A749C2B23E1403 /* MakeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeSyncService.swift; sourceTree = "<group>"; };
-		42822705CB334E3795AE1648 /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
-		51514D0E567348A2BB0BBE53 /* PasteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteParser.swift; sourceTree = "<group>"; };
-		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
-		8E4D14342F6E9E0900F9996A /* SLMTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SLMTab.swift; path = "SVLBH Panel/Views/SLMTab.swift"; sourceTree = "<group>"; };
 		8E7964C52F6E4D110051060A /* SVLBH Panel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SVLBH Panel.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7964C82F6E4D110051060A /* SVLBH_PanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelApp.swift; sourceTree = "<group>"; };
+		8E7964CA2F6E4D110051060A /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		8E7964CD2F6E4D110051060A /* SVLBH_Panel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SVLBH_Panel.xcdatamodel; sourceTree = "<group>"; };
+		8E7964CF2F6E4D110051060A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8E7964D12F6E4D120051060A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8E7964D32F6E4D120051060A /* SVLBH_Panel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SVLBH_Panel.entitlements; sourceTree = "<group>"; };
 		8E7964D52F6E4D120051060A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -72,17 +62,19 @@
 		8E7964E52F6E4D120051060A /* SVLBH PanelUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SVLBH PanelUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7964E92F6E4D120051060A /* SVLBH_PanelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITests.swift; sourceTree = "<group>"; };
 		8E7964EB2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffLogView.swift; sourceTree = "<group>"; };
-		LEAD0001BBBB00000001BBBB /* LeadBubbleTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadBubbleTab.swift; sourceTree = "<group>"; };
-		ONBO0001BBBB00000001BBBB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		A10CF5DB221742EFABD40371 /* ChakrasTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChakrasTab.swift; sourceTree = "<group>"; };
-		AB945055DBF440D689CC4DAA /* SVLBHTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHTab.swift; sourceTree = "<group>"; };
+		398A95DE26124552B401B80A /* SVLBHPanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHPanelApp.swift; sourceTree = "<group>"; };
+		42822705CB334E3795AE1648 /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
+		04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsData.swift; sourceTree = "<group>"; };
+		3A33667F10A749C2B23E1403 /* MakeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeSyncService.swift; sourceTree = "<group>"; };
+		51514D0E567348A2BB0BBE53 /* PasteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteParser.swift; sourceTree = "<group>"; };
+		2CC3751FB08544D692E1C695 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		D118F80AA4F347F0A9F10053 /* SyncBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBar.swift; sourceTree = "<group>"; };
+		AB945055DBF440D689CC4DAA /* SVLBHTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHTab.swift; sourceTree = "<group>"; };
+		A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffLogView.swift; sourceTree = "<group>"; };
+		A10CF5DB221742EFABD40371 /* ChakrasTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChakrasTab.swift; sourceTree = "<group>"; };
+		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
+		3900240D6A13450BA9326F25 /* DecodageTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodageTab.swift; sourceTree = "<group>"; };
 		F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteImportView.swift; sourceTree = "<group>"; };
-		E1A70032EXPORT0141BCCF02 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
-		CE016A20B4C74FA8B7654321 /* SessionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionExporter.swift; sourceTree = "<group>"; };
-		D15TR1B0VIEW00010000002 /* DistributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionView.swift; sourceTree = "<group>"; };
-		R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceSystemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,19 +102,9 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		567E65D9DB58443D9115DB93 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				42822705CB334E3795AE1648 /* SessionData.swift */,
-				04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		8E7964BC2F6E4D100051060A = {
 			isa = PBXGroup;
 			children = (
-				8E4D14342F6E9E0900F9996A /* SLMTab.swift */,
 				8E7964C72F6E4D110051060A /* SVLBH Panel */,
 				8E7964DE2F6E4D120051060A /* SVLBH PanelTests */,
 				8E7964E82F6E4D120051060A /* SVLBH PanelUITests */,
@@ -145,14 +127,50 @@
 			children = (
 				398A95DE26124552B401B80A /* SVLBHPanelApp.swift */,
 				8E7964C82F6E4D110051060A /* SVLBH_PanelApp.swift */,
+				8E7964CA2F6E4D110051060A /* Persistence.swift */,
+				8E7964CF2F6E4D110051060A /* ContentView.swift */,
 				567E65D9DB58443D9115DB93 /* Models */,
 				CB6A903E60E9453B814FED4F /* Services */,
 				D73360B41006421B9DE7938F /* Views */,
 				8E7964D12F6E4D120051060A /* Assets.xcassets */,
 				8E7964D32F6E4D120051060A /* SVLBH_Panel.entitlements */,
+				8E7964CC2F6E4D110051060A /* SVLBH_Panel.xcdatamodeld */,
 				8E7964D42F6E4D120051060A /* Preview Content */,
 			);
 			path = "SVLBH Panel";
+			sourceTree = "<group>";
+		};
+		567E65D9DB58443D9115DB93 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				42822705CB334E3795AE1648 /* SessionData.swift */,
+				04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CB6A903E60E9453B814FED4F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3A33667F10A749C2B23E1403 /* MakeSyncService.swift */,
+				51514D0E567348A2BB0BBE53 /* PasteParser.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D73360B41006421B9DE7938F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2CC3751FB08544D692E1C695 /* MainTabView.swift */,
+				D118F80AA4F347F0A9F10053 /* SyncBar.swift */,
+				AB945055DBF440D689CC4DAA /* SVLBHTab.swift */,
+				A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */,
+				A10CF5DB221742EFABD40371 /* ChakrasTab.swift */,
+				8E3C8036B3674B24AA785EC0 /* PierresTab.swift */,
+				3900240D6A13450BA9326F25 /* DecodageTab.swift */,
+				F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		8E7964D42F6E4D120051060A /* Preview Content */ = {
@@ -178,36 +196,6 @@
 				8E7964EB2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift */,
 			);
 			path = "SVLBH PanelUITests";
-			sourceTree = "<group>";
-		};
-		CB6A903E60E9453B814FED4F /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				3A33667F10A749C2B23E1403 /* MakeSyncService.swift */,
-				51514D0E567348A2BB0BBE53 /* PasteParser.swift */,
-				CE016A20B4C74FA8B7654321 /* SessionExporter.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		D73360B41006421B9DE7938F /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				2CC3751FB08544D692E1C695 /* MainTabView.swift */,
-				D118F80AA4F347F0A9F10053 /* SyncBar.swift */,
-				AB945055DBF440D689CC4DAA /* SVLBHTab.swift */,
-				A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */,
-				LEAD0001BBBB00000001BBBB /* LeadBubbleTab.swift */,
-				ONBO0001BBBB00000001BBBB /* OnboardingView.swift */,
-				A10CF5DB221742EFABD40371 /* ChakrasTab.swift */,
-				8E3C8036B3674B24AA785EC0 /* PierresTab.swift */,
-				3900240D6A13450BA9326F25 /* DecodageTab.swift */,
-				F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */,
-				E1A70032EXPORT0141BCCF02 /* ExportView.swift */,
-				D15TR1B0VIEW00010000002 /* DistributionView.swift */,
-				R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -341,6 +329,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E7964C92F6E4D110051060A /* SVLBH_PanelApp.swift in Sources */,
+				8E7964CB2F6E4D110051060A /* Persistence.swift in Sources */,
+				8E7964D02F6E4D110051060A /* ContentView.swift in Sources */,
+				8E7964CE2F6E4D110051060A /* SVLBH_Panel.xcdatamodeld in Sources */,
 				96FA78B46A38496C93D6083B /* SVLBHPanelApp.swift in Sources */,
 				BE256CD665AC4C8BBC60C795 /* SessionData.swift in Sources */,
 				C8AA840C76844930B7546E39 /* DimensionsData.swift in Sources */,
@@ -350,17 +341,10 @@
 				DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */,
 				DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */,
 				913D0B0F8A6A45E1A742C1FC /* DiffLogView.swift in Sources */,
-				LEAD0001AAAA00000001AAAA /* LeadBubbleTab.swift in Sources */,
-				ONBO0001AAAA00000001AAAA /* OnboardingView.swift in Sources */,
-				8E4D14352F6E9E0900F9996A /* SLMTab.swift in Sources */,
 				C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */,
 				82A46D9D05844DBE9D122144 /* PierresTab.swift in Sources */,
 				3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */,
 				FA496127934948D69587803F /* PasteImportView.swift in Sources */,
-				E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */,
-				CE016A20B4C74FA8B1234567 /* SessionExporter.swift in Sources */,
-				D15TR1B0VIEW00010000001 /* DistributionView.swift in Sources */,
-				R3F5Y5T3M0VIEW0000001 /* ReferenceSystemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,7 +497,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -533,7 +517,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -551,7 +535,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -571,7 +555,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -588,12 +572,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -611,12 +595,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -633,12 +617,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -655,12 +639,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -712,6 +696,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8E7964CC2F6E4D110051060A /* SVLBH_Panel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8E7964CD2F6E4D110051060A /* SVLBH_Panel.xcdatamodel */,
+			);
+			currentVersion = 8E7964CD2F6E4D110051060A /* SVLBH_Panel.xcdatamodel */;
+			path = SVLBH_Panel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8E7964BD2F6E4D100051060A /* Project object */;
 }
