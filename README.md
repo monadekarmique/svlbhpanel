@@ -3,7 +3,8 @@
 **Vibrational Light Body Healing — Panel Praticien iOS**
 
 Application iOS SwiftUI pour praticiens VLBH (Vibrational Light Body Healing).  
-Développée par [Digital Shaman Lab](https://vlbh.energy) — Patrick Bays, Avenches, Suisse.
+**Digital Shaman Lab** · [vlbh.energy](https://vlbh.energy) · Avenches 🇨🇭  
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0007--9183--8018-A6CE39?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0009-0007-9183-8018)
 
 ---
 
