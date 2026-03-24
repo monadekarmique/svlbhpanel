@@ -72,6 +72,7 @@ struct DecodageTab: View {
             }
             .navigationTitle("Décodage G.")
             .navigationBarTitleDisplayMode(.inline)
+            .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }
         }
         .navigationViewStyle(.stack)
     }
@@ -452,6 +453,7 @@ struct ForkGalactiqueSection: View {
                         .font(.caption2.bold()).foregroundColor(.secondary)
                     TextField("Ex: TIF-3-KET", text: $sephPrincipal)
                         .font(.body)
+                        .submitLabel(.done)
                         .padding(8)
                         .background(Color.white)
                         .cornerRadius(6)
@@ -464,6 +466,7 @@ struct ForkGalactiqueSection: View {
                         ForEach(0..<5, id: \.self) { i in
                             TextField("Code \(i + 1)", text: $sephSecondaires[i])
                                 .font(.caption)
+                                .submitLabel(.done)
                                 .padding(6)
                                 .background(Color.white)
                                 .cornerRadius(4)

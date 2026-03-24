@@ -672,6 +672,17 @@ class SessionState: ObservableObject {
         loadGroups()
         loadImageSets()
         loadLeadSlots()
+        subscribeToPierres()
+    }
+
+    /// Propager les changements de chaque PierreState vers SessionState
+    private func subscribeToPierres() {
+        for p in pierres {
+            p.objectWillChange
+                .receive(on: RunLoop.main)
+                .sink { [weak self] _ in self?.objectWillChange.send() }
+                .store(in: &cancellables)
+        }
     }
 
     /// Notifier SwiftUI manuellement (appeler après modification d'une Generation/Pierre)
