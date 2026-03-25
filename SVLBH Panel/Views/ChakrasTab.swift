@@ -5,6 +5,7 @@ import SwiftUI
 
 struct ChakrasTab: View {
     @EnvironmentObject var session: SessionState
+    @State private var collapseToken = UUID()
 
     var body: some View {
         NavigationView {
@@ -27,7 +28,7 @@ struct ChakrasTab: View {
                     Divider()
 
                     ForEach(allDimensions) { dim in
-                        DimensionSection(dim: dim)
+                        DimensionSection(dim: dim, collapseToken: collapseToken)
                             .environmentObject(session)
                     }
                     Spacer().frame(height: 80)
@@ -35,6 +36,17 @@ struct ChakrasTab: View {
             }
             .navigationTitle("Conditions")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        collapseToken = UUID()
+                    } label: {
+                        Image(systemName: "chevron.up.2")
+                            .font(.caption.bold())
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                    }
+                }
+            }
         }
         .navigationViewStyle(.stack)
     }
@@ -43,12 +55,8 @@ struct ChakrasTab: View {
 struct DimensionSection: View {
     @EnvironmentObject var session: SessionState
     let dim: DimensionInfo
-    @State private var expanded: Bool
-
-    init(dim: DimensionInfo) {
-        self.dim = dim
-        _expanded = State(initialValue: !dim.defaultCollapsed)
-    }
+    let collapseToken: UUID
+    @State private var expanded: Bool = false
 
     var cleanedInDim: Int { dim.allKeys.filter { session.chakraStates[$0] == true }.count }
     var sugInDim: Int { dim.allKeys.filter { session.sugChakraStates[$0] == true && session.chakraStates[$0] != true }.count }
@@ -66,14 +74,12 @@ struct DimensionSection: View {
                         Text(dim.description).font(.caption2).foregroundColor(.secondary)
                     }
                     Spacer()
-                    if cleanedInDim > 0 {
-                        Text("\(cleanedInDim)/\(dim.chakras.count)")
-                            .font(.caption2.bold())
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 6).padding(.vertical, 2)
-                            .background(Color(hex: "#1D9E75"))
-                            .cornerRadius(8)
-                    }
+                    Text("\(cleanedInDim)/\(dim.chakras.count)")
+                        .font(.caption2.bold())
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(cleanedInDim > 0 ? Color(hex: "#1D9E75") : Color.gray)
+                        .cornerRadius(8)
                     if sugInDim > 0 {
                         Text("🔬 \(sugInDim)")
                             .font(.caption2.bold())
@@ -95,6 +101,9 @@ struct DimensionSection: View {
                 }
             }
             Divider()
+        }
+        .onChange(of: collapseToken) { _ in
+            withAnimation(.easeInOut(duration: 0.2)) { expanded = false }
         }
     }
 }
