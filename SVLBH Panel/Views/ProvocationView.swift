@@ -94,6 +94,7 @@ struct EnergyPickerSlot: View {
     let energies: [ParasiteEnergy]
     let type: EnergyType
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var tracker: SessionTracker
 
     private var selectedEnergy: ParasiteEnergy? {
         guard let idx = selection else { return nil }
@@ -112,16 +113,17 @@ struct EnergyPickerSlot: View {
                 ForEach(energies) { energy in
                     Button {
                         selection = energy.numero
+                        tracker.logProvocation(energy)
                     } label: {
                         Text("\(energy.numero). \(energy.description)")
                     }
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Text("\(slotIndex + 1)")
-                        .font(.caption2.bold().monospaced())
+                    Text("\(selectedEnergy?.numero ?? (slotIndex + 1))")
+                        .font(.caption.bold().monospaced())
                         .foregroundColor(type.color)
-                        .frame(width: 18)
+                        .frame(width: 24)
                     if let energy = selectedEnergy {
                         Text(energy.description)
                             .font(.caption.bold())
