@@ -190,7 +190,7 @@ struct OnboardingView: View {
                     )
                     if identity.isIdentified { identity.applyTo(session) }
                     if !identity.isIdentified {
-                        error = "Ce compte Apple n'est pas enregistré"
+                        error = "Compte non reconnu. Si c'est votre 1er accès, utilisez le code praticien. Sinon, allez dans Réglages > Apple ID > Sign in with Apple > SVLBH Panel > Arrêter d'utiliser, puis réessayez."
                     }
                 case .failure(let err):
                     error = err.localizedDescription
