@@ -9,10 +9,22 @@ struct SVLBHPanelApp: App {
     @StateObject private var sync = MakeSyncService()
     @StateObject private var identity = PractitionerIdentity()
     @Environment(\.scenePhase) private var scenePhase
+    @State private var subscriptionStatus: SubscriptionStatus?
+    @State private var isCheckingSubscription = false
 
     var body: some Scene {
         WindowGroup {
-            if identity.isIdentified {
+            if !identity.isIdentified {
+                OnboardingView()
+                    .environmentObject(identity)
+                    .environmentObject(session)
+                    .preferredColorScheme(.light)
+            } else if let sub = subscriptionStatus, !sub.isActive {
+                SubscriptionWallView(status: sub) {
+                    Task { await checkSubscription() }
+                }
+                .preferredColorScheme(.light)
+            } else {
                 MainTabView()
                     .environmentObject(session)
                     .environmentObject(sync)
@@ -22,11 +34,11 @@ struct SVLBHPanelApp: App {
                         identity.applyTo(session)
                         MakeSyncService.requestNotificationPermission()
                     }
-            } else {
-                OnboardingView()
-                    .environmentObject(identity)
-                    .environmentObject(session)
-                    .preferredColorScheme(.light)
+                    .task {
+                        if subscriptionStatus == nil {
+                            await checkSubscription()
+                        }
+                    }
             }
         }
         .onChange(of: scenePhase) { phase in
@@ -42,5 +54,20 @@ struct SVLBHPanelApp: App {
                 Task { await PresenceService.shared.register(leadId: leadId, tier: "lead") }
             }
         }
+    }
+
+    private func checkSubscription() async {
+        let code = identity.code
+        guard !code.isEmpty else { return }
+        // Superviseur = toujours actif
+        if identity.isPatrick {
+            await MainActor.run {
+                subscriptionStatus = SubscriptionStatus(code: code, status: "active",
+                                                        paidUntil: "2099-12-31", trialDaysLeft: nil)
+            }
+            return
+        }
+        let status = await SubscriptionService.shared.check(code: code)
+        await MainActor.run { subscriptionStatus = status }
     }
 }

@@ -590,27 +590,40 @@ class PractitionerIdentity: ObservableObject {
 
     /// Sign in with Apple — identifie via email mappé ou userID déjà autorisé
     func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) {
-        // Premier login : email disponible → chercher dans le map
+        let appleName = fullName.flatMap {
+            [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
+        }.flatMap { $0.isEmpty ? nil : $0 }
+
+        // 1. Email disponible et dans le map → liaison automatique
         if let email = email, let match = Self.appleEmailMap[email] {
-            let appleName = fullName.flatMap {
-                [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
-            }.flatMap { $0.isEmpty ? nil : $0 } ?? match.name
-            // Sauvegarder userID + code associé
+            let name = appleName ?? match.name
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(match.code, forKey: "svlbh_apple_mapped_code")
-            UserDefaults.standard.set(appleName, forKey: "svlbh_apple_mapped_name")
-            identify(code: match.code, name: appleName)
+            UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
+            identify(code: match.code, name: name)
             return
         }
 
-        // Logins suivants : email = nil mais userID déjà autorisé
+        // 2. UserID déjà lié (login suivant, email = nil)
         let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
-        if savedAppleUser == userID, !userID.isEmpty {
-            let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code") ?? ActiveRole.patrickCode
+        if savedAppleUser == userID, !userID.isEmpty,
+           let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code"), !savedCode.isEmpty {
             let savedName = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_name") ?? "Utilisateur"
             identify(code: savedCode, name: savedName)
             return
         }
+
+        // 3. UserID inconnu mais user déjà identifié dans cette app → lier automatiquement
+        if !code.isEmpty && !displayName.isEmpty {
+            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+            UserDefaults.standard.set(code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(displayName, forKey: "svlbh_apple_mapped_name")
+            isIdentified = true
+            return
+        }
+
+        // 4. Nouveau userID, pas de code connu → sauver le userID pour la liaison manuelle
+        UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
     }
 
     func logout() {
