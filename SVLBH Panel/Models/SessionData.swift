@@ -387,6 +387,9 @@ class Generation: ObservableObject, Identifiable {
     @Published var statuts: Set<Statut> = []
     @Published var validated: Bool = false
 
+    @Published var porteTemp: Int? = nil
+    @Published var portePerm: Int? = nil
+
     @Published var sugAbuseur: String = ""
     @Published var sugVictime: String = ""
     @Published var sugPhases: Set<Phase> = []

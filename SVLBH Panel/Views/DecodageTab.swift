@@ -164,6 +164,14 @@ struct GenerationRow: View {
                         BesoinsMenu(label: "Victime", selection: $g.victime, color: Color(hex: "#185FA5"))
                     }
                     .padding(.horizontal, 12)
+                    // Portes énergétiques
+                    PorteSelector(
+                        generationId: g.id,
+                        tempSelection: $g.porteTemp,
+                        permSelection: $g.portePerm
+                    )
+                    .padding(.horizontal, 12)
+
                     // 🔬 Suggestions Besoins
                     if !g.sugAbuseur.isEmpty || !g.sugVictime.isEmpty {
                         HStack(spacing: 8) {
