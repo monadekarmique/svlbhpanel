@@ -13,8 +13,6 @@ struct MainTabView: View {
     @State private var pinInput = ""
     @State private var pendingPayload = ""
     @State private var showTimeline = false
-    @State private var showClosure = false
-    @State private var closureDragOffset: CGFloat = 0
 
     /// L'utilisateur courant n'apparaît pas dans la Planche Tactique
     private var isUnlistedUser: Bool {
@@ -28,10 +26,6 @@ struct MainTabView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
-                // ── Breadcrumb bar ──
-                SessionBreadcrumbBar()
-                    .environmentObject(tracker)
-
                 // ── Tabs ──
                 TabView(selection: $selectedTab) {
                     SVLBHTab(selectedTab: $selectedTab)
@@ -54,7 +48,7 @@ struct MainTabView: View {
                     .badge(sync.diffs.pierres > 0 ? sync.diffs.pierres : 0)
                     .tag(4)
                 ChakrasTab()
-                    .tabItem { Label("Chakras", systemImage: "circle.hexagongrid") }
+                    .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
                 if session.role.isPatrick || session.currentTier == .certifiee {
@@ -101,24 +95,6 @@ struct MainTabView: View {
                     }
                 }
             }
-        }
-        .gesture(
-            DragGesture(minimumDistance: 100)
-                .onChanged { value in
-                    if value.startLocation.y < 50 && value.translation.height > 0 {
-                        closureDragOffset = value.translation.height
-                    }
-                }
-                .onEnded { value in
-                    if value.startLocation.y < 50 && value.translation.height > 200 {
-                        showClosure = true
-                    }
-                    closureDragOffset = 0
-                }
-        )
-        .fullScreenCover(isPresented: $showClosure) {
-            SessionClosureView(isPresented: $showClosure)
-                .environmentObject(tracker)
         }
         .onAppear {
             tracker.startSession()

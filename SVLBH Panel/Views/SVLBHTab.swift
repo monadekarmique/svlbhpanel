@@ -21,7 +21,10 @@ struct SVLBHTab: View {
     @State private var showReferenceSystems = false
     @State private var showLogoutConfirm = false
     @State private var showResetConfirm = false
+    @State private var showPlanche = false
+    @State private var showClosure = false
     @EnvironmentObject var identity: PractitionerIdentity
+    @EnvironmentObject var tracker: SessionTracker
 
     var slaEstimate: Int {
         let n = session.validatedCount
@@ -265,10 +268,60 @@ struct SVLBHTab: View {
                     .buttonStyle(.plain)
                     .padding(.horizontal, 16)
 
+                    // ── Breadcrumb séance ──
+                    if tracker.isActive && !tracker.events.isEmpty {
+                        VStack(spacing: 8) {
+                            SessionBreadcrumbBar()
+                                .environmentObject(tracker)
+
+                            // Bouton protocole de clôture
+                            Button {
+                                showClosure = true
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "seal.fill")
+                                        .font(.caption)
+                                    Text("Clôturer la séance")
+                                        .font(.caption.bold())
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 14).padding(.vertical, 8)
+                                .background(Color(hex: "#B8965A"))
+                                .cornerRadius(8)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.horizontal, 16)
+                    }
 
                     // F01 — Leads connectés (Superviseur + Certifiées)
                     if session.role.isPatrick || currentTier == .certifiee {
                         LeadSlotsView().environmentObject(session)
+                    }
+
+                    // ── Planche Tactique flottante ──
+                    if session.role.isPatrick || currentTier == .certifiee {
+                        if !showPlanche {
+                            Button {
+                                withAnimation(.spring(response: 0.3)) { showPlanche = true }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "rectangle.on.rectangle.angled")
+                                        .font(.caption)
+                                    Text("Planche Tactique")
+                                        .font(.caption.bold())
+                                }
+                                .foregroundColor(Color(hex: "#8B3A62"))
+                                .padding(.horizontal, 12).padding(.vertical, 8)
+                                .background(Color(hex: "#8B3A62").opacity(0.08))
+                                .cornerRadius(8)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 16)
+                        }
+
+                        PlancheFloatingView(isVisible: $showPlanche)
+                            .environmentObject(session)
                     }
 
                     Spacer().frame(height: 120)
@@ -339,6 +392,10 @@ struct SVLBHTab: View {
             }
             .sheet(isPresented: $showReferenceSystems) {
                 ReferenceSystemView().environmentObject(session).environmentObject(sync)
+            }
+            .fullScreenCover(isPresented: $showClosure) {
+                SessionClosureView(isPresented: $showClosure)
+                    .environmentObject(tracker)
             }
         }
         .navigationViewStyle(.stack)
