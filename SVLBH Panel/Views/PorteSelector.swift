@@ -20,35 +20,30 @@ struct PorteSelector: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Temporaires
             porteMenu(
                 label: "Ouvertures Temporaires",
-                placeholder: "— Sélectionner une porte temporaire —",
+                placeholder: "— Sélectionner —",
                 color: Color(hex: "#10B981"),
                 portes: PorteEnergetiqueData.temporaires,
                 selection: $tempSelection,
                 selected: selectedTemp
             )
-
-            // Permanentes
             porteMenu(
                 label: "Ouvertures Permanentes",
-                placeholder: "— Sélectionner une porte permanente —",
+                placeholder: "— Sélectionner —",
                 color: Color(hex: "#E24B4A"),
                 portes: PorteEnergetiqueData.permanentes,
                 selection: $permSelection,
                 selected: selectedPerm
             )
-
-            // Reset
             if tempSelection != nil || permSelection != nil {
                 Button {
                     tempSelection = nil
                     permSelection = nil
                 } label: {
                     HStack(spacing: 3) {
-                        Image(systemName: "arrow.counterclockwise").font(.system(size: 9))
-                        Text("Réinitialiser").font(.system(size: 9))
+                        Image(systemName: "arrow.counterclockwise").font(.caption)
+                        Text("Réinitialiser").font(.caption)
                     }
                     .foregroundColor(.secondary)
                 }
@@ -75,23 +70,23 @@ struct PorteSelector: View {
             } label: {
                 HStack(spacing: 4) {
                     Text(label)
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.caption.bold())
                         .foregroundColor(color)
                     Spacer()
                     if let porte = selected {
                         let pt = porte.point.isEmpty ? "" : " (\(porte.point))"
                         Text("\(porte.nom)\(pt)")
-                            .font(.system(size: 9))
+                            .font(.caption)
                             .foregroundColor(.primary)
                             .lineLimit(1)
                     } else {
                         Text(placeholder)
-                            .font(.system(size: 9))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     }
                     Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 7))
+                        .font(.caption)
                         .foregroundColor(color.opacity(0.5))
                 }
                 .padding(.horizontal, 8).padding(.vertical, 5)
@@ -101,17 +96,16 @@ struct PorteSelector: View {
             }
             .accessibilityLabel("\(label) G\(generationId)")
 
-            // Détail sélection
             if let porte = selected {
                 HStack(spacing: 4) {
-                    Text(porte.isPermanent ? "🔴" : "🟢").font(.system(size: 8))
+                    Text(porte.isPermanent ? "🔴" : "🟢").font(.caption)
                     let pt = porte.point.isEmpty ? "" : " (\(porte.point))"
                     Text("\(porte.nom)\(pt)")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.caption.bold())
                         .foregroundColor(color)
-                    Text("·").foregroundColor(.secondary)
+                    Text("·").font(.caption).foregroundColor(.secondary)
                     Text(porte.condition)
-                        .font(.system(size: 9).italic())
+                        .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }

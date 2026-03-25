@@ -16,10 +16,10 @@ struct ProvocationView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Énergies Parasitaires")
-                        .font(.headline.bold())
+                        .font(.title3.bold())
                         .foregroundColor(Color(hex: "#8B3A62"))
                     Text("\(ParasiteEnergyData.permanentes.count) permanentes · \(ParasiteEnergyData.temporaires.count) temporaires")
-                        .font(.caption2).foregroundColor(.secondary)
+                        .font(.caption).foregroundColor(.secondary)
                 }
                 Spacer()
                 // Compteur validées / affichées (côté droit)
@@ -28,7 +28,7 @@ struct ProvocationView: View {
                         .font(.title2.bold())
                         .foregroundColor(Color(hex: "#1D9E75"))
                     Text("validées")
-                        .font(.caption2).foregroundColor(.secondary)
+                        .font(.caption).foregroundColor(.secondary)
                 }
             }
             .padding(.horizontal, 12)
@@ -38,8 +38,8 @@ struct ProvocationView: View {
                 // ── Colonne gauche : 3 × Permanentes ──
                 VStack(spacing: 8) {
                     HStack {
-                        Text("PERMANENT")
-                            .font(.headline.bold())
+                        Text("PERMANENTES (48)")
+                            .font(.title3.bold())
                             .foregroundColor(.white)
                             .padding(.horizontal, 8).padding(.vertical, 3)
                             .background(EnergyType.permanent.color)
@@ -61,8 +61,8 @@ struct ProvocationView: View {
                 // ── Colonne droite : 5 × Temporaires ──
                 VStack(spacing: 8) {
                     HStack {
-                        Text("TEMPORAIRE")
-                            .font(.headline.bold())
+                        Text("TEMPORAIRES (19)")
+                            .font(.title3.bold())
                             .foregroundColor(.white)
                             .padding(.horizontal, 8).padding(.vertical, 3)
                             .background(EnergyType.temporary.color)
@@ -124,17 +124,17 @@ struct EnergyPickerSlot: View {
                         .frame(width: 18)
                     if let energy = selectedEnergy {
                         Text(energy.description)
-                            .font(.caption2.bold())
+                            .font(.caption.bold())
                             .foregroundColor(.primary)
                             .lineLimit(1)
                     } else {
                         Text("Sélectionner…")
-                            .font(.caption2.bold())
+                            .font(.caption.bold())
                             .foregroundColor(.secondary)
                     }
                     Spacer()
                     Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 9))
+                        .font(.system(size: 11))
                         .foregroundColor(type.color.opacity(0.6))
                 }
                 .padding(.horizontal, 8).padding(.vertical, 8)
@@ -147,25 +147,25 @@ struct EnergyPickerSlot: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // Nom en couleur (violet/vert)
                     Text(energy.nom)
-                        .font(.caption2.bold())
+                        .font(.caption.bold())
                         .foregroundColor(type.color)
 
                     // Dimensions à vérifier
                     HStack(spacing: 4) {
                         Text(type == .temporary ? "D2" : energy.niveau)
-                            .font(.caption2.bold())
+                            .font(.caption.bold())
                             .foregroundColor(type.color)
                             .padding(.horizontal, 6).padding(.vertical, 2)
                             .background(type.color.opacity(0.15))
                             .cornerRadius(5)
                         Text("à vérifier")
-                            .font(.caption2)
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
 
                     // Recommandation
                     Text(energy.liberation)
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundColor(.primary.opacity(0.75))
                         .fixedSize(horizontal: false, vertical: true)
                 }

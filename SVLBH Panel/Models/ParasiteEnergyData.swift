@@ -15,8 +15,8 @@ enum EnergyType: String, Codable {
 
     var label: String {
         switch self {
-        case .permanent: return "PERMANENT"
-        case .temporary: return "TEMPORAIRE"
+        case .permanent: return "PERMANENTES (48)"
+        case .temporary: return "TEMPORAIRES (19)"
         }
     }
 }
