@@ -574,15 +574,24 @@ class PractitionerIdentity: ObservableObject {
         Task { await registerVendorID(code: code, name: name) }
     }
 
-    /// Sign in with Apple — identifie Patrick via son email
+    /// Sign in with Apple — identifie Patrick via son email ou userID déjà autorisé
     func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) {
-        UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
         let name = fullName.flatMap {
             [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
-        } ?? "Patrick"
-        // bays.patrick@gmail.com → superviseur
+        }.flatMap { $0.isEmpty ? nil : $0 } ?? "Patrick"
+
+        // Premier login : email disponible → vérifier et sauvegarder le userID
         if email == Self.patrickAppleEmail {
+            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             identify(code: ActiveRole.patrickCode, name: name)
+            return
+        }
+
+        // Logins suivants : email = nil mais userID déjà autorisé
+        let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
+        if savedAppleUser == userID, !userID.isEmpty {
+            identify(code: ActiveRole.patrickCode, name: name)
+            return
         }
     }
 

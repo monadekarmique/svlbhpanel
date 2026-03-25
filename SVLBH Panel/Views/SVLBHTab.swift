@@ -87,12 +87,12 @@ struct SVLBHTab: View {
                     }
                     .padding(.top, 14)
 
-                    // WhatsApp par tier (si disponible)
-                    if let url = currentTier.whatsappURL {
+                    // WhatsApp par tier (sauf lead — déjà dans SyncBar)
+                    if currentTier != .lead, let url = currentTier.whatsappURL {
                         Link(destination: url) {
                             HStack(spacing: 4) {
                                 Image(systemName: "message.fill").font(.caption)
-                                Text(currentTier == .lead ? "Contacte-nous" : "WhatsApp").font(.caption.bold())
+                                Text("WhatsApp").font(.caption.bold())
                             }
                             .foregroundColor(.white)
                             .padding(.horizontal, 10).padding(.vertical, 6)
@@ -270,6 +270,7 @@ struct SVLBHTab: View {
                     Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                         .foregroundColor(Color(hex: "#C27894").opacity(0.7))
+                        .fixedSize()
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
