@@ -18,7 +18,10 @@ struct SVLBHPanelApp: App {
                     .environmentObject(sync)
                     .environmentObject(identity)
                     .preferredColorScheme(.light)
-                    .onAppear { identity.applyTo(session) }
+                    .onAppear {
+                        identity.applyTo(session)
+                        MakeSyncService.requestNotificationPermission()
+                    }
             } else {
                 OnboardingView()
                     .environmentObject(identity)
@@ -30,6 +33,9 @@ struct SVLBHPanelApp: App {
             if phase == .background, identity.tier == .lead {
                 let leadId = PresenceService.shared.leadId
                 Task { await PresenceService.shared.disconnect(leadId: leadId) }
+            }
+            if phase == .active {
+                UIApplication.shared.applicationIconBadgeNumber = 0
             }
             if phase == .active, identity.isIdentified, identity.tier == .lead {
                 let leadId = PresenceService.shared.leadId

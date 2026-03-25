@@ -12,6 +12,8 @@ struct OnboardingView: View {
     @State private var error = ""
     @State private var isCheckingPresence = false
     @State private var presenceBlocked = false
+    @State private var pendingAppleUserID: String?
+    @State private var showAppleLinkAlert = false
 
     private var codeInt: Int? { Int(codeDraft) }
     private var isValid: Bool {
@@ -124,7 +126,13 @@ struct OnboardingView: View {
                 }
                 .disabled(!isValid || nameDraft.trimmingCharacters(in: .whitespaces).isEmpty || isCheckingPresence || presenceBlocked)
 
-                // ── Sign in with Apple (Patrick) ──
+                Text("Entrez votre code praticien et prénom, puis appuyez Entrer.\nOu utilisez la connexion rapide ci-dessous.")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
+
+                // ── Sign in with Apple ──
                 appleSignInSection
             }
             .padding(24)
@@ -168,6 +176,29 @@ struct OnboardingView: View {
             await identity.autoIdentify()
             if identity.isIdentified { identity.applyTo(session) }
         }
+        .alert("Lier votre compte Apple", isPresented: $showAppleLinkAlert) {
+            TextField("Code praticien", text: $codeDraft).keyboardType(.numberPad)
+            TextField("Prénom", text: $nameDraft)
+            Button("Lier") {
+                guard let userID = pendingAppleUserID,
+                      let code = Int(codeDraft), (1...30000).contains(code) || code == 455000,
+                      !nameDraft.trimmingCharacters(in: .whitespaces).isEmpty else {
+                    error = "Code invalide"
+                    return
+                }
+                let name = nameDraft.trimmingCharacters(in: .whitespaces)
+                // Sauvegarder l'association Apple userID → code/nom
+                UserDefaults.standard.set(userID, forKey: "svlbh_apple_user_id")
+                UserDefaults.standard.set(codeDraft, forKey: "svlbh_apple_mapped_code")
+                UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
+                identity.identify(code: codeDraft, name: name)
+                identity.applyTo(session)
+                pendingAppleUserID = nil
+            }
+            Button("Annuler", role: .cancel) { pendingAppleUserID = nil }
+        } message: {
+            Text("Votre compte Apple n'est pas encore lié. Entrez votre code praticien pour activer la connexion automatique.")
+        }
     }
 
     // MARK: - Sign in with Apple
@@ -190,7 +221,9 @@ struct OnboardingView: View {
                     )
                     if identity.isIdentified { identity.applyTo(session) }
                     if !identity.isIdentified {
-                        error = "Compte non reconnu. Si c'est votre 1er accès, utilisez le code praticien. Sinon, allez dans Réglages > Apple ID > Sign in with Apple > SVLBH Panel > Arrêter d'utiliser, puis réessayez."
+                        // Proposer de lier le compte Apple au code praticien
+                        pendingAppleUserID = credential.user
+                        showAppleLinkAlert = true
                     }
                 case .failure(let err):
                     error = err.localizedDescription

@@ -553,9 +553,16 @@ class PractitionerIdentity: ObservableObject {
 
     /// Mapping email Apple → (code praticien, prénom)
     static let appleEmailMap: [String: (code: String, name: String)] = [
+        // Superviseur
         "bays.patrick@icloud.com": (ActiveRole.patrickCode, "Patrick"),
         "bays.patrick@gmail.com": (ActiveRole.patrickCode, "Patrick"),
+        "pb@vlbh.energy": (ActiveRole.patrickCode, "Patrick"),
+        // Certifiées
         "cornelia.althaus@hotmail.com": ("300", "Cornelia"),
+        "anne.gr29@gmail.com": ("302", "Anne"),
+        "flaviaguift@icloud.com": ("301", "Flavia"),
+        // Lead
+        "chloegattlensar@me.com": ("22", "Chloé"),
     ]
 
     @Published var isIdentified: Bool = false

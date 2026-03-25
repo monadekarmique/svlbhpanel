@@ -2,6 +2,8 @@
 // v4.0.4 — debounce queue-drain post-update + guard pullKey vide + max() patientId
 
 import Foundation
+import UserNotifications
+import UIKit
 
 class MakeSyncService: ObservableObject {
     static let pushURL = URL(string: "https://hook.eu2.make.com/1xhfk4o1l5pu4h23m0x26zql6oe8c3ns")!
@@ -249,8 +251,15 @@ class MakeSyncService: ObservableObject {
             }
         }
         await MainActor.run {
+            let previousCount = pendingSources.count
             pendingSources = found.sorted(by: { $0.code < $1.code })
             isScanning = false
+            // Badge app
+            UIApplication.shared.applicationIconBadgeNumber = pendingSources.count
+            // Notification locale si nouveaux soins détectés
+            if pendingSources.count > previousCount && !pendingSources.isEmpty {
+                sendLocalNotification(count: pendingSources.count, names: pendingSources.map(\.displayName))
+            }
         }
     }
 
@@ -492,5 +501,26 @@ class MakeSyncService: ObservableObject {
             r.suggestions += 1
         }
         return r
+    }
+
+    // MARK: - Notifications locales
+
+    static func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            print("[Notifications] Permission: \(granted)")
+        }
+    }
+
+    private func sendLocalNotification(count: Int, names: [String]) {
+        let content = UNMutableNotificationContent()
+        content.title = "Soin reçu"
+        content.body = count == 1
+            ? "\(names.first ?? "Une shamane") a envoyé un soin"
+            : "\(count) soins en attente de \(names.joined(separator: ", "))"
+        content.sound = .default
+        content.badge = NSNumber(value: count)
+        let request = UNNotificationRequest(identifier: "soin-\(UUID().uuidString)",
+                                            content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 }
