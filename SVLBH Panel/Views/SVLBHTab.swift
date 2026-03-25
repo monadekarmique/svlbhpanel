@@ -23,6 +23,7 @@ struct SVLBHTab: View {
     @State private var showResetConfirm = false
     @State private var showPlanche = false
     @State private var showClosure = false
+    @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var tracker: SessionTracker
 
@@ -44,6 +45,7 @@ struct SVLBHTab: View {
         session.visibleGenerations.filter { $0.meridiens.contains(.KI) || $0.meridiens.contains(.GB) }.count > 3
     }
     var currentTier: PractitionerTier {
+        if let sim = simulatedTier { return sim }
         switch session.role {
         case .patrick: return .superviseur
         case .shamane(let s): return s.tier
@@ -206,7 +208,7 @@ struct SVLBHTab: View {
                     .padding(.horizontal, 16)
 
                     // F30 — Programme (Patrick only : 00 ↔ 01)
-                    if session.role.isPatrick {
+                    if session.role.isPatrick || simulatedTier != nil {
                         HStack(spacing: 10) {
                             Text("Programme")
                                 .font(.caption.bold()).foregroundColor(.secondary)
@@ -215,6 +217,45 @@ struct SVLBHTab: View {
                                 Text("01 — Recherche").tag("01")
                             }
                             .pickerStyle(.segmented)
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 4)
+                    }
+
+                    // Sélecteur de segment (Superviseur only)
+                    if identity.isPatrick {
+                        HStack(spacing: 10) {
+                            Text("Segment")
+                                .font(.caption.bold()).foregroundColor(.secondary)
+                            Menu {
+                                Button("Superviseur (réel)") { simulatedTier = nil }
+                                Divider()
+                                ForEach(session.shamaneProfiles, id: \.code) { profile in
+                                    Button("\(profile.displayName) · \(profile.tier.label) (\(profile.codeFormatted))") {
+                                        simulatedTier = profile.tier
+                                        session.role = .shamane(profile)
+                                    }
+                                }
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Text(simulatedTier?.label ?? "SUPERVISEUR")
+                                        .font(.caption.bold())
+                                    Image(systemName: "chevron.up.chevron.down")
+                                        .font(.system(size: 8))
+                                }
+                                .foregroundColor(Color(hex: "#8B3A62"))
+                                .padding(.horizontal, 8).padding(.vertical, 5)
+                                .background(Color(hex: "#8B3A62").opacity(0.08))
+                                .cornerRadius(6)
+                            }
+                            if simulatedTier != nil {
+                                Button {
+                                    simulatedTier = nil
+                                    session.role = .patrick
+                                } label: {
+                                    Text("↩").font(.caption.bold()).foregroundColor(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
                         .padding(.horizontal, 16).padding(.vertical, 4)
                     }
