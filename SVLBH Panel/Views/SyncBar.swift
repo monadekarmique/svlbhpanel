@@ -168,7 +168,7 @@ struct SyncBar: View {
                             if sync.isReceiving || sync.isScanning {
                                 ProgressView().scaleEffect(0.65)
                             } else {
-                                Text("📥")
+                                Image(systemName: "antenna.radiowaves.left.and.right").font(.caption)
                             }
                             if !isCompact { Text("Recevoir").font(.caption.bold()) }
                             if !sync.pendingSources.isEmpty {
@@ -190,7 +190,7 @@ struct SyncBar: View {
                     Button { Task { await doPull() } } label: {
                         HStack(spacing: 3) {
                             if sync.isReceiving { ProgressView().scaleEffect(0.65) }
-                            else { Text("📥") }
+                            else { Image(systemName: "antenna.radiowaves.left.and.right").font(.caption) }
                             if !isCompact { Text("Recevoir").font(.caption.bold()) }
                         }
                         .foregroundColor(Color(hex: "#8B3A62"))
@@ -247,7 +247,7 @@ struct SyncBar: View {
                 Button { checkTierAndPush() } label: {
                     HStack(spacing: 3) {
                         if sync.isSending { ProgressView().scaleEffect(0.65) }
-                        else { Text("📤") }
+                        else { Image(systemName: "waveform").font(.caption) }
                         if !isCompact { Text(isRenvoyer ? "Renvoyer" : "Envoyer").font(.caption.bold()) }
                     }
                     .foregroundColor(.white)

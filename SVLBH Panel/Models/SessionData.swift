@@ -3,6 +3,7 @@
 
 import Foundation
 import Combine
+import UIKit
 
 // ═══════════════════════════════════════════════════════════════════
 // MARK: - Rôle actif (dynamique)
@@ -544,10 +545,16 @@ class PatientRegistry {
 class PractitionerIdentity: ObservableObject {
     private static let codeKey = "svlbh_practitioner_code"
     private static let nameKey = "svlbh_practitioner_name"
+    private static let appleUserKey = "svlbh_apple_user_id"
+    private static let identityURL = URL(string: "https://hook.eu2.make.com/svlbh-identity-lookup")!
+
+    /// Email autorisé pour Sign in with Apple → superviseur
+    static let patrickAppleEmail = "bays.patrick@gmail.com"
 
     @Published var isIdentified: Bool = false
     @Published var code: String = ""
     @Published var displayName: String = ""
+    @Published var isAutoIdentifying: Bool = false
 
     init() { load() }
 
@@ -563,9 +570,28 @@ class PractitionerIdentity: ObservableObject {
         UserDefaults.standard.set(code, forKey: Self.codeKey)
         UserDefaults.standard.set(name, forKey: Self.nameKey)
         isIdentified = true
+        // Enregistrer le vendorID sur Make pour les prochains lancements
+        Task { await registerVendorID(code: code, name: name) }
+    }
+
+    /// Sign in with Apple — identifie Patrick via son email
+    func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) {
+        UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+        let name = fullName.flatMap {
+            [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
+        } ?? "Patrick"
+        // bays.patrick@gmail.com → superviseur
+        if email == Self.patrickAppleEmail {
+            identify(code: ActiveRole.patrickCode, name: name)
+        }
     }
 
     func logout() {
+        // Disconnect lead presence si c'est un lead
+        if tier == .lead {
+            let leadId = PresenceService.shared.leadId
+            Task { await PresenceService.shared.disconnect(leadId: leadId) }
+        }
         code = ""
         displayName = ""
         UserDefaults.standard.removeObject(forKey: Self.codeKey)
@@ -588,6 +614,67 @@ class PractitionerIdentity: ObservableObject {
                 ?? ShamaneProfile(code: code, prenom: displayName, nom: "",
                                   whatsapp: "", email: "", abonnement: "")
             session.role = .shamane(profile)
+        }
+    }
+
+    // MARK: - VendorID ↔ Make.com
+
+    private var vendorID: String {
+        UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+    }
+
+    /// Enregistre vendorID + code + nom sur Make après identification manuelle
+    func registerVendorID(code: String, name: String) async {
+        let body: [String: String] = [
+            "action": "register",
+            "vendor_id": vendorID,
+            "code": code,
+            "name": name
+        ]
+        do {
+            var req = URLRequest(url: Self.identityURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            req.timeoutInterval = 10
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            print("[Identity] register vendorID → \(status)")
+        } catch {
+            print("[Identity] register vendorID failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// Tente un auto-login via vendorID au lancement
+    func autoIdentify() async {
+        guard !isIdentified else { return }
+        await MainActor.run { isAutoIdentifying = true }
+        defer { Task { @MainActor in isAutoIdentifying = false } }
+
+        let body: [String: String] = [
+            "action": "lookup",
+            "vendor_id": vendorID
+        ]
+        do {
+            var req = URLRequest(url: Self.identityURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            req.timeoutInterval = 8
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else {
+                print("[Identity] lookup → \(status), no match")
+                return
+            }
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let code = json["code"] as? String, !code.isEmpty,
+               let name = json["name"] as? String {
+                await MainActor.run { identify(code: code, name: name) }
+                print("[Identity] autoIdentify → \(code) (\(name))")
+            }
+        } catch {
+            print("[Identity] autoIdentify failed: \(error.localizedDescription)")
         }
     }
 }

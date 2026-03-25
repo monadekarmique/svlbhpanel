@@ -18,6 +18,9 @@ struct SVLBHTab: View {
     @State private var showTherapists = false
     @State private var showDistribution = false
     @State private var showReferenceSystems = false
+    @State private var showLogoutConfirm = false
+    @State private var showResetConfirm = false
+    @EnvironmentObject var identity: PractitionerIdentity
 
     var slaEstimate: Int {
         let n = session.validatedCount
@@ -162,8 +165,24 @@ struct SVLBHTab: View {
                                         .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                Image(systemName: "pencil.circle")
-                                    .foregroundColor(Color(hex: "#C27894")).padding(.leading, 8)
+                                if session.role.isPatrick {
+                                    Button {
+                                        showResetConfirm = true
+                                    } label: {
+                                        ZStack {
+                                            Circle()
+                                                .stroke(Color(hex: "#E24B4A"), lineWidth: 1.5)
+                                                .frame(width: 26, height: 26)
+                                            Text("R")
+                                                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                                .foregroundColor(Color(hex: "#E24B4A"))
+                                        }
+                                    }
+                                    .padding(.leading, 8)
+                                } else {
+                                    Image(systemName: "pencil.circle")
+                                        .foregroundColor(Color(hex: "#C27894")).padding(.leading, 8)
+                                }
                             }
                             .padding(12)
                             .background(Color(hex: "#8B3A62").opacity(colorScheme == .dark ? 0.2 : 0.08))
@@ -236,8 +255,8 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
 
 
-                    // F01 — Leads actifs (Patrick only)
-                    if session.role.isPatrick {
+                    // F01 — Leads connectés (Superviseur + Certifiées)
+                    if session.role.isPatrick || currentTier == .certifiee {
                         LeadSlotsView().environmentObject(session)
                     }
 
@@ -282,6 +301,12 @@ struct SVLBHTab: View {
                             } label: {
                                 Label("Systèmes de référence", systemImage: "photo.on.rectangle.angled")
                             }
+                            Divider()
+                            Button(role: .destructive) {
+                                showLogoutConfirm = true
+                            } label: {
+                                Label("Changer d'utilisateur", systemImage: "person.crop.circle.badge.minus")
+                            }
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle").foregroundColor(Color(hex: "#8B3A62"))
@@ -305,6 +330,18 @@ struct SVLBHTab: View {
             }
         }
         .navigationViewStyle(.stack)
+        .alert("Reset session ?", isPresented: $showResetConfirm) {
+            Button("Reset", role: .destructive) { session.resetForShamane() }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Toutes les données de la session seront purgées (scores, générations, pierres, chakras). Cette action est irréversible.")
+        }
+        .alert("Changer d'utilisateur ?", isPresented: $showLogoutConfirm) {
+            Button("Déconnexion", role: .destructive) { identity.logout() }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Vous serez redirigé vers l'écran d'identification.")
+        }
         .alert("Identifier la session", isPresented: $showSessionEdit) {
             TextField("Patient (ex: 765)", text: $patientIdDraft).keyboardType(.numberPad)
             TextField("Séance (ex: 001)", text: $sessionNumDraft).keyboardType(.numberPad)
@@ -682,7 +719,7 @@ struct LeadSlotsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("Leads actifs")
+                Text("Leads connectés")
                     .font(.caption.bold()).foregroundColor(Color(hex: "#E24B4A"))
                 Spacer()
                 Text("\(session.activeLeadCount)/\(SessionState.maxActiveLeads)")
