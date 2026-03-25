@@ -4,6 +4,7 @@
 import SwiftUI
 
 struct ProvocationView: View {
+    @EnvironmentObject var session: SessionState
     /// 3 sélections permanentes (gauche)
     @State private var permanentSelections: [Int?] = [nil, nil, nil]
     /// 5 sélections temporaires (droite)
@@ -11,14 +12,26 @@ struct ProvocationView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Header
-            VStack(spacing: 4) {
-                Text("Énergies Parasitaires")
-                    .font(.subheadline.bold())
-                    .foregroundColor(Color(hex: "#8B3A62"))
-                Text("\(ParasiteEnergyData.permanentes.count) permanentes · \(ParasiteEnergyData.temporaires.count) temporaires")
-                    .font(.caption2).foregroundColor(.secondary)
+            // Header + compteur validées
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Énergies Parasitaires")
+                        .font(.headline.bold())
+                        .foregroundColor(Color(hex: "#8B3A62"))
+                    Text("\(ParasiteEnergyData.permanentes.count) permanentes · \(ParasiteEnergyData.temporaires.count) temporaires")
+                        .font(.caption2).foregroundColor(.secondary)
+                }
+                Spacer()
+                // Compteur validées / affichées (côté droit)
+                VStack(spacing: 2) {
+                    Text("\(session.validatedCount)/\(session.visibleGenerations.count)")
+                        .font(.title2.bold())
+                        .foregroundColor(Color(hex: "#1D9E75"))
+                    Text("validées")
+                        .font(.caption2).foregroundColor(.secondary)
+                }
             }
+            .padding(.horizontal, 12)
             .padding(.top, 8)
 
             HStack(alignment: .top, spacing: 10) {
@@ -26,7 +39,7 @@ struct ProvocationView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Text("PERMANENT")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.headline.bold())
                             .foregroundColor(.white)
                             .padding(.horizontal, 8).padding(.vertical, 3)
                             .background(EnergyType.permanent.color)
@@ -49,7 +62,7 @@ struct ProvocationView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Text("TEMPORAIRE")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.headline.bold())
                             .foregroundColor(.white)
                             .padding(.horizontal, 8).padding(.vertical, 3)
                             .background(EnergyType.temporary.color)
@@ -81,7 +94,6 @@ struct EnergyPickerSlot: View {
     let energies: [ParasiteEnergy]
     let type: EnergyType
     @Environment(\.colorScheme) var colorScheme
-    @State private var isExpanded = false
 
     private var selectedEnergy: ParasiteEnergy? {
         guard let idx = selection else { return nil }
@@ -89,9 +101,7 @@ struct EnergyPickerSlot: View {
     }
 
     private var bgColor: Color {
-        colorScheme == .dark
-            ? Color(UIColor.secondarySystemBackground)
-            : Color(UIColor.secondarySystemBackground)
+        Color(UIColor.secondarySystemBackground)
     }
 
     var body: some View {
@@ -109,17 +119,17 @@ struct EnergyPickerSlot: View {
             } label: {
                 HStack(spacing: 6) {
                     Text("\(slotIndex + 1)")
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .font(.caption2.bold().monospaced())
                         .foregroundColor(type.color)
                         .frame(width: 18)
                     if let energy = selectedEnergy {
                         Text(energy.description)
-                            .font(.system(size: 11))
+                            .font(.caption2.bold())
                             .foregroundColor(.primary)
                             .lineLimit(1)
                     } else {
                         Text("Sélectionner…")
-                            .font(.system(size: 11))
+                            .font(.caption2.bold())
                             .foregroundColor(.secondary)
                     }
                     Spacer()
@@ -137,25 +147,25 @@ struct EnergyPickerSlot: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // Nom en couleur (violet/vert)
                     Text(energy.nom)
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.caption2.bold())
                         .foregroundColor(type.color)
 
                     // Dimensions à vérifier
                     HStack(spacing: 4) {
                         Text(type == .temporary ? "D2" : energy.niveau)
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.caption2.bold())
                             .foregroundColor(type.color)
                             .padding(.horizontal, 6).padding(.vertical, 2)
                             .background(type.color.opacity(0.15))
                             .cornerRadius(5)
                         Text("à vérifier")
-                            .font(.system(size: 10))
+                            .font(.caption2)
                             .foregroundColor(.secondary)
                     }
 
                     // Recommandation
                     Text(energy.liberation)
-                        .font(.system(size: 11))
+                        .font(.caption2)
                         .foregroundColor(.primary.opacity(0.75))
                         .fixedSize(horizontal: false, vertical: true)
                 }

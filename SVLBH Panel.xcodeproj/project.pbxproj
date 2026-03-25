@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		07BC6F608F514688855FAE54 /* PasteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51514D0E567348A2BB0BBE53 /* PasteParser.swift */; };
+		131D886D7C8C7ADB6C3CD3CE /* SessionClosureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0FFBAA031EBC812F4DEF47 /* SessionClosureView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
 		4C3372F287014F868EA82C30 /* MakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A33667F10A749C2B23E1403 /* MakeSyncService.swift */; };
 		6512716BF1D3ECAF2FA58EC4 /* PresenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298C62119865A99EDDEA7070 /* PresenceService.swift */; };
@@ -25,6 +26,9 @@
 		96FA78B46A38496C93D6083B /* SVLBHPanelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398A95DE26124552B401B80A /* SVLBHPanelApp.swift */; };
 		BBA79F225B832B794210F148 /* ProvocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */; };
 		BE256CD665AC4C8BBC60C795 /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42822705CB334E3795AE1648 /* SessionData.swift */; };
+		C27652A06C632886943E91D5 /* SessionTimelinePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165D3DC5CABA1DE7330C4084 /* SessionTimelinePanel.swift */; };
+		C2F84CFFF4EC5522B55B2F1A /* SessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D93D35E16BC40CB1968846 /* SessionTracker.swift */; };
+		C4548B3E270133359C834E7E /* SessionBreadcrumbBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC162E701B3A3C64193617B /* SessionBreadcrumbBar.swift */; };
 		C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CF5DB221742EFABD40371 /* ChakrasTab.swift */; };
 		C8AA840C76844930B7546E39 /* DimensionsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */; };
 		CE016A20B4C74FA8B1234567 /* SessionExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE016A20B4C74FA8B7654321 /* SessionExporter.swift */; };
@@ -58,11 +62,13 @@
 
 /* Begin PBXFileReference section */
 		04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsData.swift; sourceTree = "<group>"; };
+		165D3DC5CABA1DE7330C4084 /* SessionTimelinePanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionTimelinePanel.swift; sourceTree = "<group>"; };
 		298C62119865A99EDDEA7070 /* PresenceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresenceService.swift; sourceTree = "<group>"; };
 		2CC3751FB08544D692E1C695 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		3900240D6A13450BA9326F25 /* DecodageTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodageTab.swift; sourceTree = "<group>"; };
 		398A95DE26124552B401B80A /* SVLBHPanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHPanelApp.swift; sourceTree = "<group>"; };
 		3A33667F10A749C2B23E1403 /* MakeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeSyncService.swift; sourceTree = "<group>"; };
+		3FC162E701B3A3C64193617B /* SessionBreadcrumbBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionBreadcrumbBar.swift; sourceTree = "<group>"; };
 		42822705CB334E3795AE1648 /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
 		51514D0E567348A2BB0BBE53 /* PasteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteParser.swift; sourceTree = "<group>"; };
 		54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProvocationView.swift; sourceTree = "<group>"; };
@@ -79,9 +85,11 @@
 		8E7964E52F6E4D120051060A /* SVLBH PanelUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SVLBH PanelUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7964E92F6E4D120051060A /* SVLBH_PanelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITests.swift; sourceTree = "<group>"; };
 		8E7964EB2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9D0FFBAA031EBC812F4DEF47 /* SessionClosureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionClosureView.swift; sourceTree = "<group>"; };
 		A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffLogView.swift; sourceTree = "<group>"; };
 		A10CF5DB221742EFABD40371 /* ChakrasTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChakrasTab.swift; sourceTree = "<group>"; };
 		AB945055DBF440D689CC4DAA /* SVLBHTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHTab.swift; sourceTree = "<group>"; };
+		B3D93D35E16BC40CB1968846 /* SessionTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionTracker.swift; sourceTree = "<group>"; };
 		CE016A20B4C74FA8B7654321 /* SessionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionExporter.swift; sourceTree = "<group>"; };
 		D118F80AA4F347F0A9F10053 /* SyncBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBar.swift; sourceTree = "<group>"; };
 		D15TR1B0VIEW00010000002 /* DistributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionView.swift; sourceTree = "<group>"; };
@@ -124,6 +132,7 @@
 				42822705CB334E3795AE1648 /* SessionData.swift */,
 				04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */,
 				594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */,
+				B3D93D35E16BC40CB1968846 /* SessionTracker.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -218,6 +227,9 @@
 				R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */,
 				PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */,
 				54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */,
+				3FC162E701B3A3C64193617B /* SessionBreadcrumbBar.swift */,
+				165D3DC5CABA1DE7330C4084 /* SessionTimelinePanel.swift */,
+				9D0FFBAA031EBC812F4DEF47 /* SessionClosureView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -377,6 +389,10 @@
 				6512716BF1D3ECAF2FA58EC4 /* PresenceService.swift in Sources */,
 				7C6D954A5F205EA1012A6096 /* ParasiteEnergyData.swift in Sources */,
 				BBA79F225B832B794210F148 /* ProvocationView.swift in Sources */,
+				C2F84CFFF4EC5522B55B2F1A /* SessionTracker.swift in Sources */,
+				C4548B3E270133359C834E7E /* SessionBreadcrumbBar.swift in Sources */,
+				C27652A06C632886943E91D5 /* SessionTimelinePanel.swift in Sources */,
+				131D886D7C8C7ADB6C3CD3CE /* SessionClosureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,7 +545,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -568,7 +584,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -606,7 +622,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -629,7 +645,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -651,7 +667,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -673,7 +689,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;

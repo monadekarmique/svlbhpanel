@@ -31,23 +31,18 @@ struct DecodageTab: View {
                         .padding(.bottom, 8)
                     Divider().padding(.horizontal, 16)
 
-                    // Résumé
-                    HStack(spacing: 16) {
-                        VStack(spacing: 2) {
-                            Text("\(session.validatedCount)")
-                                .font(.title2.bold()).foregroundColor(Color(hex: "#1D9E75"))
-                            Text("validées / 15").font(.caption2).foregroundColor(.secondary)
-                        }
-                        if let (m, n) = dominantMeridian {
+                    // Résumé — méridien dominant
+                    if let (m, n) = dominantMeridian {
+                        HStack(spacing: 16) {
                             VStack(spacing: 2) {
                                 Text(m.rawValue + " ×\(n)")
                                     .font(.title2.bold()).foregroundColor(Color(hex: m.color))
                                 Text("méridien dominant").font(.caption2).foregroundColor(.secondary)
                             }
+                            Spacer()
                         }
-                        Spacer()
+                        .padding(.horizontal, 16).padding(.vertical, 12)
                     }
-                    .padding(.horizontal, 16).padding(.vertical, 12)
                     Divider()
 
                     // F25 — Fork galactique conditionnel au tier

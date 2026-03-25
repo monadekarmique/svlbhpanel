@@ -1,16 +1,20 @@
 // SVLBHPanel — Views/MainTabView.swift
-// v1.4.1 — Auto-scan sources + SyncBar badge
+// v4.8.0 — Auto-scan sources + SyncBar badge + SessionTracker + Closure
 
 import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var session: SessionState
     @EnvironmentObject var sync: MakeSyncService
+    @StateObject private var tracker = SessionTracker()
     @State private var selectedTab = 0
     @State private var showDiffLog = false
     @State private var showPINAlert = false
     @State private var pinInput = ""
     @State private var pendingPayload = ""
+    @State private var showTimeline = false
+    @State private var showClosure = false
+    @State private var closureDragOffset: CGFloat = 0
 
     /// L'utilisateur courant n'apparaît pas dans la Planche Tactique
     private var isUnlistedUser: Bool {
@@ -23,17 +27,23 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                SVLBHTab(selectedTab: $selectedTab)
-                    .tabItem { Label("SVLBH", systemImage: "atom") }
-                    .tag(0)
+            VStack(spacing: 0) {
+                // ── Breadcrumb bar ──
+                SessionBreadcrumbBar()
+                    .environmentObject(tracker)
+
+                // ── Tabs ──
+                TabView(selection: $selectedTab) {
+                    SVLBHTab(selectedTab: $selectedTab)
+                        .tabItem { Label("SVLBH", systemImage: "atom") }
+                        .tag(0)
                 if isUnlistedUser {
                     LeadBubbleTab()
                         .tabItem { Label("Comment faire ?", systemImage: "person.wave.2") }
                         .tag(1)
                 }
                 DecodageTab()
-                    .tabItem { Label("Provocation", systemImage: "list.bullet.rectangle") }
+                    .tabItem { Label("Épuisement", systemImage: "list.bullet.rectangle") }
                     .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
                     .tag(2)
                 SLMTab()
@@ -56,6 +66,13 @@ struct MainTabView: View {
             .modifier(TabBarOnlyModifier())
             .environmentObject(session)
             .environmentObject(sync)
+            .environmentObject(tracker)
+            }  // close VStack (breadcrumb + tabs)
+
+            // ── Timeline panel (rétractable) ──
+            SessionTimelinePanel(isVisible: $showTimeline)
+                .environmentObject(tracker)
+
             .onChange(of: selectedTab) { tab in
                 switch tab {
                 case 1: break  // Comment faire ? — pas de badge
@@ -84,6 +101,27 @@ struct MainTabView: View {
                     }
                 }
             }
+        }
+        .gesture(
+            DragGesture(minimumDistance: 100)
+                .onChanged { value in
+                    if value.startLocation.y < 50 && value.translation.height > 0 {
+                        closureDragOffset = value.translation.height
+                    }
+                }
+                .onEnded { value in
+                    if value.startLocation.y < 50 && value.translation.height > 200 {
+                        showClosure = true
+                    }
+                    closureDragOffset = 0
+                }
+        )
+        .fullScreenCover(isPresented: $showClosure) {
+            SessionClosureView(isPresented: $showClosure)
+                .environmentObject(tracker)
+        }
+        .onAppear {
+            tracker.startSession()
         }
         .sheet(isPresented: $showDiffLog) {
             DiffLogView().environmentObject(sync)
