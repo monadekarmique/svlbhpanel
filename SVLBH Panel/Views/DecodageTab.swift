@@ -1,5 +1,5 @@
 // SVLBHPanel — Views/DecodageTab.swift
-// v4.0.0 — Tableau 15 générations + Fork galactique conditionnel au tier
+// v4.8.0 — Provocation : énergies parasitaires + tableau générations
 
 import SwiftUI
 
@@ -25,6 +25,12 @@ struct DecodageTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
+                    // ── Énergies parasitaires ──
+                    ProvocationView()
+                        .frame(minHeight: 400)
+                        .padding(.bottom, 8)
+                    Divider().padding(.horizontal, 16)
+
                     // Résumé
                     HStack(spacing: 16) {
                         VStack(spacing: 2) {

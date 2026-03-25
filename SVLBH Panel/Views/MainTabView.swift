@@ -33,7 +33,7 @@ struct MainTabView: View {
                         .tag(1)
                 }
                 DecodageTab()
-                    .tabItem { Label("Décodage G.", systemImage: "list.bullet.rectangle") }
+                    .tabItem { Label("Provocation", systemImage: "list.bullet.rectangle") }
                     .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
                     .tag(2)
                 SLMTab()
