@@ -24,7 +24,7 @@ struct MainTabView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $selectedTab) {
-                SVLBHTab()
+                SVLBHTab(selectedTab: $selectedTab)
                     .tabItem { Label("SVLBH", systemImage: "atom") }
                     .tag(0)
                 if isUnlistedUser {
@@ -47,9 +47,11 @@ struct MainTabView: View {
                     .tabItem { Label("Chakras", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
-                PlancheTactiqueTab()
-                    .tabItem { Label("Planche", systemImage: "rectangle.on.rectangle.angled") }
-                    .tag(6)
+                if session.role.isPatrick || session.currentTier == .certifiee {
+                    PlancheTactiqueTab()
+                        .tabItem { Label("Planche", systemImage: "rectangle.on.rectangle.angled") }
+                        .tag(6)
+                }
             }
             .modifier(TabBarOnlyModifier())
             .environmentObject(session)

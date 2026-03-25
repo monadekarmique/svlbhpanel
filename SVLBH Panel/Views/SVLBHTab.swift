@@ -5,6 +5,7 @@ import SwiftUI
 import UIKit
 
 struct SVLBHTab: View {
+    @Binding var selectedTab: Int
     @EnvironmentObject var session: SessionState
     @EnvironmentObject var sync: MakeSyncService
     @Environment(\.colorScheme) var colorScheme
@@ -239,20 +240,30 @@ struct SVLBHTab: View {
                     HStack(alignment: .top, spacing: 12) {
                         // Colonne gauche : Générations + Chakras empilés
                         VStack(spacing: 12) {
-                            KPICard(icon: "✓", label: "Générations",
-                                    value: "\(session.validatedCount)/\(session.currentTier.maxGenerations)", color: Color(hex: "#1D9E75"))
-                            ChakrasKPICard(session: session)
+                            Button { selectedTab = 2 } label: {
+                                KPICard(icon: "✓", label: "Générations",
+                                        value: "\(session.validatedCount)/\(session.currentTier.maxGenerations)", color: Color(hex: "#1D9E75"))
+                            }.buttonStyle(.plain)
+
+                            Button { selectedTab = 5 } label: {
+                                ChakrasKPICard(session: session)
+                            }.buttonStyle(.plain)
                         }
                         // Colonne droite : Scores étiré pour remplir la hauteur
-                        ScoresKPICard(session: session, estimated: slaEstimate)
-                            .frame(maxHeight: .infinity)
+                        Button { selectedTab = 3 } label: {
+                            ScoresKPICard(session: session, estimated: slaEstimate)
+                                .frame(maxHeight: .infinity)
+                        }.buttonStyle(.plain)
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 16)
 
                     // ── Ligne 2 : Pierres sur deux colonnes ──
-                    PierresKPICard(session: session)
-                        .padding(.horizontal, 16)
+                    Button { selectedTab = 4 } label: {
+                        PierresKPICard(session: session)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 16)
 
 
                     // F01 — Leads connectés (Superviseur + Certifiées)

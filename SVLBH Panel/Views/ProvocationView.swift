@@ -1,207 +1,175 @@
 // SVLBHPanel — Views/ProvocationView.swift
-// v4.8.0 — Classification des énergies parasitaires — DisclosureGroup 2 colonnes
+// v4.8.0 — Classification des énergies parasitaires — 3 permanentes + 5 temporaires
 
 import SwiftUI
 
 struct ProvocationView: View {
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    @State private var selectedSegment = 0 // iPhone: 0=permanent, 1=temporaire
+    /// 3 sélections permanentes (gauche)
+    @State private var permanentSelections: [Int?] = [nil, nil, nil]
+    /// 5 sélections temporaires (droite)
+    @State private var temporarySelections: [Int?] = [nil, nil, nil, nil, nil]
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 12) {
             // Header
             VStack(spacing: 4) {
-                Text("Classification des Énergies Parasitaires")
+                Text("Énergies Parasitaires")
                     .font(.subheadline.bold())
                     .foregroundColor(Color(hex: "#8B3A62"))
                 Text("\(ParasiteEnergyData.permanentes.count) permanentes · \(ParasiteEnergyData.temporaires.count) temporaires")
                     .font(.caption2).foregroundColor(.secondary)
             }
-            .padding(.vertical, 10)
+            .padding(.top, 8)
 
-            if sizeClass == .regular {
-                // iPad : deux colonnes côte à côte
-                twoColumnLayout
-            } else {
-                // iPhone : segment picker + une colonne
-                phoneLayout
-            }
-        }
-    }
+            HStack(alignment: .top, spacing: 10) {
+                // ── Colonne gauche : 3 × Permanentes ──
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("PERMANENT")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(EnergyType.permanent.color)
+                            .cornerRadius(5)
+                        Spacer()
+                    }
 
-    // MARK: - iPad : 2 colonnes
-
-    private var twoColumnLayout: some View {
-        HStack(alignment: .top, spacing: 12) {
-            EnergyColumnView(
-                energies: ParasiteEnergyData.permanentes,
-                type: .permanent
-            )
-            EnergyColumnView(
-                energies: ParasiteEnergyData.temporaires,
-                type: .temporary
-            )
-        }
-        .padding(.horizontal, 12)
-    }
-
-    // MARK: - iPhone : picker + colonne unique
-
-    private var phoneLayout: some View {
-        VStack(spacing: 0) {
-            Picker("", selection: $selectedSegment) {
-                Text("Permanent (\(ParasiteEnergyData.permanentes.count))").tag(0)
-                Text("Temporaire (\(ParasiteEnergyData.temporaires.count))").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 12)
-            .padding(.bottom, 8)
-
-            if selectedSegment == 0 {
-                EnergyColumnView(
-                    energies: ParasiteEnergyData.permanentes,
-                    type: .permanent
-                )
-                .padding(.horizontal, 12)
-            } else {
-                EnergyColumnView(
-                    energies: ParasiteEnergyData.temporaires,
-                    type: .temporary
-                )
-                .padding(.horizontal, 12)
-            }
-        }
-    }
-}
-
-// MARK: - Colonne d'énergies (ScrollView + DisclosureGroups accordion)
-
-struct EnergyColumnView: View {
-    let energies: [ParasiteEnergy]
-    let type: EnergyType
-    @State private var expandedId: UUID?
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Badge type
-            HStack {
-                Text(type.label)
-                    .font(.caption.bold())
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(type.color)
-                    .cornerRadius(6)
-                Spacer()
-                Text("\(energies.count)")
-                    .font(.caption.bold().monospaced())
-                    .foregroundColor(type.color)
-            }
-            .padding(.horizontal, 4)
-            .padding(.bottom, 8)
-
-            ScrollView {
-                LazyVStack(spacing: 6) {
-                    ForEach(energies) { energy in
-                        EnergyDisclosureRow(
-                            energy: energy,
-                            isExpanded: expandedId == energy.id,
-                            onToggle: {
-                                withAnimation(.spring(response: 0.3)) {
-                                    expandedId = expandedId == energy.id ? nil : energy.id
-                                }
-                            }
+                    ForEach(0..<3, id: \.self) { idx in
+                        EnergyPickerSlot(
+                            slotIndex: idx,
+                            selection: $permanentSelections[idx],
+                            energies: ParasiteEnergyData.permanentes,
+                            type: .permanent
                         )
                     }
                 }
-                .padding(.bottom, 80)
+                .frame(maxWidth: .infinity)
+
+                // ── Colonne droite : 5 × Temporaires ──
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("TEMPORAIRE")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(EnergyType.temporary.color)
+                            .cornerRadius(5)
+                        Spacer()
+                    }
+
+                    ForEach(0..<5, id: \.self) { idx in
+                        EnergyPickerSlot(
+                            slotIndex: idx,
+                            selection: $temporarySelections[idx],
+                            energies: ParasiteEnergyData.temporaires,
+                            type: .temporary
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
+            .padding(.horizontal, 12)
         }
     }
 }
 
-// MARK: - Row individuelle (simule DisclosureGroup avec accordion)
+// MARK: - Slot picker individuel
 
-struct EnergyDisclosureRow: View {
-    let energy: ParasiteEnergy
-    let isExpanded: Bool
-    let onToggle: () -> Void
+struct EnergyPickerSlot: View {
+    let slotIndex: Int
+    @Binding var selection: Int?
+    let energies: [ParasiteEnergy]
+    let type: EnergyType
     @Environment(\.colorScheme) var colorScheme
+    @State private var isExpanded = false
+
+    private var selectedEnergy: ParasiteEnergy? {
+        guard let idx = selection else { return nil }
+        return energies.first { $0.numero == idx }
+    }
 
     private var bgColor: Color {
         colorScheme == .dark
-            ? Color(hex: "#1A1A2E")
+            ? Color(UIColor.secondarySystemBackground)
             : Color(UIColor.secondarySystemBackground)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header row (toujours visible)
-            Button(action: onToggle) {
-                HStack(spacing: 8) {
-                    Text("\(energy.numero)")
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundColor(energy.type.color)
-                        .frame(width: 24)
-                    Text(energy.nom)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .lineLimit(isExpanded ? nil : 1)
-                        .multilineTextAlignment(.leading)
-                    Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(energy.type.color.opacity(0.6))
+            // ── Menu déroulant ──
+            Menu {
+                Button("— Aucune —") { selection = nil }
+                ForEach(energies) { energy in
+                    Button {
+                        selection = energy.numero
+                    } label: {
+                        Text("\(energy.numero). \(energy.description)")
+                    }
                 }
-                .padding(.horizontal, 10).padding(.vertical, 10)
-                .contentShape(Rectangle())
+            } label: {
+                HStack(spacing: 6) {
+                    Text("\(slotIndex + 1)")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundColor(type.color)
+                        .frame(width: 18)
+                    if let energy = selectedEnergy {
+                        Text(energy.description)
+                            .font(.system(size: 11))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                    } else {
+                        Text("Sélectionner…")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 9))
+                        .foregroundColor(type.color.opacity(0.6))
+                }
+                .padding(.horizontal, 8).padding(.vertical, 8)
+                .background(bgColor)
+                .cornerRadius(8)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Énergie \(energy.nom), \(energy.type.label), niveau \(energy.niveau)")
 
-            // Contenu déplié
-            if isExpanded {
-                VStack(alignment: .leading, spacing: 8) {
-                    Divider().padding(.horizontal, 8)
-
-                    // Description
-                    Text(energy.description)
-                        .font(.system(size: 13))
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    // Énergie
+            // ── Détails si sélectionné ──
+            if let energy = selectedEnergy {
+                VStack(alignment: .leading, spacing: 4) {
+                    // Nom en couleur (violet/vert)
                     Text(energy.nom)
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundColor(energy.type.color)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(type.color)
 
-                    // Badge niveau
-                    Text(energy.niveau)
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(energy.type.color)
-                        .padding(.horizontal, 10).padding(.vertical, 4)
-                        .background(energy.type.color.opacity(0.15))
-                        .cornerRadius(8)
+                    // Dimensions à vérifier
+                    HStack(spacing: 4) {
+                        Text(type == .temporary ? "D2" : energy.niveau)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(type.color)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(type.color.opacity(0.15))
+                            .cornerRadius(5)
+                        Text("à vérifier")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
 
-                    // Libération
+                    // Recommandation
                     Text(energy.liberation)
-                        .font(.system(size: 13).italic())
+                        .font(.system(size: 11))
                         .foregroundColor(.primary.opacity(0.75))
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.horizontal, 12).padding(.bottom, 12)
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                .padding(.horizontal, 8).padding(.vertical, 6)
+                .background(type.color.opacity(0.05))
+                .overlay(
+                    Rectangle()
+                        .fill(type.color)
+                        .frame(width: 2),
+                    alignment: .leading
+                )
+                .cornerRadius(6)
+                .padding(.top, 2)
             }
         }
-        .background(bgColor)
-        .overlay(
-            isExpanded
-                ? Rectangle()
-                    .fill(energy.type.color)
-                    .frame(width: 3)
-                    .padding(.vertical, 1)
-                : nil,
-            alignment: .leading
-        )
-        .cornerRadius(12)
     }
 }
