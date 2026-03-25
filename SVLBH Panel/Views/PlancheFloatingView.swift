@@ -53,13 +53,16 @@ struct PlancheFloatingView: View {
                     )
                 }
             }
+            .frame(width: 260)
             .background(
                 RoundedRectangle(cornerRadius: 14)
                     .fill(Color(UIColor.systemBackground))
-                    .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+                    .shadow(color: .black.opacity(0.15), radius: 12, x: 4, y: 0)
             )
-            .padding(.horizontal, 12)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .padding(.vertical, 60)
+            .padding(.leading, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .transition(.move(edge: .leading).combined(with: .opacity))
         }
     }
 

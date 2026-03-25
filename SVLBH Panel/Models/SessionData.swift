@@ -755,6 +755,7 @@ class SessionState: ObservableObject {
     @Published var sugChakraStates: [String: Bool] = [:]
     // F16 — CIM-11 sélectionnés par chakra
     @Published var selectedCIM: [String: Set<String>] = [:]
+    @Published var porteSelections: [String: Int] = [:]  // chakraKey_temp / chakraKey_perm → numero porte
     @Published var syncStatus: String = "🔴 Off"
     @Published var lastPin: String = ""
     private var cancellables = Set<AnyCancellable>()

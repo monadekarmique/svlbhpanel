@@ -10,11 +10,6 @@ struct ChakrasTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
-                    // ── Conditions d'ouverture des portes ──
-                    ConditionsPortesView()
-                        .padding(.bottom, 8)
-                    Divider().padding(.horizontal, 16)
-
                     VStack(spacing: 4) {
                         HStack {
                             Text("Chakras nettoyés")
@@ -38,7 +33,7 @@ struct ChakrasTab: View {
                     Spacer().frame(height: 80)
                 }
             }
-            .navigationTitle("Chakras")
+            .navigationTitle("Conditions")
             .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
@@ -162,6 +157,10 @@ struct ChakraRow: View {
                             .cornerRadius(3)
                     }
                 }
+
+                // Portes énergétiques
+                PorteSelectorCompact(chakraKey: key)
+                    .environmentObject(session)
 
                 // Issues — SLM (remplace SLA)
                 ForEach(chakra.issues, id: \.label) { issue in

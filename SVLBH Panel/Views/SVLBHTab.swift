@@ -299,31 +299,6 @@ struct SVLBHTab: View {
                         LeadSlotsView().environmentObject(session)
                     }
 
-                    // ── Planche Tactique flottante ──
-                    if session.role.isPatrick || currentTier == .certifiee {
-                        if !showPlanche {
-                            Button {
-                                withAnimation(.spring(response: 0.3)) { showPlanche = true }
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "rectangle.on.rectangle.angled")
-                                        .font(.caption)
-                                    Text("Planche Tactique")
-                                        .font(.caption.bold())
-                                }
-                                .foregroundColor(Color(hex: "#8B3A62"))
-                                .padding(.horizontal, 12).padding(.vertical, 8)
-                                .background(Color(hex: "#8B3A62").opacity(0.08))
-                                .cornerRadius(8)
-                            }
-                            .buttonStyle(.plain)
-                            .padding(.horizontal, 16)
-                        }
-
-                        PlancheFloatingView(isVisible: $showPlanche)
-                            .environmentObject(session)
-                    }
-
                     Spacer().frame(height: 120)
                 }
             }
@@ -331,10 +306,21 @@ struct SVLBHTab: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundColor(Color(hex: "#C27894").opacity(0.7))
-                        .fixedSize()
+                    HStack(spacing: 8) {
+                        if session.role.isPatrick || currentTier == .certifiee {
+                            Button {
+                                withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
+                            } label: {
+                                Image(systemName: "rectangle.on.rectangle.angled")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : Color(hex: "#C27894"))
+                            }
+                        }
+                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .foregroundColor(Color(hex: "#C27894").opacity(0.7))
+                            .fixedSize()
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
@@ -397,6 +383,10 @@ struct SVLBHTab: View {
                 SessionClosureView(isPresented: $showClosure)
                     .environmentObject(tracker)
             }
+        }
+        .overlay {
+            PlancheFloatingView(isVisible: $showPlanche)
+                .environmentObject(session)
         }
         .navigationViewStyle(.stack)
         .alert("Reset session ?", isPresented: $showResetConfirm) {

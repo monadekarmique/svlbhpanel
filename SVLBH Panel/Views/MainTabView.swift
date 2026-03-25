@@ -51,11 +51,6 @@ struct MainTabView: View {
                     .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
-                if session.role.isPatrick || session.currentTier == .certifiee {
-                    PlancheTactiqueTab()
-                        .tabItem { Label("Planche", systemImage: "rectangle.on.rectangle.angled") }
-                        .tag(6)
-                }
             }
             .modifier(TabBarOnlyModifier())
             .environmentObject(session)

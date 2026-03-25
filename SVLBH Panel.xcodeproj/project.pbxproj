@@ -36,6 +36,7 @@
 		C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CF5DB221742EFABD40371 /* ChakrasTab.swift */; };
 		C8AA840C76844930B7546E39 /* DimensionsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */; };
 		CE016A20B4C74FA8B1234567 /* SessionExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE016A20B4C74FA8B7654321 /* SessionExporter.swift */; };
+		CEFDC1DF1923BCF407A6A338 /* PorteSelectorCompact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0532858F4AF5AF4BCDAA5EA8 /* PorteSelectorCompact.swift */; };
 		D15TR1B0VIEW00010000001 /* DistributionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15TR1B0VIEW00010000002 /* DistributionView.swift */; };
 		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
 		DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D118F80AA4F347F0A9F10053 /* SyncBar.swift */; };
@@ -66,6 +67,7 @@
 
 /* Begin PBXFileReference section */
 		04103650C0AA4F4D9EDF8936 /* DimensionsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsData.swift; sourceTree = "<group>"; };
+		0532858F4AF5AF4BCDAA5EA8 /* PorteSelectorCompact.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PorteSelectorCompact.swift; sourceTree = "<group>"; };
 		07A21B6576179D4CBD117499 /* PorteSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PorteSelector.swift; sourceTree = "<group>"; };
 		165D3DC5CABA1DE7330C4084 /* SessionTimelinePanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionTimelinePanel.swift; sourceTree = "<group>"; };
 		298C62119865A99EDDEA7070 /* PresenceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresenceService.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */,
 				C14F4DE41214AAADCA850495 /* ConditionsPortesView.swift */,
 				07A21B6576179D4CBD117499 /* PorteSelector.swift */,
+				0532858F4AF5AF4BCDAA5EA8 /* PorteSelectorCompact.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -409,6 +412,7 @@
 				6BC32FDEF49244CCE17009F9 /* PorteEnergetiqueData.swift in Sources */,
 				BE3A34F085D7B202764622E0 /* ConditionsPortesView.swift in Sources */,
 				9C770E585E6E8752C77EE527 /* PorteSelector.swift in Sources */,
+				CEFDC1DF1923BCF407A6A338 /* PorteSelectorCompact.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,7 +565,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -600,7 +604,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -638,7 +642,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -661,7 +665,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -683,7 +687,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -705,7 +709,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
