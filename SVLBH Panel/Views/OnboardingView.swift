@@ -174,7 +174,7 @@ struct OnboardingView: View {
     private var appleSignInSection: some View {
         VStack(spacing: 8) {
             Divider().padding(.vertical, 4)
-            Text("Superviseur")
+            Text("Connexion rapide")
                 .font(.caption.bold()).foregroundColor(.secondary)
 
             SignInWithAppleButton(.signIn) { request in
@@ -190,7 +190,7 @@ struct OnboardingView: View {
                     )
                     if identity.isIdentified { identity.applyTo(session) }
                     if !identity.isIdentified {
-                        error = "Ce compte Apple n'est pas autorisé comme superviseur"
+                        error = "Ce compte Apple n'est pas enregistré"
                     }
                 case .failure(let err):
                     error = err.localizedDescription

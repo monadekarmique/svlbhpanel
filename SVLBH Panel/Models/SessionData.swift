@@ -551,8 +551,12 @@ class PractitionerIdentity: ObservableObject {
     private static let appleUserKey = "svlbh_apple_user_id"
     private static let identityURL = URL(string: "https://hook.eu2.make.com/svlbh-identity-lookup")!
 
-    /// Email autorisé pour Sign in with Apple → superviseur
-    static let patrickAppleEmail = "bays.patrick@gmail.com"
+    /// Mapping email Apple → (code praticien, prénom)
+    static let appleEmailMap: [String: (code: String, name: String)] = [
+        "bays.patrick@icloud.com": (ActiveRole.patrickCode, "Patrick"),
+        "bays.patrick@gmail.com": (ActiveRole.patrickCode, "Patrick"),
+        "cornelia.althaus@hotmail.com": ("300", "Cornelia"),
+    ]
 
     @Published var isIdentified: Bool = false
     @Published var code: String = ""
@@ -577,23 +581,27 @@ class PractitionerIdentity: ObservableObject {
         Task { await registerVendorID(code: code, name: name) }
     }
 
-    /// Sign in with Apple — identifie Patrick via son email ou userID déjà autorisé
+    /// Sign in with Apple — identifie via email mappé ou userID déjà autorisé
     func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) {
-        let name = fullName.flatMap {
-            [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
-        }.flatMap { $0.isEmpty ? nil : $0 } ?? "Patrick"
-
-        // Premier login : email disponible → vérifier et sauvegarder le userID
-        if email == Self.patrickAppleEmail {
+        // Premier login : email disponible → chercher dans le map
+        if let email = email, let match = Self.appleEmailMap[email] {
+            let appleName = fullName.flatMap {
+                [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
+            }.flatMap { $0.isEmpty ? nil : $0 } ?? match.name
+            // Sauvegarder userID + code associé
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
-            identify(code: ActiveRole.patrickCode, name: name)
+            UserDefaults.standard.set(match.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(appleName, forKey: "svlbh_apple_mapped_name")
+            identify(code: match.code, name: appleName)
             return
         }
 
         // Logins suivants : email = nil mais userID déjà autorisé
         let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
         if savedAppleUser == userID, !userID.isEmpty {
-            identify(code: ActiveRole.patrickCode, name: name)
+            let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code") ?? ActiveRole.patrickCode
+            let savedName = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_name") ?? "Utilisateur"
+            identify(code: savedCode, name: savedName)
             return
         }
     }
