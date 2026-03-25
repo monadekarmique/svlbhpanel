@@ -71,7 +71,7 @@ struct PlancheTactiqueTab: View {
         case .tier(let t):
             return session.shamaneProfiles.filter { $0.tier == t }
         case .programme(let p):
-            return session.shamaneProfiles.filter { $0.programme == p }
+            return session.shamaneProfiles.filter { $0.programmes.contains(p) }
         }
     }
 }
@@ -158,15 +158,17 @@ struct ShamaneCardView: View {
                     .font(.caption).foregroundColor(.secondary)
             }
 
-            // Ligne 4: Programme actuel
-            if profile.programme != .aucun {
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(Color(hex: profile.programme.badgeColor))
-                        .frame(width: 8, height: 8)
-                    Text(profile.programme.label)
-                        .font(.caption2.bold())
-                        .foregroundColor(Color(hex: profile.programme.badgeColor))
+            // Ligne 4: Programmes actuels
+            if !profile.programmes.isEmpty {
+                ForEach(profile.programmes, id: \.self) { prog in
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(Color(hex: prog.badgeColor))
+                            .frame(width: 8, height: 8)
+                        Text(prog.label)
+                            .font(.caption2.bold())
+                            .foregroundColor(Color(hex: prog.badgeColor))
+                    }
                 }
             }
         }
@@ -196,7 +198,13 @@ struct ShamaneCardView: View {
 
     private func assignProgramme(_ programme: ShamaneProgramme) {
         var updated = profile
-        updated.programme = programme
+        if programme == .aucun {
+            updated.programmes = []
+        } else if updated.programmes.contains(programme) {
+            updated.programmes.removeAll { $0 == programme }
+        } else {
+            updated.programmes.append(programme)
+        }
         session.updateShamane(updated)
     }
 }
@@ -214,7 +222,9 @@ extension View {
                         guard let code = item as? String else { return }
                         DispatchQueue.main.async {
                             if var shamane = session.shamaneProfiles.first(where: { $0.code == code }) {
-                                shamane.programme = prog
+                                if !shamane.programmes.contains(prog) {
+                                    shamane.programmes.append(prog)
+                                }
                                 session.updateShamane(shamane)
                             }
                         }

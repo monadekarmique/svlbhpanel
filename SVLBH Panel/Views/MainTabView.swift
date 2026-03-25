@@ -12,29 +12,40 @@ struct MainTabView: View {
     @State private var pinInput = ""
     @State private var pendingPayload = ""
 
+    /// L'utilisateur courant n'apparaît pas dans la Planche Tactique
+    private var isUnlistedUser: Bool {
+        if session.role.isPatrick { return false }
+        if case .shamane(let p) = session.role {
+            return !session.shamaneProfiles.contains(where: { $0.code == p.code })
+        }
+        return true
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $selectedTab) {
                 SVLBHTab()
                     .tabItem { Label("SVLBH", systemImage: "atom") }
                     .tag(0)
+                if isUnlistedUser {
+                    LeadBubbleTab()
+                        .tabItem { Label("Comment faire ?", systemImage: "person.wave.2") }
+                        .tag(1)
+                }
                 DecodageTab()
                     .tabItem { Label("Décodage G.", systemImage: "list.bullet.rectangle") }
                     .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
-                    .tag(1)
+                    .tag(2)
                 SLMTab()
                     .tabItem { Label("SLM", systemImage: "light.max") }
-                    .tag(2)
+                    .tag(3)
                 PierresTab()
                     .tabItem { Label("Pierres", systemImage: "diamond") }
                     .badge(sync.diffs.pierres > 0 ? sync.diffs.pierres : 0)
-                    .tag(3)
+                    .tag(4)
                 ChakrasTab()
                     .tabItem { Label("Chakras", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
-                    .tag(4)
-                LeadBubbleTab()
-                    .tabItem { Label("Lead", systemImage: "person.wave.2") }
                     .tag(5)
                 PlancheTactiqueTab()
                     .tabItem { Label("Planche", systemImage: "rectangle.on.rectangle.angled") }
@@ -45,11 +56,11 @@ struct MainTabView: View {
             .environmentObject(sync)
             .onChange(of: selectedTab) { tab in
                 switch tab {
-                case 1: sync.diffs.decode = 0
-                case 2: break  // SLM
-                case 3: sync.diffs.pierres = 0
-                case 4: sync.diffs.chakras = 0
-                case 5: break  // Lead — pas de badge
+                case 1: break  // Comment faire ? — pas de badge
+                case 2: sync.diffs.decode = 0
+                case 3: break  // SLM
+                case 4: sync.diffs.pierres = 0
+                case 5: sync.diffs.chakras = 0
                 default: break
                 }
             }

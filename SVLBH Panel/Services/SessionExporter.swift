@@ -92,11 +92,9 @@ struct SessionExporter {
     // MARK: - Section SLM
     private static func slmSection(_ session: SessionState) -> [String] {
         let t = session.scoresTherapist
-        let p = session.scoresPatrick
         return [
             "── SLM ──",
             "Thérapeute : SLA \(fmt(t.sla))% · SLSA \(fmt(t.slsa))% · SLM \(fmt(t.slm))% · TotSLM \(fmt(t.totSlm))%",
-            "Superviseur : SLA \(fmt(p.sla))% · SLSA \(fmt(p.slsa))% · SLM \(fmt(p.slm))% · TotSLM \(fmt(p.totSlm))%",
             ""
         ]
     }

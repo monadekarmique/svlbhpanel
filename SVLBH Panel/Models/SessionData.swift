@@ -150,7 +150,7 @@ struct ShamaneProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var zones: [String] = []             // max 5 zones texte libre
     var photoSetId: String? = nil       // lien vers ReferenceImageSet.id
     var sephirothCodes: [String] = []   // max 5 codes séphirothiques
-    var programme: ShamaneProgramme = .aucun
+    var programmes: [ShamaneProgramme] = []
 
     var tier: PractitionerTier { PractitionerTier.from(code: Int(code) ?? 0) }
 
@@ -262,6 +262,7 @@ enum Shamane: String, CaseIterable, Identifiable {
     case flavia    = "301"   // certifiée
     case chloe     = "22"    // lead
     case veronique = "21"    // lead
+    case irene     = "103"   // formation
 
     var id: String { rawValue }
     var displayName: String {
@@ -271,12 +272,13 @@ enum Shamane: String, CaseIterable, Identifiable {
         case .flavia:    return "Flavia"
         case .chloe:     return "Chloé"
         case .veronique: return "Véronique"
+        case .irene:     return "Irène"
         }
     }
     var isCertifiee: Bool {
         switch self {
         case .cornelia, .anne, .flavia: return true
-        case .chloe, .veronique: return false
+        case .chloe, .veronique, .irene: return false
         }
     }
 
@@ -926,7 +928,7 @@ class SessionState: ObservableObject {
                                prochainFacturation: nil)
             }
         } else {
-            // F28 — Defaults v4.2.10
+            // F28 — Defaults v4.2.11
             shamaneProfiles = [
                 ShamaneProfile(code: "300", prenom: "Cornelia", nom: "",
                                whatsapp: "", email: "", abonnement: ""),
@@ -935,9 +937,13 @@ class SessionState: ObservableObject {
                 ShamaneProfile(code: "302", prenom: "Anne", nom: "",
                                whatsapp: "", email: "", abonnement: ""),
                 ShamaneProfile(code: "22", prenom: "Chloé", nom: "",
-                               whatsapp: "", email: "", abonnement: ""),
+                               whatsapp: "", email: "", abonnement: "",
+                               programmes: [.mySha, .protection]),
                 ShamaneProfile(code: "21", prenom: "Véronique", nom: "",
                                whatsapp: "", email: "", abonnement: ""),
+                ShamaneProfile(code: "103", prenom: "Irène", nom: "Bays-Marion",
+                               whatsapp: "", email: "", abonnement: "",
+                               programmes: [.myShaFa]),
                 ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
                                whatsapp: "", email: "", abonnement: "Superviseur"),
             ]
