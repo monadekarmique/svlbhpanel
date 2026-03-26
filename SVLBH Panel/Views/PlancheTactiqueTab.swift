@@ -206,6 +206,11 @@ struct ShamaneCardView: View {
             updated.programmes.append(programme)
         }
         session.updateShamane(updated)
+
+        // Push segment vers Make → svlbh-v2
+        Task {
+            await SegmentUpdateService.pushSegment(for: updated, autoReply: updated.tier == .lead)
+        }
     }
 }
 
@@ -226,6 +231,11 @@ extension View {
                                     shamane.programmes.append(prog)
                                 }
                                 session.updateShamane(shamane)
+                                // PUSH segment vers Make → svlbh-v2
+                                let s = shamane
+                                Task {
+                                    await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+                                }
                             }
                         }
                     }
