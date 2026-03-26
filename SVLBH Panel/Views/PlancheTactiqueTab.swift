@@ -32,6 +32,11 @@ enum PlancheCategory: Hashable, CaseIterable {
         if case .programme = self { return true }
         return false
     }
+
+    var isTier: Bool {
+        if case .tier = self { return true }
+        return false
+    }
 }
 
 // MARK: - Tab principal
@@ -214,36 +219,43 @@ struct ShamaneCardView: View {
     }
 }
 
-// MARK: - Drop conditionnel (uniquement sur sections programme)
+// MARK: - Drop sur sections (tier + programme)
 
 extension View {
     @ViewBuilder
     func conditionalDrop(category: PlancheCategory, session: SessionState) -> some View {
-        if category.isProgramme {
-            self.onDrop(of: [.text], isTargeted: nil) { providers in
-                guard case .programme(let prog) = category else { return false }
-                for provider in providers {
-                    provider.loadObject(ofClass: NSString.self) { item, _ in
-                        guard let code = item as? String else { return }
-                        DispatchQueue.main.async {
-                            if var shamane = session.shamaneProfiles.first(where: { $0.code == code }) {
-                                if !shamane.programmes.contains(prog) {
-                                    shamane.programmes.append(prog)
-                                }
-                                session.updateShamane(shamane)
-                                // PUSH segment vers Make → svlbh-v2
-                                let s = shamane
-                                Task {
-                                    await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
-                                }
-                            }
+        self.onDrop(of: [.text], isTargeted: nil) { providers in
+            for provider in providers {
+                provider.loadObject(ofClass: NSString.self) { item, _ in
+                    guard let code = item as? String else { return }
+                    DispatchQueue.main.async {
+                        guard var shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
+
+                        switch category {
+                        case .tier(let targetTier):
+                            // Changer de tier = attribuer un nouveau code dans la plage cible
+                            guard shamane.tier != targetTier else { return }
+                            let newCode = ShamaneProfile.nextCode(tier: targetTier, existing: session.shamaneProfiles)
+                            session.removeShamane(shamane)
+                            shamane.code = newCode
+                            session.shamaneProfiles.append(shamane)
+
+                        case .programme(let prog):
+                            // Ajouter un programme
+                            guard !shamane.programmes.contains(prog) else { return }
+                            shamane.programmes.append(prog)
+                            session.updateShamane(shamane)
+                        }
+
+                        // PUSH segment vers Make → svlbh-v2
+                        let s = shamane
+                        Task {
+                            await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
                         }
                     }
                 }
-                return true
             }
-        } else {
-            self
+            return true
         }
     }
 }
