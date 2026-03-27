@@ -1,7 +1,8 @@
 // SVLBHPanel — Views/PlancheFloatingView.swift
-// v4.8.0 — Planche Tactique flottante sur onglet SVLBH
+// v4.9.0 — Planche Tactique flottante + drag-drop tier/programme
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PlancheFloatingView: View {
     @EnvironmentObject var session: SessionState
@@ -38,6 +39,7 @@ struct PlancheFloatingView: View {
                                 profiles: profiles(for: cat),
                                 selectedProfile: $selectedProfile
                             )
+                            .environmentObject(session)
                         }
                     }
                     .padding(10)
@@ -85,12 +87,14 @@ struct PlancheFloatingView: View {
     }
 }
 
-// MARK: - Section compacte : label + numéros inline
+// MARK: - Section compacte : label + numéros inline + drag & drop
 
 struct PlancheCompactSection: View {
+    @EnvironmentObject var session: SessionState
     let category: PlancheCategory
     let profiles: [ShamaneProfile]
     @Binding var selectedProfile: ShamaneProfile?
+    @State private var isTargeted = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -101,36 +105,77 @@ struct PlancheCompactSection: View {
 
             // Numéros des shamanes
             if profiles.isEmpty {
-                Text("—")
+                Text("Glisser ici")
                     .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondary).italic()
+                    .frame(maxWidth: .infinity, minHeight: 30)
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 50), spacing: 4)], spacing: 4) {
                     ForEach(profiles) { profile in
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                selectedProfile = selectedProfile?.code == profile.code ? nil : profile
+                        Text(profile.codeFormatted)
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundColor(selectedProfile?.code == profile.code ? .white : Color(hex: category.badgeColor))
+                            .padding(.horizontal, 7).padding(.vertical, 3)
+                            .background(
+                                selectedProfile?.code == profile.code
+                                    ? Color(hex: category.badgeColor)
+                                    : Color(hex: category.badgeColor).opacity(0.12)
+                            )
+                            .cornerRadius(5)
+                            .onDrag {
+                                NSItemProvider(object: profile.code as NSString)
                             }
-                        } label: {
-                            Text(profile.codeFormatted)
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundColor(selectedProfile?.code == profile.code ? .white : Color(hex: category.badgeColor))
-                                .padding(.horizontal, 7).padding(.vertical, 3)
-                                .background(
-                                    selectedProfile?.code == profile.code
-                                        ? Color(hex: category.badgeColor)
-                                        : Color(hex: category.badgeColor).opacity(0.12)
-                                )
-                                .cornerRadius(5)
-                        }
-                        .buttonStyle(.plain)
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.3)) {
+                                    selectedProfile = selectedProfile?.code == profile.code ? nil : profile
+                                }
+                            }
                     }
                 }
             }
         }
         .padding(8)
-        .background(Color(hex: category.badgeColor).opacity(0.04))
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(hex: category.badgeColor).opacity(isTargeted ? 0.2 : 0.04))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isTargeted ? Color(hex: category.badgeColor) : .clear, lineWidth: 2)
+        )
         .cornerRadius(8)
+        .onDrop(of: [UTType.plainText], isTargeted: $isTargeted) { providers in
+            for provider in providers {
+                provider.loadObject(ofClass: NSString.self) { item, _ in
+                    guard let code = item as? String else { return }
+                    DispatchQueue.main.async {
+                        guard var shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
+
+                        switch category {
+                        case .tier(let targetTier):
+                            guard shamane.tier != targetTier else { return }
+                            let newCode = ShamaneProfile.nextCode(tier: targetTier, existing: session.shamaneProfiles)
+                            session.removeShamane(shamane)
+                            shamane.code = newCode
+                            session.shamaneProfiles.append(shamane)
+
+                        case .programme(let prog):
+                            guard !shamane.programmes.contains(prog) else { return }
+                            shamane.programmes.append(prog)
+                            session.updateShamane(shamane)
+                        }
+
+                        // PUSH segment vers Make → svlbh-v2
+                        let s = shamane
+                        Task {
+                            await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+                        }
+                        selectedProfile = nil
+                    }
+                }
+            }
+            return true
+        }
     }
 }
 

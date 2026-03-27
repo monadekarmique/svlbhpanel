@@ -347,20 +347,20 @@ struct SVLBHTab: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    HStack(spacing: 8) {
-                        if session.role.isPatrick || currentTier == .certifiee {
-                            Button {
-                                withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
-                            } label: {
-                                Image(systemName: "rectangle.on.rectangle.angled")
-                                    .font(.system(size: 20))
-                                    .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : Color(hex: "#8B3A62").opacity(0.6))
-                            }
+                    Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundColor(Color(hex: "#C27894").opacity(0.7))
+                        .fixedSize()
+                }
+                if session.role.isPatrick || currentTier == .certifiee {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
+                        } label: {
+                            Image(systemName: "rectangle.on.rectangle.angled")
+                                .font(.system(size: 22, weight: .medium))
+                                .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : .accentColor)
                         }
-                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .foregroundColor(Color(hex: "#C27894").opacity(0.7))
-                            .fixedSize()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
