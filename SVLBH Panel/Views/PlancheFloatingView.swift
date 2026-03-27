@@ -118,24 +118,17 @@ struct PlancheCompactSection: View {
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 50), spacing: 4)], spacing: 4) {
                     ForEach(profiles) { profile in
-                        Text(profile.codeFormatted)
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundColor(selectedProfile?.code == profile.code ? .white : Color(hex: category.badgeColor))
-                            .padding(.horizontal, 7).padding(.vertical, 3)
-                            .background(
-                                selectedProfile?.code == profile.code
-                                    ? Color(hex: category.badgeColor)
-                                    : Color(hex: category.badgeColor).opacity(0.12)
-                            )
-                            .cornerRadius(5)
-                            .onDrag {
-                                NSItemProvider(object: profile.code as NSString)
-                            }
-                            .onTapGesture {
+                        PlancheCodeBadge(
+                            profile: profile,
+                            category: category,
+                            isSelected: selectedProfile?.code == profile.code,
+                            onTap: {
                                 withAnimation(.spring(response: 0.3)) {
                                     selectedProfile = selectedProfile?.code == profile.code ? nil : profile
                                 }
-                            }
+                            },
+                            onRemove: { removeFromCategory(profile) }
+                        )
                     }
                 }
             }
@@ -183,6 +176,75 @@ struct PlancheCompactSection: View {
             }
             return true
         }
+    }
+
+    /// Retirer un profil de cette catégorie (programme ou formation → lead)
+    private func removeFromCategory(_ profile: ShamaneProfile) {
+        guard var shamane = session.shamaneProfiles.first(where: { $0.code == profile.code }) else { return }
+
+        switch category {
+        case .programme(let prog):
+            shamane.programmes.removeAll { $0 == prog }
+            session.updateShamane(shamane)
+
+        case .tier(.formation):
+            // Retour en lead + retrait MySha/MyShaFa
+            shamane.programmes.removeAll { $0 == .mySha || $0 == .myShaFa }
+            let newCode = ShamaneProfile.nextCode(tier: .lead, existing: session.shamaneProfiles)
+            session.removeShamane(shamane)
+            shamane.code = newCode
+            session.shamaneProfiles.append(shamane)
+
+        default:
+            return
+        }
+
+        let s = shamane
+        let waConnected = segmentService.isWhatsAppConnected
+        Task {
+            await SegmentUpdateService.pushSegment(for: s, autoReply: waConnected && s.tier == .lead)
+        }
+    }
+}
+
+// MARK: - Badge numéro avec long press pour retrait
+
+struct PlancheCodeBadge: View {
+    let profile: ShamaneProfile
+    let category: PlancheCategory
+    let isSelected: Bool
+    let onTap: () -> Void
+    let onRemove: () -> Void
+    @State private var showRemoveConfirm = false
+
+    var body: some View {
+        Text(profile.codeFormatted)
+            .font(.system(size: 11, weight: .bold, design: .monospaced))
+            .foregroundColor(isSelected ? .white : Color(hex: category.badgeColor))
+            .padding(.horizontal, 7).padding(.vertical, 3)
+            .background(
+                isSelected
+                    ? Color(hex: category.badgeColor)
+                    : Color(hex: category.badgeColor).opacity(0.12)
+            )
+            .cornerRadius(5)
+            .onDrag {
+                NSItemProvider(object: profile.code as NSString)
+            }
+            .onTapGesture { onTap() }
+            .onLongPressGesture(minimumDuration: 2) {
+                if category.isProgramme || category == .tier(.formation) {
+                    showRemoveConfirm = true
+                }
+            }
+            .confirmationDialog(
+                "Retirer \(profile.displayName) de \(category.label) ?",
+                isPresented: $showRemoveConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Retirer", role: .destructive) { onRemove() }
+                Button("Annuler", role: .cancel) {}
+            }
     }
 }
 
