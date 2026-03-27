@@ -217,6 +217,10 @@ struct PlancheCodeBadge: View {
     let onRemove: () -> Void
     @State private var showRemoveConfirm = false
 
+    var canRemove: Bool {
+        category.isProgramme || category == .tier(.formation)
+    }
+
     var body: some View {
         Text(profile.codeFormatted)
             .font(.system(size: 11, weight: .bold, design: .monospaced))
@@ -228,22 +232,18 @@ struct PlancheCodeBadge: View {
                     : Color(hex: category.badgeColor).opacity(0.12)
             )
             .cornerRadius(5)
-            .onDrag {
-                NSItemProvider(object: profile.code as NSString)
-            }
             .onTapGesture { onTap() }
-            .onLongPressGesture(minimumDuration: 2) {
-                if category.isProgramme || category == .tier(.formation) {
-                    showRemoveConfirm = true
+            .if(canRemove) { view in
+                view.contextMenu {
+                    Button(role: .destructive) {
+                        onRemove()
+                    } label: {
+                        Label("Retirer de \(category.label)", systemImage: "minus.circle")
+                    }
                 }
             }
-            .confirmationDialog(
-                "Retirer \(profile.displayName) de \(category.label) ?",
-                isPresented: $showRemoveConfirm,
-                titleVisibility: .visible
-            ) {
-                Button("Retirer", role: .destructive) { onRemove() }
-                Button("Annuler", role: .cancel) {}
+            .onDrag {
+                NSItemProvider(object: profile.code as NSString)
             }
     }
 }
@@ -297,6 +297,15 @@ struct PlancheProfileDetail: View {
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(8)
         .padding(.horizontal, 10).padding(.bottom, 8)
+    }
+}
+
+// MARK: - Conditional modifier
+
+private extension View {
+    @ViewBuilder
+    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition { transform(self) } else { self }
     }
 }
 
