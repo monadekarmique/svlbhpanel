@@ -18,7 +18,7 @@ struct OnboardingView: View {
     private var codeInt: Int? { Int(codeDraft) }
     private var isValid: Bool {
         guard let n = codeInt else { return false }
-        return (1...30000).contains(n) || n == 455000
+        return (1...30000).contains(n) || n >= 455000
     }
     private var tierPreview: PractitionerTier? {
         guard let n = codeInt else { return nil }

@@ -5,6 +5,7 @@ import SwiftUI
 
 struct PierresTab: View {
     @EnvironmentObject var session: SessionState
+    @State private var showPlanche = false
 
     var chargeText: String {
         let n = session.validatedCount
@@ -33,6 +34,25 @@ struct PierresTab: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
+        .overlay {
+            if session.role.isPatrick {
+                PlancheFloatingView(isVisible: $showPlanche)
+                    .environmentObject(session)
+            }
+        }
+        .toolbar {
+            if session.role.isPatrick {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
+                    } label: {
+                        Image(systemName: "rectangle.on.rectangle.angled")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : .accentColor)
+                    }
+                }
+            }
+        }
     }
 
     private var chargeHeader: some View {

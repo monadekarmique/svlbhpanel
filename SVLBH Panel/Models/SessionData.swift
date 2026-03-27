@@ -113,6 +113,7 @@ enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
     case aucun      = "aucun"
     case protection = "protection"
     case mySha      = "mySha"
+    case formee     = "formee"
     case myShaFa    = "myShaFa"
 
     var label: String {
@@ -120,6 +121,7 @@ enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
         case .aucun:      return "Aucun"
         case .protection: return "Programme de Protection de la Sur-Âme"
         case .mySha:      return "mySha"
+        case .formee:     return "Formé.e.s"
         case .myShaFa:    return "MyShaFa"
         }
     }
@@ -129,6 +131,7 @@ enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
         case .aucun:      return "#999999"
         case .protection: return "#5B2C8E"
         case .mySha:      return "#2E6CB5"
+        case .formee:     return "#7B8D4E"
         case .myShaFa:    return "#1A8A6E"
         }
     }
@@ -1074,6 +1077,9 @@ class SessionState: ObservableObject {
                                programmes: [.myShaFa]),
                 ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
                                whatsapp: "", email: "", abonnement: "Superviseur"),
+                ShamaneProfile(code: "754545", prenom: "Patrick", nom: "Bays",
+                               whatsapp: "", email: "bays.patrick@icloud.com", abonnement: "Protection",
+                               programmes: [.protection]),
             ]
         }
     }
