@@ -2,6 +2,7 @@
 // Planche Tactique — Mindzip de cartes shamanes par catégorie
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Catégorie unifiée (tier + programme)
 
@@ -183,11 +184,11 @@ struct ShamaneCardView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
         )
-        .onTapGesture(count: 2) {
-            showProgrammePicker = true
-        }
         .onDrag {
             NSItemProvider(object: profile.code as NSString)
+        }
+        .onTapGesture(count: 2) {
+            showProgrammePicker = true
         }
         .confirmationDialog("Programme", isPresented: $showProgrammePicker) {
             ForEach(ShamaneProgramme.allCases, id: \.self) { prog in
@@ -224,7 +225,7 @@ struct ShamaneCardView: View {
 extension View {
     @ViewBuilder
     func conditionalDrop(category: PlancheCategory, session: SessionState) -> some View {
-        self.onDrop(of: [.text], isTargeted: nil) { providers in
+        self.onDrop(of: [UTType.plainText], isTargeted: nil) { providers in
             for provider in providers {
                 provider.loadObject(ofClass: NSString.self) { item, _ in
                     guard let code = item as? String else { return }

@@ -353,8 +353,8 @@ struct SVLBHTab: View {
                                 withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
                             } label: {
                                 Image(systemName: "rectangle.on.rectangle.angled")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : Color(hex: "#C27894"))
+                                    .font(.system(size: 20))
+                                    .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : Color(hex: "#8B3A62").opacity(0.6))
                             }
                         }
                         Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
