@@ -49,7 +49,7 @@ enum PractitionerTier: String, Codable, CaseIterable {
 
     var label: String {
         switch self {
-        case .lead:        return "LEAD"
+        case .lead:        return "LEAD FROID"
         case .formation:   return "EN FORMATION"
         case .certifiee:   return "CERTIFIÉE"
         case .superviseur: return "SUPERVISEUR"
@@ -111,6 +111,7 @@ enum PractitionerTier: String, Codable, CaseIterable {
 
 enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
     case aucun      = "aucun"
+    case leadChaud  = "leadChaud"
     case protection = "protection"
     case mySha      = "mySha"
     case formee     = "formee"
@@ -119,6 +120,7 @@ enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
     var label: String {
         switch self {
         case .aucun:      return "Aucun"
+        case .leadChaud:  return "Lead chaud avec RDV"
         case .protection: return "Programme de Protection de la Sur-Âme"
         case .mySha:      return "mySha"
         case .formee:     return "Formé.e.s"
@@ -129,6 +131,7 @@ enum ShamaneProgramme: String, Codable, CaseIterable, Sendable {
     var badgeColor: String {
         switch self {
         case .aucun:      return "#999999"
+        case .leadChaud:  return "#D4451A"
         case .protection: return "#5B2C8E"
         case .mySha:      return "#2E6CB5"
         case .formee:     return "#7B8D4E"

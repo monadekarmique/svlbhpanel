@@ -12,7 +12,7 @@ enum PlancheCategory: Hashable, CaseIterable {
 
     static var allCases: [PlancheCategory] {
         [.tier(.certifiee), .tier(.formation), .tier(.lead),
-         .programme(.protection), .programme(.mySha), .programme(.formee), .programme(.myShaFa)]
+         .programme(.leadChaud), .programme(.protection), .programme(.mySha), .programme(.formee), .programme(.myShaFa)]
     }
 
     var label: String {
