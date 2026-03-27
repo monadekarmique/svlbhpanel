@@ -204,6 +204,7 @@ struct ShamaneCardView: View {
 
     private func assignProgramme(_ programme: ShamaneProgramme) {
         var updated = profile
+        let wasProtection = updated.programmes.contains(.protection)
         if programme == .aucun {
             updated.programmes = []
         } else if updated.programmes.contains(programme) {
@@ -216,6 +217,11 @@ struct ShamaneCardView: View {
         // Push segment vers Make → svlbh-v2
         Task {
             await SegmentUpdateService.pushSegment(for: updated, autoReply: updated.tier == .lead)
+
+            // Protection de la Sur-Âme : hériter les pierres de Patrick (bays.patrick@icloud.com)
+            if programme == .protection && !wasProtection {
+                await SegmentUpdateService.pushProtectionPierres(for: updated, pierres: session.pierres)
+            }
         }
     }
 }
@@ -252,6 +258,11 @@ extension View {
                         let s = shamane
                         Task {
                             await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+
+                            // Protection : hériter pierres de Patrick
+                            if case .programme(.protection) = category {
+                                await SegmentUpdateService.pushProtectionPierres(for: s, pierres: session.pierres)
+                            }
                         }
                     }
                 }

@@ -124,6 +124,53 @@ class SegmentUpdateService: ObservableObject {
         return (ok, fail)
     }
 
+    // MARK: - Protection pierres push
+
+    /// Pousse les pierres sélectionnées de la session (Patrick) vers le record de la Shamane
+    /// Appelé quand une Shamane est attribuée au programme "Protection de la Sur-Âme"
+    @discardableResult
+    static func pushProtectionPierres(for profile: ShamaneProfile, pierres: [PierreState]) async -> Bool {
+        let selectedPierres = pierres.filter { $0.selected }
+        guard !selectedPierres.isEmpty else {
+            print("[SegmentUpdate] Protection: aucune pierre sélectionnée, skip")
+            return false
+        }
+
+        // Construire le payload pierres au format P|
+        var pierreLines: [String] = []
+        for p in selectedPierres {
+            let v = p.validated ? "✓" : "○"
+            let dur = "\(p.durationMin) min + \(p.durationDays) j"
+            pierreLines.append("P|\(v)|\(p.spec.nom)|\(p.volume)\(p.unit)|\(dur)")
+        }
+        let payload = pierreLines.joined(separator: "\n")
+
+        // Clé session : 00-{patientId}-001-{shamaneCode}
+        let sessionKey = "00-\(profile.patientId)-001-\(profile.codeFormatted)"
+
+        let body: [String: String] = [
+            "session_id": sessionKey,
+            "payload": payload
+        ]
+
+        do {
+            var req = URLRequest(url: URL(string: "https://hook.eu2.make.com/1xhfk4o1l5pu4h23m0x26zql6oe8c3ns")!)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.timeoutInterval = 10
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let ok = (200...299).contains(status)
+            print("[SegmentUpdate] Protection pierres → \(sessionKey) → \(selectedPierres.count) pierres → HTTP \(status)")
+            return ok
+        } catch {
+            print("[SegmentUpdate] Protection pierres FAILED \(sessionKey): \(error.localizedDescription)")
+            return false
+        }
+    }
+
     // MARK: - Helpers
 
     /// Nettoie un numéro de téléphone (garde chiffres + préfixe +)
