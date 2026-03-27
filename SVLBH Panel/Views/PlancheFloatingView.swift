@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 
 struct PlancheFloatingView: View {
     @EnvironmentObject var session: SessionState
+    @EnvironmentObject var segmentService: SegmentUpdateService
     @Binding var isVisible: Bool
     @State private var selectedProfile: ShamaneProfile?
 
@@ -20,6 +21,10 @@ struct PlancheFloatingView: View {
                         .font(.caption.bold())
                         .foregroundColor(Color(hex: "#8B3A62"))
                     Spacer()
+                    // Indicateur WhatsApp connecté
+                    Image(systemName: segmentService.isWhatsAppConnected ? "bolt.fill" : "bolt.slash")
+                        .font(.system(size: 10))
+                        .foregroundColor(segmentService.isWhatsAppConnected ? .green : .red)
                     Button { withAnimation(.spring(response: 0.3)) { isVisible = false } } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 16))
@@ -91,6 +96,7 @@ struct PlancheFloatingView: View {
 
 struct PlancheCompactSection: View {
     @EnvironmentObject var session: SessionState
+    @EnvironmentObject var segmentService: SegmentUpdateService
     let category: PlancheCategory
     let profiles: [ShamaneProfile]
     @Binding var selectedProfile: ShamaneProfile?
@@ -165,10 +171,11 @@ struct PlancheCompactSection: View {
                             session.updateShamane(shamane)
                         }
 
-                        // PUSH segment vers Make → svlbh-v2
+                        // PUSH segment vers Make → svlbh-v2 (auto_reply uniquement si WhatsApp connecté)
                         let s = shamane
+                        let waConnected = self.segmentService.isWhatsAppConnected
                         Task {
-                            await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+                            await SegmentUpdateService.pushSegment(for: s, autoReply: waConnected && s.tier == .lead)
                         }
                         selectedProfile = nil
                     }

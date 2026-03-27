@@ -29,6 +29,7 @@ struct SVLBHPanelApp: App {
                     .environmentObject(session)
                     .environmentObject(sync)
                     .environmentObject(identity)
+                    .environmentObject(SegmentUpdateService.shared)
                     .preferredColorScheme(.light)
                     .onAppear {
                         identity.applyTo(session)
@@ -38,6 +39,7 @@ struct SVLBHPanelApp: App {
                         if subscriptionStatus == nil {
                             await checkSubscription()
                         }
+                        await SegmentUpdateService.shared.checkWhatsAppConnectivity()
                     }
             }
         }

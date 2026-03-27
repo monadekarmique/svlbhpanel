@@ -36,10 +36,39 @@ enum SVLBHSegment: String, CaseIterable, Sendable {
 
 // MARK: - Service
 
-class SegmentUpdateService {
+class SegmentUpdateService: ObservableObject {
+
+    /// Singleton pour accès global (état connectivité)
+    static let shared = SegmentUpdateService()
 
     /// Webhook Make — SEGMENT UPDATE scenario #8944575
     static let webhookURL = URL(string: "https://hook.eu2.make.com/jl32rcoregoc34xeekj3cldngj9rkhh9")!
+
+    /// Webhook Make — WhatsApp auto-reply router
+    static let whatsappRouterURL = URL(string: "https://hook.eu2.make.com/lllo1g6btuv4e3qjt4qvpj8fjwyd663s")!
+
+    /// true si le dernier check webhook a réussi
+    @Published var isWhatsAppConnected = false
+
+    /// Vérifie si le webhook WhatsApp router est actif (HEAD request)
+    func checkWhatsAppConnectivity() async {
+        do {
+            var req = URLRequest(url: Self.whatsappRouterURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.timeoutInterval = 5
+            req.httpBody = try JSONSerialization.data(withJSONObject: ["ping": true])
+
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let ok = (200...299).contains(status)
+            await MainActor.run { isWhatsAppConnected = ok }
+            print("[WhatsApp] Connectivity check: \(ok ? "OK" : "FAIL") (HTTP \(status))")
+        } catch {
+            await MainActor.run { isWhatsAppConnected = false }
+            print("[WhatsApp] Connectivity check: FAIL (\(error.localizedDescription))")
+        }
+    }
 
     /// Envoie le segment d'un ShamaneProfile vers Make → svlbh-v2
     /// Clé contact : CT-{telephone} (convention data store)
