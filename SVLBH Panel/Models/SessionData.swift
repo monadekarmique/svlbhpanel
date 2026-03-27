@@ -565,7 +565,7 @@ class PractitionerIdentity: ObservableObject {
         "anne.gr29@gmail.com": ("302", "Anne"),
         "flaviaguift@icloud.com": ("301", "Flavia"),
         // Lead
-        "chloegattlensar@me.com": ("22", "Chloé"),
+        "chloegattlensar@me.com": ("303", "Chloé"),
     ]
 
     @Published var isIdentified: Bool = false
@@ -1067,7 +1067,7 @@ class SessionState: ObservableObject {
                                whatsapp: "", email: "", abonnement: ""),
                 ShamaneProfile(code: "302", prenom: "Anne", nom: "",
                                whatsapp: "", email: "", abonnement: ""),
-                ShamaneProfile(code: "22", prenom: "Chloé", nom: "",
+                ShamaneProfile(code: "303", prenom: "Chloé", nom: "",
                                whatsapp: "", email: "", abonnement: "",
                                programmes: [.mySha, .protection]),
                 ShamaneProfile(code: "21", prenom: "Véronique", nom: "",
