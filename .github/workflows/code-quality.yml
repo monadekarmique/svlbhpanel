@@ -40,22 +40,14 @@ jobs:
       - name: Install Periphery
         run: brew install periphery
 
-      - name: Build project
-        run: |
-          xcodebuild build \
-            -project "SVLBH Panel.xcodeproj" \
-            -scheme "SVLBH Panel" \
-            -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M4)' \
-            -quiet \
-            CODE_SIGNING_ALLOWED=NO
-
       - name: Run Periphery scan
         run: |
           periphery scan \
             --project "SVLBH Panel.xcodeproj" \
             --schemes "SVLBH Panel" \
             --targets "SVLBH Panel" \
+            --destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
             --format xcode \
             --retain-public \
             --index-exclude "SVLBH PanelTests/**" "SVLBH PanelUITests/**" \
-            --skip-build
+            --code-signing-allowed=NO
