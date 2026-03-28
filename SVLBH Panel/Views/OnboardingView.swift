@@ -187,10 +187,11 @@ struct OnboardingView: View {
                     return
                 }
                 let name = nameDraft.trimmingCharacters(in: .whitespaces)
-                // Sauvegarder l'association Apple userID → code/nom
+                // Sauvegarder l'association Apple userID → code/nom (UserDefaults + Keychain)
                 UserDefaults.standard.set(userID, forKey: "svlbh_apple_user_id")
                 UserDefaults.standard.set(codeDraft, forKey: "svlbh_apple_mapped_code")
                 UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
+                PractitionerIdentity.keychainSave(userID: userID, code: codeDraft, name: name)
                 identity.identify(code: codeDraft, name: name)
                 identity.applyTo(session)
                 pendingAppleUserID = nil

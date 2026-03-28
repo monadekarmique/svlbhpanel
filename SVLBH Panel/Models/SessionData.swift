@@ -557,6 +557,39 @@ class PractitionerIdentity: ObservableObject {
     private static let appleUserKey = "svlbh_apple_user_id"
     private static let identityURL = URL(string: "https://hook.eu2.make.com/svlbh-identity-lookup")!
 
+    // MARK: - Keychain (persiste entre reinstalls)
+    private static let keychainService = "com.svlbh.panel.apple-identity"
+
+    static func keychainSave(userID: String, code: String, name: String) {
+        let data = "\(code)|\(name)".data(using: .utf8)!
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: userID
+        ]
+        SecItemDelete(query as CFDictionary)
+        var add = query
+        add[kSecValueData as String] = data
+        SecItemAdd(add as CFDictionary, nil)
+    }
+
+    private static func keychainLoad(userID: String) -> (code: String, name: String)? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: userID,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let data = result as? Data,
+              let str = String(data: data, encoding: .utf8) else { return nil }
+        let parts = str.split(separator: "|", maxSplits: 1)
+        guard parts.count == 2 else { return nil }
+        return (code: String(parts[0]), name: String(parts[1]))
+    }
+
     /// Mapping email Apple → (code praticien, prénom)
     static let appleEmailMap: [String: (code: String, name: String)] = [
         // Superviseur
@@ -606,11 +639,12 @@ class PractitionerIdentity: ObservableObject {
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(match.code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
+            Self.keychainSave(userID: userID, code: match.code, name: name)
             identify(code: match.code, name: name)
             return
         }
 
-        // 2. UserID déjà lié (login suivant, email = nil)
+        // 2. UserID déjà lié via UserDefaults (login suivant, email = nil)
         let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
         if savedAppleUser == userID, !userID.isEmpty,
            let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code"), !savedCode.isEmpty {
@@ -619,16 +653,26 @@ class PractitionerIdentity: ObservableObject {
             return
         }
 
-        // 3. UserID inconnu mais user déjà identifié dans cette app → lier automatiquement
+        // 3. UserID dans le Keychain (survit aux reinstalls)
+        if let saved = Self.keychainLoad(userID: userID) {
+            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+            UserDefaults.standard.set(saved.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(saved.name, forKey: "svlbh_apple_mapped_name")
+            identify(code: saved.code, name: saved.name)
+            return
+        }
+
+        // 4. UserID inconnu mais user déjà identifié dans cette app → lier automatiquement
         if !code.isEmpty && !displayName.isEmpty {
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(displayName, forKey: "svlbh_apple_mapped_name")
+            Self.keychainSave(userID: userID, code: code, name: displayName)
             isIdentified = true
             return
         }
 
-        // 4. Nouveau userID, pas de code connu → sauver le userID pour la liaison manuelle
+        // 5. Nouveau userID, pas de code connu → sauver le userID pour la liaison manuelle
         UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
     }
 
