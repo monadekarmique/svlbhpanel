@@ -194,6 +194,9 @@ struct OnboardingView: View {
                 PractitionerIdentity.keychainSave(userID: userID, code: codeDraft, name: name)
                 identity.identify(code: codeDraft, name: name)
                 identity.applyTo(session)
+                // Enregistrer sur Make pour lookup cross-device
+                let regCode = codeDraft; let regName = name; let regUserID = userID
+                Task { await identity.registerAppleUserIDFromLink(userID: regUserID, code: regCode, name: regName) }
                 pendingAppleUserID = nil
             }
             Button("Annuler", role: .cancel) { pendingAppleUserID = nil }
@@ -215,28 +218,21 @@ struct OnboardingView: View {
                 switch result {
                 case .success(let auth):
                     guard let credential = auth.credential as? ASAuthorizationAppleIDCredential else { return }
-                    identity.identifyWithApple(
-                        userID: credential.user,
-                        email: credential.email,
-                        fullName: credential.fullName
-                    )
-                    if identity.isIdentified { identity.applyTo(session) }
-                    if !identity.isIdentified {
-                        // Tenter l'auto-identification vendorID avant de demander code/prénom
-                        let userID = credential.user
-                        Task {
-                            await identity.autoIdentify()
-                            await MainActor.run {
-                                if identity.isIdentified {
-                                    // Lier le userID Apple pour les prochains lancements
-                                    UserDefaults.standard.set(userID, forKey: "svlbh_apple_user_id")
-                                    UserDefaults.standard.set(identity.code, forKey: "svlbh_apple_mapped_code")
-                                    UserDefaults.standard.set(identity.displayName, forKey: "svlbh_apple_mapped_name")
-                                    identity.applyTo(session)
-                                } else {
-                                    pendingAppleUserID = userID
-                                    showAppleLinkAlert = true
-                                }
+                    let userID = credential.user
+                    let email = credential.email
+                    let fullName = credential.fullName
+                    Task {
+                        await identity.identifyWithApple(
+                            userID: userID,
+                            email: email,
+                            fullName: fullName
+                        )
+                        await MainActor.run {
+                            if identity.isIdentified {
+                                identity.applyTo(session)
+                            } else {
+                                pendingAppleUserID = userID
+                                showAppleLinkAlert = true
                             }
                         }
                     }

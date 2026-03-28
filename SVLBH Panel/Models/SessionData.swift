@@ -556,6 +556,7 @@ class PractitionerIdentity: ObservableObject {
     private static let nameKey = "svlbh_practitioner_name"
     private static let appleUserKey = "svlbh_apple_user_id"
     private static let identityURL = URL(string: "https://hook.eu2.make.com/svlbh-identity-lookup")!
+    private static let appleIdentityURL = URL(string: "https://hook.eu2.make.com/ril8mrrt2f97rq8r1ztip26th2nhd8zl")!
 
     // MARK: - Keychain (persiste entre reinstalls)
     private static let keychainService = "com.svlbh.panel.apple-identity"
@@ -627,13 +628,13 @@ class PractitionerIdentity: ObservableObject {
         Task { await registerVendorID(code: code, name: name) }
     }
 
-    /// Sign in with Apple — identifie via email mappé ou userID déjà autorisé
-    func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) {
+    /// Sign in with Apple — identifie via email mappé, cache local, ou webhook Make
+    func identifyWithApple(userID: String, email: String?, fullName: PersonNameComponents?) async {
         let appleName = fullName.flatMap {
             [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
         }.flatMap { $0.isEmpty ? nil : $0 }
 
-        // 1. Email disponible et dans le map → liaison automatique
+        // 1. Email disponible et dans le map → liaison automatique + enregistrer sur Make
         if let email = email, let match = Self.appleEmailMap[email] {
             let name = appleName ?? match.name
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
@@ -641,6 +642,7 @@ class PractitionerIdentity: ObservableObject {
             UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
             Self.keychainSave(userID: userID, code: match.code, name: name)
             identify(code: match.code, name: name)
+            Task { await registerAppleUserID(userID: userID, code: match.code, name: name) }
             return
         }
 
@@ -662,18 +664,88 @@ class PractitionerIdentity: ObservableObject {
             return
         }
 
-        // 4. UserID inconnu mais user déjà identifié dans cette app → lier automatiquement
+        // 4. Webhook Make — lookup par apple_user_id (survit changement d'appareil)
+        if let remote = await lookupAppleUserID(userID: userID) {
+            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+            UserDefaults.standard.set(remote.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(remote.name, forKey: "svlbh_apple_mapped_name")
+            Self.keychainSave(userID: userID, code: remote.code, name: remote.name)
+            identify(code: remote.code, name: remote.name)
+            return
+        }
+
+        // 5. UserID inconnu mais user déjà identifié dans cette app → lier automatiquement
         if !code.isEmpty && !displayName.isEmpty {
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(displayName, forKey: "svlbh_apple_mapped_name")
             Self.keychainSave(userID: userID, code: code, name: displayName)
+            Task { await registerAppleUserID(userID: userID, code: code, name: displayName) }
             isIdentified = true
             return
         }
 
-        // 5. Nouveau userID, pas de code connu → sauver le userID pour la liaison manuelle
+        // 6. Nouveau userID, pas de code connu → sauver le userID pour la liaison manuelle
         UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+    }
+
+    // MARK: - Apple Identity ↔ Make.com
+
+    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device (appelé depuis OnboardingView lors de la liaison manuelle)
+    func registerAppleUserIDFromLink(userID: String, code: String, name: String) async {
+        await registerAppleUserID(userID: userID, code: code, name: name)
+    }
+
+    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device
+    private func registerAppleUserID(userID: String, code: String, name: String) async {
+        let body: [String: String] = [
+            "action": "apple_register",
+            "apple_user_id": userID,
+            "code": code,
+            "name": name
+        ]
+        do {
+            var req = URLRequest(url: Self.appleIdentityURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            req.timeoutInterval = 10
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            print("[Identity] apple_register → \(status)")
+        } catch {
+            print("[Identity] apple_register failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// Lookup apple_user_id sur Make — retourne code/name ou nil
+    private func lookupAppleUserID(userID: String) async -> (code: String, name: String)? {
+        let body: [String: String] = [
+            "action": "apple_lookup",
+            "apple_user_id": userID
+        ]
+        do {
+            var req = URLRequest(url: Self.appleIdentityURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            req.timeoutInterval = 8
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else {
+                print("[Identity] apple_lookup → \(status), no match")
+                return nil
+            }
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let code = json["code"] as? String, !code.isEmpty,
+               let name = json["name"] as? String, !name.isEmpty {
+                print("[Identity] apple_lookup → \(code) (\(name))")
+                return (code, name)
+            }
+        } catch {
+            print("[Identity] apple_lookup failed: \(error.localizedDescription)")
+        }
+        return nil
     }
 
     func logout() {
