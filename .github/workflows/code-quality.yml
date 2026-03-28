@@ -10,12 +10,14 @@ jobs:
   codacy:
     name: Codacy Analysis
     runs-on: ubuntu-latest
-    if: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
       - name: Codacy Analysis CLI
         uses: codacy/codacy-analysis-cli-action@master
+        env:
+          CODACY_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           upload: true
