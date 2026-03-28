@@ -221,9 +221,23 @@ struct OnboardingView: View {
                     )
                     if identity.isIdentified { identity.applyTo(session) }
                     if !identity.isIdentified {
-                        // Proposer de lier le compte Apple au code praticien
-                        pendingAppleUserID = credential.user
-                        showAppleLinkAlert = true
+                        // Tenter l'auto-identification vendorID avant de demander code/prénom
+                        let userID = credential.user
+                        Task {
+                            await identity.autoIdentify()
+                            await MainActor.run {
+                                if identity.isIdentified {
+                                    // Lier le userID Apple pour les prochains lancements
+                                    UserDefaults.standard.set(userID, forKey: "svlbh_apple_user_id")
+                                    UserDefaults.standard.set(identity.code, forKey: "svlbh_apple_mapped_code")
+                                    UserDefaults.standard.set(identity.displayName, forKey: "svlbh_apple_mapped_name")
+                                    identity.applyTo(session)
+                                } else {
+                                    pendingAppleUserID = userID
+                                    showAppleLinkAlert = true
+                                }
+                            }
+                        }
                     }
                 case .failure(let err):
                     error = err.localizedDescription
