@@ -1,0 +1,53 @@
+name: Code Quality
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop, 'claude/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  codacy:
+    name: Codacy Analysis
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@master
+        env:
+          CODACY_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          upload: true
+          max-allowed-issues: 0
+
+  periphery:
+    name: Periphery – Dead Code Detection
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          echo "Using Xcode at: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+
+      - name: Install Periphery
+        run: brew install periphery
+
+      - name: Run Periphery scan
+        run: |
+          periphery scan \
+            --project "SVLBH Panel.xcodeproj" \
+            --schemes "SVLBH Panel" \
+            --targets "SVLBH Panel" \
+            --destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
+            --format xcode \
+            --retain-public \
+            --index-exclude "SVLBH PanelTests/**" "SVLBH PanelUITests/**" \
+            --code-signing-allowed=NO

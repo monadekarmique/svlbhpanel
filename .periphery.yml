@@ -1,0 +1,13 @@
+retain_public: true
+
+targets:
+  - "SVLBH Panel"
+
+schemes:
+  - "SVLBH Panel"
+
+format: xcode
+
+index_exclude:
+  - "SVLBH PanelTests/**"
+  - "SVLBH PanelUITests/**"
