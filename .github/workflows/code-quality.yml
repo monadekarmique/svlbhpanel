@@ -48,4 +48,5 @@ jobs:
             --format xcode \
             --retain-public \
             --index-exclude "SVLBH PanelTests/**" "SVLBH PanelUITests/**" \
+            -- -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=18.5' \
             2>&1 || true
