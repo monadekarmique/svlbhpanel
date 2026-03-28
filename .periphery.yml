@@ -1,8 +1,5 @@
 retain_public: true
 
-targets:
-  - "SVLBH Panel"
-
 schemes:
   - "SVLBH Panel"
 
