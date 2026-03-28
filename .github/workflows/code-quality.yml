@@ -40,17 +40,12 @@ jobs:
       - name: Install Periphery
         run: brew install periphery
 
-      - name: List available simulators
-        run: xcrun simctl list devices available | head -30
-
       - name: Run Periphery scan
         run: |
           periphery scan \
             --project "SVLBH Panel.xcodeproj" \
             --schemes "SVLBH Panel" \
-            --targets "SVLBH Panel" \
             --format xcode \
             --retain-public \
             --index-exclude "SVLBH PanelTests/**" "SVLBH PanelUITests/**" \
-            --build-arguments="-destination,generic/platform=iOS Simulator,CODE_SIGNING_ALLOWED=NO" \
             2>&1 || true
