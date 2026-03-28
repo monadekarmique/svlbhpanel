@@ -1,0 +1,14 @@
+---
+engines:
+  swiftlint:
+    enabled: true
+
+languages:
+  - swift
+
+exclude_paths:
+  - "DerivedData/**"
+  - ".build/**"
+  - "SVLBH PanelTests/**"
+  - "SVLBH PanelUITests/**"
+  - "*.xcodeproj/**"

@@ -1,0 +1,44 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  codacy:
+    name: Codacy Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          upload: true
+          max-allowed-issues: 0
+
+  periphery:
+    name: Periphery – Dead Code Detection
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      - name: Install Periphery
+        run: brew install periphery
+
+      - name: Run Periphery scan
+        run: |
+          periphery scan \
+            --project "SVLBH Panel.xcodeproj" \
+            --schemes "SVLBH Panel" \
+            --targets "SVLBH Panel" \
+            --format xcode \
+            --retain-public \
+            --index-exclude "SVLBH PanelTests/**" "SVLBH PanelUITests/**" \
+            --strict
