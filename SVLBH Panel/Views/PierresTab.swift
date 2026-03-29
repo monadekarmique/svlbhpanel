@@ -107,17 +107,27 @@ struct ValidationRow: View {
 
 struct PierreCard: View {
     @ObservedObject var p: PierreState
+    @State private var showFiche = false
+
+    private var fiche: PierreEnseignement? { PierreEnseignement.fiches[p.spec.id] }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(p.spec.icon + " " + p.spec.nom)
-                    .font(.caption.bold())
-                    .foregroundColor(p.selected ? Color(hex: "#8B3A62") : .primary)
-                    .lineLimit(2)
+                Button {
+                    if p.selected { withAnimation { showFiche.toggle() } }
+                } label: {
+                    Text(p.spec.icon + " " + p.spec.nom)
+                        .font(.caption.bold())
+                        .foregroundColor(p.selected ? Color(hex: "#8B3A62") : .primary)
+                        .lineLimit(2)
+                        .underline(p.selected)
+                }
+                .buttonStyle(.plain)
+                .disabled(!p.selected)
                 Spacer()
                 Button {
-                    withAnimation { p.selected.toggle() }
+                    withAnimation { p.selected.toggle(); if !p.selected { showFiche = false } }
                 } label: {
                     Image(systemName: p.selected ? "checkmark.circle.fill" : "plus.circle")
                         .font(.title3)
@@ -128,6 +138,11 @@ struct PierreCard: View {
 
             Text(p.spec.role)
                 .font(.caption2).foregroundColor(.secondary).lineLimit(3)
+
+            // Fiche enseignement (visible quand sélectionnée + tap sur titre)
+            if p.selected && showFiche, let fiche = fiche {
+                PierreFicheView(fiche: fiche)
+            }
 
             if p.selected {
                 Divider()
@@ -263,5 +278,43 @@ struct PierreDetail: View {
                     .fixedSize()
             }
         }
+    }
+}
+
+// MARK: - Fiche enseignement pierre
+
+struct PierreFicheView: View {
+    let fiche: PierreEnseignement
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Divider()
+            Text(fiche.formule)
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundColor(Color(hex: "#5B2C8E"))
+            Text(fiche.signature)
+                .font(.caption.italic())
+                .foregroundColor(Color(hex: "#8B3A62"))
+            HStack(spacing: 4) {
+                ForEach(fiche.absorbe, id: \.self) { tag in
+                    Text(tag)
+                        .font(.system(size: 9, weight: .medium))
+                        .padding(.horizontal, 6).padding(.vertical, 3)
+                        .background(Color(hex: "#8B3A62").opacity(0.1))
+                        .cornerRadius(4)
+                }
+            }
+            Text("Contexte SVLBH").font(.caption2.bold()).foregroundColor(.secondary).padding(.top, 4)
+            Text(fiche.contexte)
+                .font(.caption2)
+                .foregroundColor(.primary.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+            Text("Usage en accompagnement").font(.caption2.bold()).foregroundColor(.secondary).padding(.top, 4)
+            Text(fiche.usage)
+                .font(.caption2)
+                .foregroundColor(.primary.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.top, 4)
     }
 }

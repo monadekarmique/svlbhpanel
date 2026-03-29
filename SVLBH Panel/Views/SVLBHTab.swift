@@ -118,19 +118,14 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // ── Clé électromagnétique / Historique / Programmes de recherche ──
-                    HStack(spacing: 4) {
-                        Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique Patient / Syst\u{00e8}me")
-                            .font(.caption.bold()).foregroundColor(.secondary)
-                        Text("/")
-                            .font(.caption.bold()).foregroundColor(.secondary)
-                        Button("Historique") {
-                            showHistory = true
+                    // ── Clé électromagnétique / Programmes de recherche ──
+                    HStack {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique")
+                                .font(.caption.bold()).foregroundColor(.secondary)
+                            Text("Patient / Syst\u{00e8}me")
+                                .font(.caption.bold()).foregroundColor(.secondary)
                         }
-                        .font(.caption.bold())
-                        .foregroundColor(Color(hex: "#8B3A62"))
-                        .disabled(!isSubscriptionActive)
-                        .opacity(isSubscriptionActive ? 1.0 : 0.4)
                         Spacer()
                         if showResearchAccess {
                             Button {
@@ -215,6 +210,23 @@ struct SVLBHTab: View {
                             .background(Color(hex: "#8B3A62").opacity(colorScheme == .dark ? 0.2 : 0.08))
                             .cornerRadius(10)
                         }
+                    }
+                    .padding(.horizontal, 16)
+
+                    // ── Historique ──
+                    HStack {
+                        Button {
+                            showHistory = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "clock.arrow.circlepath").font(.system(size: 12))
+                                Text("Historique des cl\u{00e9}s").font(.caption.bold())
+                            }
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                        }
+                        .disabled(!isSubscriptionActive)
+                        .opacity(isSubscriptionActive ? 1.0 : 0.4)
+                        Spacer()
                     }
                     .padding(.horizontal, 16)
 
@@ -404,16 +416,6 @@ struct SVLBHTab: View {
                         }
                         if session.role.isSuperviseur {
                             Divider()
-                            Button {
-                                showTherapists = true
-                            } label: {
-                                Label("Shamanes", systemImage: "person.2.badge.gearshape")
-                            }
-                            Button {
-                                showDistribution = true
-                            } label: {
-                                Label("Distribution", systemImage: "list.bullet.rectangle")
-                            }
                             Button {
                                 showReferenceSystems = true
                             } label: {

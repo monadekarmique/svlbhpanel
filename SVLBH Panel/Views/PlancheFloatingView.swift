@@ -9,9 +9,11 @@ struct PlancheFloatingView: View {
     @EnvironmentObject var segmentService: SegmentUpdateService
     @Binding var isVisible: Bool
     @State private var selectedProfile: ShamaneProfile?
+    @State private var showTherapists = false
+    @State private var showDistribution = false
 
     var body: some View {
-        if isVisible && (session.role.isPatrick || session.currentTier == .certifiee) {
+        if isVisible && (session.role.isSuperviseur || session.currentTier == .certifiee) {
             VStack(spacing: 0) {
                 // Header
                 HStack {
@@ -21,7 +23,6 @@ struct PlancheFloatingView: View {
                         .font(.caption.bold())
                         .foregroundColor(Color(hex: "#8B3A62"))
                     Spacer()
-                    // Indicateur WhatsApp connecté
                     Image(systemName: segmentService.isWhatsAppConnected ? "bolt.fill" : "bolt.slash")
                         .font(.system(size: 10))
                         .foregroundColor(segmentService.isWhatsAppConnected ? .green : .red)
@@ -32,6 +33,34 @@ struct PlancheFloatingView: View {
                     }
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8)
+
+                // Shamanes + Distribution (superviseurs)
+                if session.role.isSuperviseur {
+                    HStack(spacing: 8) {
+                        Button { showTherapists = true } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: "person.2.badge.gearshape").font(.system(size: 10))
+                                Text("Shamanes").font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(Color(hex: "#8B3A62").opacity(0.1))
+                            .cornerRadius(6)
+                        }
+                        Button { showDistribution = true } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: "list.bullet.rectangle").font(.system(size: 10))
+                                Text("Distribution").font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(Color(hex: "#8B3A62").opacity(0.1))
+                            .cornerRadius(6)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 12).padding(.bottom, 4)
+                }
 
                 Divider()
 
@@ -70,6 +99,12 @@ struct PlancheFloatingView: View {
             .padding(.leading, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .transition(.move(edge: .leading).combined(with: .opacity))
+            .sheet(isPresented: $showTherapists) {
+                TherapistManagerView().environmentObject(session)
+            }
+            .sheet(isPresented: $showDistribution) {
+                DistributionView().environmentObject(session)
+            }
         }
     }
 
