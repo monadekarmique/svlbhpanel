@@ -142,6 +142,21 @@ class MakeSyncService: ObservableObject {
         }
     }
 
+    // MARK: - PULL (single key)
+    private func pullSingleKey(_ key: String) async throws -> String? {
+        let body: [String: String] = ["session_id": key]
+        var req = URLRequest(url: Self.pullURL)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try JSONSerialization.data(withJSONObject: body)
+        req.timeoutInterval = 10
+        let (data, _) = try await URLSession.shared.data(for: req)
+        let text = String(data: data, encoding: .utf8) ?? ""
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed != "Accepted", trimmed != "READ" else { return nil }
+        return text
+    }
+
     // MARK: - PULL
     func pull(session: SessionState, manual: Bool = true) async -> String? {
         guard session.isPatientIdValid else {
@@ -163,16 +178,31 @@ class MakeSyncService: ObservableObject {
         }
         lastPullTimestamp = now
         await MainActor.run { isReceiving = true; lastError = nil }
-        let body: [String: String] = ["session_id": key]
         do {
-            var req = URLRequest(url: Self.pullURL)
-            req.httpMethod = "POST"
-            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            req.httpBody = try JSONSerialization.data(withJSONObject: body)
-            let (data, _) = try await URLSession.shared.data(for: req)
-            let text = String(data: data, encoding: .utf8) ?? ""
+            // Try primary key first
+            var text = try await pullSingleKey(key)
+
+            // If primary key returned nothing useful, try alternate program codes (00→01→02)
+            // This handles the case where the supervisor changed the program code during correction
+            if text == nil {
+                let parts = key.split(separator: "-", maxSplits: 1)
+                if parts.count == 2, let currentCode = Int(parts[0]) {
+                    let suffix = String(parts[1])
+                    for altCode in (currentCode + 1)...min(currentCode + 5, 99) {
+                        let altKey = String(format: "%02d-%@", altCode, suffix)
+                        if let altText = try await pullSingleKey(altKey) {
+                            print("[MakeSyncService] PULL fallback: found data at \(altKey) (original: \(key))")
+                            text = altText
+                            // Update session program code to match
+                            await MainActor.run { session.sessionProgramCode = String(format: "%02d", altCode) }
+                            break
+                        }
+                    }
+                }
+            }
+
             await MainActor.run { isReceiving = false }
-            guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+            guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
             var lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
             var detectedPin: String?
             if let first = lines.first, first.hasPrefix("PIN:") {
