@@ -23,6 +23,7 @@ struct SVLBHTab: View {
     @State private var showResetConfirm = false
     @State private var showPlanche = false
     @State private var showClosure = false
+    @State private var showHistory = false
     @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var tracker: SessionTracker
@@ -376,6 +377,11 @@ struct SVLBHTab: View {
                         } label: {
                             Label("Exporter WhatsApp", systemImage: "square.and.arrow.up")
                         }
+                        Button {
+                            showHistory = true
+                        } label: {
+                            Label("Historique", systemImage: "clock.arrow.circlepath")
+                        }
                         if session.role.isPatrick {
                             Divider()
                             Button {
@@ -410,6 +416,9 @@ struct SVLBHTab: View {
             }
             .sheet(isPresented: $showExportSheet) {
                 ExportView(text: exportedText)
+            }
+            .sheet(isPresented: $showHistory) {
+                SessionHistoryView(session: session, syncService: sync)
             }
             .sheet(isPresented: $showTherapists) {
                 TherapistManagerView().environmentObject(session)

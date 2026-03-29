@@ -100,6 +100,17 @@ class MakeSyncService: ObservableObject {
             }
             guard ok else { return false }
 
+            // Record in session history
+            let headerLine = payload.split(separator: "\n").first.map(String.init) ?? ""
+            SessionHistory.record(
+                key: cleanKey,
+                programCode: session.sessionProgramCode,
+                patientId: session.patientId,
+                sessionNum: session.sessionNum,
+                practitionerCode: session.role.code,
+                headerLine: headerLine
+            )
+
             // Auto-dismiss toast après 3s
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 3_000_000_000)
@@ -143,7 +154,7 @@ class MakeSyncService: ObservableObject {
     }
 
     // MARK: - PULL (single key)
-    private func pullSingleKey(_ key: String) async throws -> String? {
+    func pullSingleKey(_ key: String) async throws -> String? {
         let body: [String: String] = ["session_id": key]
         var req = URLRequest(url: Self.pullURL)
         req.httpMethod = "POST"
