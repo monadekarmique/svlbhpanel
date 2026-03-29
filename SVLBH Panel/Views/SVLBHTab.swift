@@ -24,9 +24,16 @@ struct SVLBHTab: View {
     @State private var showPlanche = false
     @State private var showClosure = false
     @State private var showHistory = false
+    @State private var showResearchPrograms = false
 
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
     private var isSubscriptionActive: Bool { true }
+
+    /// Programmes de recherche visibles pour certifiées et superviseurs
+    private var showResearchAccess: Bool {
+        if session.role.isPatrick { return true }
+        return currentTier == .certifiee
+    }
     @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var tracker: SessionTracker
@@ -107,6 +114,24 @@ struct SVLBHTab: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 10).padding(.vertical, 6)
                             .background(Color(hex: "#1D9E75")).cornerRadius(8)
+                        }
+                        .padding(.horizontal, 16)
+                    }
+
+                    // ── Programmes de recherche (certifiées + superviseurs) ──
+                    if showResearchAccess {
+                        HStack {
+                            Spacer()
+                            Button {
+                                showResearchPrograms = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "flask")
+                                    Text("Programmes de recherche")
+                                }
+                                .font(.caption.bold())
+                                .foregroundColor(Color(hex: "#5B2C8E"))
+                            }
                         }
                         .padding(.horizontal, 16)
                     }
@@ -433,6 +458,11 @@ struct SVLBHTab: View {
             }
             .sheet(isPresented: $showHistory) {
                 SessionHistoryView(session: session, syncService: sync)
+            }
+            .sheet(isPresented: $showResearchPrograms) {
+                ResearchProgramsView()
+                    .environmentObject(session)
+                    .environmentObject(sync)
             }
             .sheet(isPresented: $showTherapists) {
                 TherapistManagerView().environmentObject(session)

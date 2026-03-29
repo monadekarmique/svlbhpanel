@@ -14,6 +14,7 @@
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
 		4C3372F287014F868EA82C30 /* MakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A33667F10A749C2B23E1403 /* MakeSyncService.swift */; };
+		4E5B663D5A6C1FB9E4ACCCC3 /* ResearchProgramsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */; };
 		6512716BF1D3ECAF2FA58EC4 /* PresenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298C62119865A99EDDEA7070 /* PresenceService.swift */; };
 		6BC32FDEF49244CCE17009F9 /* PorteEnergetiqueData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */; };
 		7C6D954A5F205EA1012A6096 /* ParasiteEnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */; };
@@ -88,6 +89,7 @@
 		548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlancheFloatingView.swift; sourceTree = "<group>"; };
 		54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProvocationView.swift; sourceTree = "<group>"; };
 		594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParasiteEnergyData.swift; sourceTree = "<group>"; };
+		6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResearchProgramsView.swift; sourceTree = "<group>"; };
 		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
 		8E4D14342F6E9E0900F9996A /* SLMTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SLMTab.swift; path = "SVLBH Panel/Views/SLMTab.swift"; sourceTree = "<group>"; };
 		8E7964C52F6E4D110051060A /* SVLBH Panel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SVLBH Panel.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -263,6 +265,7 @@
 				49B2B08BF080A80D78B9BFEF /* SubscriptionWallView.swift */,
 				A9B1C0AC86379A98F91710B1 /* SessionHistoryView.swift */,
 				F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */,
+				6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -437,6 +440,7 @@
 				0188CEEA9D6B1991B3AD447C /* SessionHistory.swift in Sources */,
 				FAE55C7281C7B1769E4B8706 /* SessionHistoryView.swift in Sources */,
 				F20BE258FD441F4306FF6CD8 /* PasserelleTab.swift in Sources */,
+				4E5B663D5A6C1FB9E4ACCCC3 /* ResearchProgramsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,7 +593,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -628,7 +632,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -666,7 +670,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -689,7 +693,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -711,7 +715,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
@@ -733,7 +737,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
