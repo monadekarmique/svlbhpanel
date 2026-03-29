@@ -13,6 +13,16 @@ struct MainTabView: View {
     @State private var pinInput = ""
     @State private var pendingPayload = ""
     @State private var showTimeline = false
+    @State private var showPasserelleAccess = false
+
+    /// Onglet Passerelle visible pour Patrick, Cornelia (0300), Anne (0302)
+    private var showPasserelle: Bool {
+        if session.role.isPatrick { return true }
+        if case .shamane(let p) = session.role {
+            return ["0300", "0302"].contains(p.codeFormatted)
+        }
+        return false
+    }
 
     /// L'utilisateur courant n'apparaît pas dans la Planche Tactique
     private var isUnlistedUser: Bool {
@@ -51,6 +61,24 @@ struct MainTabView: View {
                     .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
+                if showPasserelle {
+                    PasserelleTab()
+                        .overlay(alignment: .topTrailing) {
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .frame(width: 100, height: 44)
+                                .onLongPressGesture(minimumDuration: 3) {
+                                    showPasserelleAccess = true
+                                }
+                        }
+                        .alert("Acc\u{00e8}s Passerelle", isPresented: $showPasserelleAccess) {
+                            Button("OK", role: .cancel) {}
+                        } message: {
+                            Text("Patrick Bays (superviseur)\nCornelia Althaus (0300)\nAnne Grangier Bays (0302)")
+                        }
+                        .tabItem { Label("PROTO Passerelle", systemImage: "arrow.left.arrow.right") }
+                        .tag(6)
+                }
             }
             .modifier(TabBarOnlyModifier())
             .environmentObject(session)

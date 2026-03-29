@@ -44,6 +44,7 @@
 		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
 		DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D118F80AA4F347F0A9F10053 /* SyncBar.swift */; };
 		E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A70032EXPORT0141BCCF02 /* ExportView.swift */; };
+		F20BE258FD441F4306FF6CD8 /* PasserelleTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */; };
 		F6E5D4C3B2A1 /* SegmentUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6 /* SegmentUpdateService.swift */; };
 		FA496127934948D69587803F /* PasteImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */; };
 		FAE55C7281C7B1769E4B8706 /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B1C0AC86379A98F91710B1 /* SessionHistoryView.swift */; };
@@ -115,6 +116,7 @@
 		D983E04A64C189A5DC0D8241 /* SessionHistory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionHistory.swift; sourceTree = "<group>"; };
 		E1A70032EXPORT0141BCCF02 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteImportView.swift; sourceTree = "<group>"; };
+		F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PasserelleTab.swift; sourceTree = "<group>"; };
 		LEAD0001BBBB00000001BBBB /* LeadBubbleTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadBubbleTab.swift; sourceTree = "<group>"; };
 		ONBO0001BBBB00000001BBBB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlancheTactiqueTab.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				0532858F4AF5AF4BCDAA5EA8 /* PorteSelectorCompact.swift */,
 				49B2B08BF080A80D78B9BFEF /* SubscriptionWallView.swift */,
 				A9B1C0AC86379A98F91710B1 /* SessionHistoryView.swift */,
+				F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -433,6 +436,7 @@
 				B08A4FB7DC9161909FD72C6D /* SubscriptionWallView.swift in Sources */,
 				0188CEEA9D6B1991B3AD447C /* SessionHistory.swift in Sources */,
 				FAE55C7281C7B1769E4B8706 /* SessionHistoryView.swift in Sources */,
+				F20BE258FD441F4306FF6CD8 /* PasserelleTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,7 +589,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -605,7 +609,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -624,7 +628,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -644,7 +648,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -662,12 +666,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -685,12 +689,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -707,12 +711,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -729,12 +733,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
