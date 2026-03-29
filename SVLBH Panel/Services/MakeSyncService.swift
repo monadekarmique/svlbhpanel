@@ -79,7 +79,7 @@ class MakeSyncService: ObservableObject {
 
         var pin = ""
         var payload = serializeSession(session)
-        if session.role.isPatrick {
+        if session.role.isSuperviseur {
             pin = String(format: "%04d", Int.random(in: 1000...9999))
             payload = "PIN:\(pin)\n" + payload
         }
@@ -250,7 +250,7 @@ class MakeSyncService: ObservableObject {
 
     // MARK: - SCAN all shamane sources (Patrick only)
     func scanSources(session: SessionState) async {
-        guard session.role.isPatrick else { return }
+        guard session.role.isSuperviseur else { return }
         guard session.isPatientIdValid else {
             print("[MakeSyncService] Scan skipped: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")
             return
@@ -352,7 +352,7 @@ class MakeSyncService: ObservableObject {
     // MARK: - Apply received payload (MERGE mode)
     func applyPayload(_ text: String, to session: SessionState) {
         var log: [String] = []
-        let sender = session.role.isPatrick ? (session.pullSource?.displayName ?? "?") : "🔬 Patrick"
+        let sender = session.role.isSuperviseur ? (session.pullSource?.displayName ?? "?") : "🔬 Patrick"
         let df = DateFormatter(); df.dateFormat = "HH:mm:ss"
         log.append("📥 Réception de \(sender) · \(df.string(from: Date()))")
         log.append("🔑 Pull key: \(session.pullKey)")

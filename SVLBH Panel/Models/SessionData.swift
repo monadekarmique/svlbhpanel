@@ -34,7 +34,11 @@ enum ActiveRole: Equatable {
         return false
     }
 
-    var isSuperviseur: Bool { isPatrick }
+    var isSuperviseur: Bool {
+        if isPatrick { return true }
+        if case .shamane(let s) = self { return s.tier == .superviseur }
+        return false
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════

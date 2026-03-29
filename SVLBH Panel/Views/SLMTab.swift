@@ -22,10 +22,10 @@ struct SLMTab: View {
                     }
                     .padding(.top, 14)
 
-                    if session.role.isPatrick {
+                    if session.role.isSuperviseur {
                         // ── Patrick actif : scores shamane (read-only) + scores Patrick (éditable) ──
                         ScoreBlock(
-                            title: session.pullSource?.displayName ?? "Thérapeute",
+                            title: session.pullSource?.displayName ?? "Th\u{00e9}rapeute MyShamanFamily",
                             color: Color(hex: "#8B3A62"),
                             scores: $session.scoresTherapist,
                             readOnly: true

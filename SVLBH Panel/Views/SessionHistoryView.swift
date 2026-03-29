@@ -32,7 +32,7 @@ struct SessionHistoryView: View {
     private var filteredKeys: [String] {
         let code = session.role.code
         let keys: [String]
-        if session.role.isPatrick {
+        if session.role.isSuperviseur {
             keys = allKeys.filter { let k = pureKey($0); return k.contains("-") && k.first?.isNumber == true }
         } else {
             keys = allKeys.filter { pureKey($0).hasSuffix("-\(code)") }

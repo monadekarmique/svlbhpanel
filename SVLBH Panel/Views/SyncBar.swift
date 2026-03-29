@@ -70,7 +70,7 @@ struct SyncBar: View {
                     .cornerRadius(7)
 
                 // Broadcast ciblé (certifiées / programme / groupe)
-                if session.role.isPatrick && !session.shamaneProfiles.isEmpty {
+                if session.role.isSuperviseur && !session.shamaneProfiles.isEmpty {
                     Menu {
                         if !session.shamanesCertifiees.isEmpty {
                             Button {
@@ -139,7 +139,7 @@ struct SyncBar: View {
                 }
 
                 // ── Recevoir : scan + badge + menu (Patrick) ou bouton simple (shamane) ──
-                if session.role.isPatrick {
+                if session.role.isSuperviseur {
                     Menu {
                         Button {
                             Task { await sync.scanSources(session: session) }
@@ -202,7 +202,7 @@ struct SyncBar: View {
                 }
 
                 // ── Shamane dropdown (mode B "Décoder et Envoyer") ──
-                if session.role.isPatrick && !isRenvoyer {
+                if session.role.isSuperviseur && !isRenvoyer {
                     Menu {
                         Section("Certifiées") {
                             ForEach(Shamane.certifiees) { s in
@@ -264,7 +264,7 @@ struct SyncBar: View {
                 }
 
                 // ↺ Refaire — visible uniquement en mode relay (Patrick renvoie un soin)
-                if session.role.isPatrick && isRenvoyer {
+                if session.role.isSuperviseur && isRenvoyer {
                     Button {
                         Task { await doRelayRepeat() }
                     } label: {
@@ -288,7 +288,7 @@ struct SyncBar: View {
 
     private func checkTierAndPush() {
         // Vérifier si la shamane destinataire a un tier limité
-        if session.role.isPatrick, let shamane = selectedShamane {
+        if session.role.isSuperviseur, let shamane = selectedShamane {
             let profile = session.shamaneProfiles.first {
                 $0.codeFormatted == shamane.rawValue || $0.code == shamane.rawValue
             }
@@ -308,7 +308,7 @@ struct SyncBar: View {
     /// Mode B requires a shamane selected; mode A (renvoyer) always allowed
     private var canSend: Bool {
         guard !sync.isSending && !sync.isReceiving else { return false }
-        if session.role.isPatrick && !isRenvoyer {
+        if session.role.isSuperviseur && !isRenvoyer {
             return selectedShamane != nil
         }
         return true
@@ -316,7 +316,7 @@ struct SyncBar: View {
 
     private func doPush() async {
         // Mode B: override pullSource with selected shamane's code
-        if session.role.isPatrick, !isRenvoyer, let shamane = selectedShamane {
+        if session.role.isSuperviseur, !isRenvoyer, let shamane = selectedShamane {
             // Find or create a matching ShamaneProfile for the key
             if let profile = session.shamaneProfiles.first(where: { $0.codeFormatted == shamane.rawValue || $0.code == shamane.rawValue }) {
                 session.pullSource = profile

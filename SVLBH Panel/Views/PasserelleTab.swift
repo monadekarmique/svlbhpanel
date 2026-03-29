@@ -22,10 +22,12 @@ struct PasserelleTab: View {
                     pedagogieSection
                 }
                 .padding()
+                .padding(.bottom, 80)
             }
             .navigationTitle("Passerelle")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(.stack)
     }
 
     // MARK: - Header

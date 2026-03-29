@@ -118,25 +118,7 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // ── Programmes de recherche (certifiées + superviseurs) ──
-                    if showResearchAccess {
-                        HStack {
-                            Spacer()
-                            Button {
-                                showResearchPrograms = true
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "flask")
-                                    Text("Programmes de recherche")
-                                }
-                                .font(.caption.bold())
-                                .foregroundColor(Color(hex: "#5B2C8E"))
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-
-                    // ── Clé électromagnétique Patient / Système / Historique ──
+                    // ── Clé électromagnétique / Historique / Programmes de recherche ──
                     HStack(spacing: 4) {
                         Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique Patient / Syst\u{00e8}me")
                             .font(.caption.bold()).foregroundColor(.secondary)
@@ -150,6 +132,18 @@ struct SVLBHTab: View {
                         .disabled(!isSubscriptionActive)
                         .opacity(isSubscriptionActive ? 1.0 : 0.4)
                         Spacer()
+                        if showResearchAccess {
+                            Button {
+                                showResearchPrograms = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "flask")
+                                    Text("Programmes de recherche")
+                                }
+                                .font(.caption.bold())
+                                .foregroundColor(Color(hex: "#5B2C8E"))
+                            }
+                        }
                     }
                     .padding(.horizontal, 16)
 
@@ -162,15 +156,15 @@ struct SVLBHTab: View {
                             HStack(spacing: 0) {
                                 VStack(alignment: .leading, spacing: 2) {
                                     HStack(spacing: 0) {
-                                        ForEach(["Patient", "Système"], id: \.self) { opt in
-                                            let active = (opt == "Système") == session.isSysteme
+                                        ForEach(["G\u{00e9}om\u{00e9}trie", "Syst\u{00e8}me"], id: \.self) { opt in
+                                            let active = (opt == "Syst\u{00e8}me") == session.isSysteme
                                             Text(opt)
                                                 .font(.system(size: 9, weight: active ? .bold : .regular))
                                                 .foregroundColor(active ? .white : Color(hex: "#8B3A62"))
                                                 .padding(.horizontal, 5).padding(.vertical, 2)
                                                 .background(active ? Color(hex: "#8B3A62") : Color.clear)
                                                 .cornerRadius(4)
-                                                .onTapGesture { session.isSysteme = (opt == "Système") }
+                                                .onTapGesture { session.isSysteme = (opt == "Syst\u{00e8}me") }
                                         }
                                     }
                                     .background(Color(hex: "#8B3A62").opacity(0.12))
@@ -181,7 +175,7 @@ struct SVLBHTab: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 Divider().frame(height: 28).padding(.horizontal, 8)
                                 VStack(alignment: .center, spacing: 2) {
-                                    Text("Séance").font(.caption2).foregroundColor(.secondary)
+                                    Text("Niveau").font(.caption2).foregroundColor(.secondary)
                                     Text(session.sessionNum)
                                         .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
                                 }
@@ -312,7 +306,7 @@ struct SVLBHTab: View {
                         // Colonne gauche : Générations + Chakras empilés
                         VStack(spacing: 12) {
                             Button { selectedTab = 2 } label: {
-                                KPICard(icon: "✓", label: "Générations",
+                                KPICard(icon: "✓", label: "Niveaux",
                                         value: "\(session.validatedCount)/\(session.currentTier.maxGenerations)", color: Color(hex: "#1D9E75"))
                             }.buttonStyle(.plain)
 
@@ -379,8 +373,8 @@ struct SVLBHTab: View {
                         .foregroundColor(Color(hex: "#C27894").opacity(0.7))
                         .fixedSize()
                 }
-                if session.role.isPatrick || currentTier == .certifiee {
-                    ToolbarItem(placement: .topBarLeading) {
+                if session.role.isSuperviseur || currentTier == .certifiee {
+                    ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
                         } label: {
@@ -408,7 +402,7 @@ struct SVLBHTab: View {
                         } label: {
                             Label("Historique", systemImage: "clock.arrow.circlepath")
                         }
-                        if session.role.isPatrick {
+                        if session.role.isSuperviseur {
                             Divider()
                             Button {
                                 showTherapists = true
@@ -505,7 +499,7 @@ struct ScoresKPICard: View {
         VStack(spacing: 6) {
             // Thérapeute
             VStack(alignment: .leading, spacing: 4) {
-                Text("Thérapeute").font(.system(size:14, weight:.medium)).foregroundColor(.secondary)
+                Text("Th\u{00e9}rapeute MyShamanFamily").font(.system(size:14, weight:.medium)).foregroundColor(.secondary)
                 ScoreRow(label:"SLA",    val:fmt(session.scoresTherapist.sla ?? session.slaTherapist), c:Color(hex:"#8B3A62"))
                 ScoreRow(label:"SLSA",   val:fmt(session.scoresTherapist.slsa),  c:Color(hex:"#8B3A62"))
                 ScoreRow(label:"SLM",    val:fmt(session.scoresTherapist.slm),   c:Color(hex:"#8B3A62"))
@@ -589,7 +583,7 @@ struct ChakrasKPICard: View {
                     Text("+ Système").font(.system(size:9)).foregroundColor(.secondary)
                 }
             }
-            Text("Chakras").font(.caption2).foregroundColor(.secondary)
+            Text("Conditions").font(.caption2).foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity).padding(10)
         .background(Color(hex:"#185FA5").opacity(colorScheme == .dark ? 0.2 : 0.08))
