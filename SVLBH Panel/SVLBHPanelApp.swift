@@ -11,10 +11,15 @@ struct SVLBHPanelApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @State private var subscriptionStatus: SubscriptionStatus?
     @State private var isCheckingSubscription = false
+    @State private var buildBlocked = false
+    @State private var buildStatus: BuildGateService.BuildStatus?
 
     var body: some Scene {
         WindowGroup {
-            if !identity.isIdentified {
+            if buildBlocked, let status = buildStatus {
+                BuildGateView(status: status)
+                    .preferredColorScheme(.light)
+            } else if !identity.isIdentified {
                 OnboardingView()
                     .environmentObject(identity)
                     .environmentObject(session)
@@ -36,6 +41,7 @@ struct SVLBHPanelApp: App {
                         MakeSyncService.requestNotificationPermission()
                     }
                     .task {
+                        await checkBuildGate()
                         if subscriptionStatus == nil {
                             await checkSubscription()
                         }
@@ -55,6 +61,16 @@ struct SVLBHPanelApp: App {
                 let leadId = PresenceService.shared.leadId
                 Task { await PresenceService.shared.register(leadId: leadId, tier: "lead") }
             }
+        }
+    }
+
+    private func checkBuildGate() async {
+        // Patrick (superviseur) n'est jamais bloqué
+        guard !identity.isPatrick else { return }
+        let status = await BuildGateService.shared.check()
+        await MainActor.run {
+            buildStatus = status
+            buildBlocked = !status.isAllowed
         }
     }
 
