@@ -53,7 +53,7 @@ enum PractitionerTier: String, Codable, CaseIterable {
 
     var label: String {
         switch self {
-        case .lead:        return "LEAD FROID"
+        case .lead:        return "INVITÉ"
         case .formation:   return "EN FORMATION"
         case .certifiee:   return "CERTIFIÉE"
         case .superviseur: return "SUPERVISEUR"

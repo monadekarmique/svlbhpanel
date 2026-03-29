@@ -136,6 +136,7 @@ struct PlancheCompactSection: View {
     let profiles: [ShamaneProfile]
     @Binding var selectedProfile: ShamaneProfile?
     @State private var isTargeted = false
+    @State private var pendingMutation: PendingTierMutation?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -183,33 +184,66 @@ struct PlancheCompactSection: View {
                 provider.loadObject(ofClass: NSString.self) { item, _ in
                     guard let code = item as? String else { return }
                     DispatchQueue.main.async {
-                        guard var shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
+                        guard let shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
 
                         switch category {
                         case .tier(let targetTier):
                             guard shamane.tier != targetTier else { return }
                             let newCode = ShamaneProfile.nextCode(tier: targetTier, existing: session.shamaneProfiles)
-                            session.removeShamane(shamane)
-                            shamane.code = newCode
-                            session.shamaneProfiles.append(shamane)
+
+                            // Confirmation requise pour formation → certifiée
+                            if shamane.tier == .formation && targetTier == .certifiee {
+                                pendingMutation = PendingTierMutation(
+                                    shamaneCode: shamane.code,
+                                    shamaneName: shamane.displayName,
+                                    targetTier: targetTier,
+                                    newCode: newCode
+                                )
+                                return
+                            }
+
+                            applyTierChange(shamaneCode: shamane.code, newCode: newCode)
 
                         case .programme(let prog):
                             guard !shamane.programmes.contains(prog) else { return }
-                            shamane.programmes.append(prog)
-                            session.updateShamane(shamane)
-                        }
+                            var updated = shamane
+                            updated.programmes.append(prog)
+                            session.updateShamane(updated)
 
-                        // PUSH segment vers Make → svlbh-v2 (auto_reply uniquement si WhatsApp connecté)
-                        let s = shamane
-                        let waConnected = self.segmentService.isWhatsAppConnected
-                        Task {
-                            await SegmentUpdateService.pushSegment(for: s, autoReply: waConnected && s.tier == .lead)
+                            let s = updated
+                            let waConnected = self.segmentService.isWhatsAppConnected
+                            Task {
+                                await SegmentUpdateService.pushSegment(for: s, autoReply: waConnected && s.tier == .lead)
+                            }
                         }
                         selectedProfile = nil
                     }
                 }
             }
             return true
+        }
+        .alert(item: $pendingMutation) { mutation in
+            Alert(
+                title: Text("Certification"),
+                message: Text("Muter \(mutation.shamaneName) en \(mutation.newCode) certifiée et supprimer ses clés de formation ?\n\nLes clés de recherche importantes sont conservées par Patrick."),
+                primaryButton: .destructive(Text("Confirmer")) {
+                    applyTierChange(shamaneCode: mutation.shamaneCode, newCode: mutation.newCode)
+                },
+                secondaryButton: .cancel(Text("Annuler"))
+            )
+        }
+    }
+
+    private func applyTierChange(shamaneCode: String, newCode: String) {
+        guard var shamane = session.shamaneProfiles.first(where: { $0.code == shamaneCode }) else { return }
+        session.removeShamane(shamane)
+        shamane.code = newCode
+        session.shamaneProfiles.append(shamane)
+
+        let s = shamane
+        let waConnected = segmentService.isWhatsAppConnected
+        Task {
+            await SegmentUpdateService.pushSegment(for: s, autoReply: waConnected && s.tier == .lead)
         }
     }
 

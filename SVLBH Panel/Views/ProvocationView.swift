@@ -105,19 +105,13 @@ struct EnergyPickerSlot: View {
         Color(UIColor.secondarySystemBackground)
     }
 
+    @State private var showPicker = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // ── Menu déroulant ──
-            Menu {
-                Button("— Aucune —") { selection = nil }
-                ForEach(energies) { energy in
-                    Button {
-                        selection = energy.numero
-                        tracker.logProvocation(energy)
-                    } label: {
-                        Text("\(energy.numero). \(energy.description)")
-                    }
-                }
+            // ── Bouton ouvrant le sélecteur scrollable ──
+            Button {
+                showPicker = true
             } label: {
                 HStack(spacing: 6) {
                     Text("\(selectedEnergy?.numero ?? (slotIndex + 1))")
@@ -142,6 +136,15 @@ struct EnergyPickerSlot: View {
                 .padding(.horizontal, 8).padding(.vertical, 8)
                 .background(bgColor)
                 .cornerRadius(8)
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showPicker) {
+                EnergyPickerSheet(
+                    selection: $selection,
+                    energies: energies,
+                    type: type,
+                    tracker: tracker
+                )
             }
 
             // ── Détails si sélectionné ──
@@ -181,6 +184,70 @@ struct EnergyPickerSlot: View {
                 )
                 .cornerRadius(6)
                 .padding(.top, 2)
+            }
+        }
+    }
+}
+
+// MARK: - Sheet scrollable avec scroll-to-selection
+
+struct EnergyPickerSheet: View {
+    @Binding var selection: Int?
+    let energies: [ParasiteEnergy]
+    let type: EnergyType
+    let tracker: SessionTracker
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollViewReader { proxy in
+                List {
+                    Button {
+                        selection = nil
+                        dismiss()
+                    } label: {
+                        Text("— Aucune —")
+                            .foregroundColor(.secondary)
+                    }
+
+                    ForEach(energies) { energy in
+                        Button {
+                            selection = energy.numero
+                            tracker.logProvocation(energy)
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text("\(energy.numero)")
+                                    .font(.caption.bold().monospaced())
+                                    .foregroundColor(type.color)
+                                    .frame(width: 28, alignment: .trailing)
+                                Text(energy.description)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if selection == energy.numero {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(type.color)
+                                }
+                            }
+                        }
+                        .id(energy.numero)
+                    }
+                }
+                .listStyle(.plain)
+                .onAppear {
+                    if let sel = selection {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation { proxy.scrollTo(sel, anchor: .center) }
+                        }
+                    }
+                }
+            }
+            .navigationTitle(type == .permanent ? "Permanentes" : "Temporaires")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fermer") { dismiss() }
+                }
             }
         }
     }

@@ -40,6 +40,8 @@ struct ChakraPorteSelector: View {
     @Binding var tempSelection: Int?
     @Binding var permSelection: Int?
     @Environment(\.colorScheme) var colorScheme
+    @State private var showTempPicker = false
+    @State private var showPermPicker = false
 
     private var selectedTemp: PorteEnergetique? {
         guard let n = tempSelection else { return nil }
@@ -76,23 +78,37 @@ struct ChakraPorteSelector: View {
                 }
             }
 
-            // Menu Temporaires
-            porteMenu(
+            // Ouvertures Temporaires
+            porteButton(
                 label: "Ouvertures Temporaires",
                 color: Color(hex: "#10B981"),
-                portes: PorteEnergetiqueData.temporaires,
-                selection: $tempSelection,
-                selected: selectedTemp
+                selected: selectedTemp,
+                showPicker: $showTempPicker
             )
+            .sheet(isPresented: $showTempPicker) {
+                PortePickerSheet(
+                    selection: $tempSelection,
+                    portes: PorteEnergetiqueData.temporaires,
+                    title: "Temporaires — \(chakra.nom)",
+                    color: Color(hex: "#10B981")
+                )
+            }
 
-            // Menu Permanentes
-            porteMenu(
+            // Ouvertures Permanentes
+            porteButton(
                 label: "Ouvertures Permanentes",
                 color: Color(hex: "#E24B4A"),
-                portes: PorteEnergetiqueData.permanentes,
-                selection: $permSelection,
-                selected: selectedPerm
+                selected: selectedPerm,
+                showPicker: $showPermPicker
             )
+            .sheet(isPresented: $showPermPicker) {
+                PortePickerSheet(
+                    selection: $permSelection,
+                    portes: PorteEnergetiqueData.permanentes,
+                    title: "Permanentes — \(chakra.nom)",
+                    color: Color(hex: "#E24B4A")
+                )
+            }
         }
         .padding(10)
         .background(Color(UIColor.secondarySystemBackground))
@@ -101,21 +117,10 @@ struct ChakraPorteSelector: View {
     }
 
     @ViewBuilder
-    private func porteMenu(label: String, color: Color, portes: [PorteEnergetique],
-                           selection: Binding<Int?>, selected: PorteEnergetique?) -> some View {
+    private func porteButton(label: String, color: Color,
+                             selected: PorteEnergetique?, showPicker: Binding<Bool>) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            // Menu déroulant
-            Menu {
-                Button("— Aucune —") { selection.wrappedValue = nil }
-                ForEach(portes) { porte in
-                    Button {
-                        selection.wrappedValue = porte.numero
-                    } label: {
-                        let pointStr = porte.point.isEmpty ? "" : " (\(porte.point))"
-                        Text("\(porte.numero). \(porte.nom)\(pointStr) — \(porte.condition)")
-                    }
-                }
-            } label: {
+            Button { showPicker.wrappedValue = true } label: {
                 HStack(spacing: 4) {
                     Text(label)
                         .font(.system(size: 9, weight: .bold))
@@ -143,13 +148,13 @@ struct ChakraPorteSelector: View {
                         .stroke(color.opacity(0.2), lineWidth: 1)
                 )
             }
+            .buttonStyle(.plain)
             .accessibilityLabel("\(label) pour chakra \(chakra.nom)")
 
             // Détail si sélectionné
             if let porte = selected {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
-                        // Badge statut
                         Text(porte.isPermanent ? "🔴" : "🟢")
                             .font(.system(size: 8))
                         let pointStr = porte.point.isEmpty ? "" : " (\(porte.point))"
@@ -167,6 +172,75 @@ struct ChakraPorteSelector: View {
                 .padding(.horizontal, 8).padding(.vertical, 4)
                 .background(color.opacity(0.04))
                 .cornerRadius(5)
+            }
+        }
+    }
+}
+
+// MARK: - Sheet scrollable pour portes énergétiques
+
+struct PortePickerSheet: View {
+    @Binding var selection: Int?
+    let portes: [PorteEnergetique]
+    let title: String
+    let color: Color
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollViewReader { proxy in
+                List {
+                    Button {
+                        selection = nil
+                        dismiss()
+                    } label: {
+                        Text("— Aucune —")
+                            .foregroundColor(.secondary)
+                    }
+
+                    ForEach(portes) { porte in
+                        Button {
+                            selection = porte.numero
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text("\(porte.numero)")
+                                    .font(.caption.bold().monospaced())
+                                    .foregroundColor(color)
+                                    .frame(width: 28, alignment: .trailing)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    let pointStr = porte.point.isEmpty ? "" : " (\(porte.point))"
+                                    Text("\(porte.nom)\(pointStr)")
+                                        .foregroundColor(.primary)
+                                    Text(porte.condition)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                if selection == porte.numero {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(color)
+                                }
+                            }
+                        }
+                        .id(porte.numero)
+                    }
+                }
+                .listStyle(.plain)
+                .onAppear {
+                    if let sel = selection {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation { proxy.scrollTo(sel, anchor: .center) }
+                        }
+                    }
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fermer") { dismiss() }
+                }
             }
         }
     }

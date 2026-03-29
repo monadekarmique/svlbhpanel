@@ -228,46 +228,94 @@ struct ShamaneCardView: View {
 
 // MARK: - Drop sur sections (tier + programme)
 
-extension View {
-    @ViewBuilder
-    func conditionalDrop(category: PlancheCategory, session: SessionState) -> some View {
-        self.onDrop(of: [UTType.plainText], isTargeted: nil) { providers in
-            for provider in providers {
-                provider.loadObject(ofClass: NSString.self) { item, _ in
-                    guard let code = item as? String else { return }
-                    DispatchQueue.main.async {
-                        guard var shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
+/// Pending tier mutation awaiting user confirmation
+struct PendingTierMutation: Identifiable {
+    let id = UUID()
+    let shamaneCode: String
+    let shamaneName: String
+    let targetTier: PractitionerTier
+    let newCode: String
+}
 
-                        switch category {
-                        case .tier(let targetTier):
-                            // Changer de tier = attribuer un nouveau code dans la plage cible
-                            guard shamane.tier != targetTier else { return }
-                            let newCode = ShamaneProfile.nextCode(tier: targetTier, existing: session.shamaneProfiles)
-                            session.removeShamane(shamane)
-                            shamane.code = newCode
-                            session.shamaneProfiles.append(shamane)
+struct DropTargetModifier: ViewModifier {
+    let category: PlancheCategory
+    @ObservedObject var session: SessionState
+    @State private var pendingMutation: PendingTierMutation?
 
-                        case .programme(let prog):
-                            // Ajouter un programme
-                            guard !shamane.programmes.contains(prog) else { return }
-                            shamane.programmes.append(prog)
-                            session.updateShamane(shamane)
-                        }
+    func body(content: Content) -> some View {
+        content
+            .onDrop(of: [UTType.plainText], isTargeted: nil) { providers in
+                for provider in providers {
+                    provider.loadObject(ofClass: NSString.self) { item, _ in
+                        guard let code = item as? String else { return }
+                        DispatchQueue.main.async {
+                            guard let shamane = session.shamaneProfiles.first(where: { $0.code == code }) else { return }
 
-                        // PUSH segment vers Make → svlbh-v2
-                        let s = shamane
-                        Task {
-                            await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+                            switch category {
+                            case .tier(let targetTier):
+                                guard shamane.tier != targetTier else { return }
+                                let newCode = ShamaneProfile.nextCode(tier: targetTier, existing: session.shamaneProfiles)
 
-                            // Protection : hériter pierres de Patrick
-                            if case .programme(.protection) = category {
-                                await SegmentUpdateService.pushProtectionPierres(for: s, pierres: session.pierres)
+                                // Confirmation requise pour formation → certifiée
+                                if shamane.tier == .formation && targetTier == .certifiee {
+                                    pendingMutation = PendingTierMutation(
+                                        shamaneCode: shamane.code,
+                                        shamaneName: shamane.displayName,
+                                        targetTier: targetTier,
+                                        newCode: newCode
+                                    )
+                                    return
+                                }
+
+                                applyTierChange(shamaneCode: shamane.code, newCode: newCode)
+
+                            case .programme(let prog):
+                                guard !shamane.programmes.contains(prog) else { return }
+                                var updated = shamane
+                                updated.programmes.append(prog)
+                                session.updateShamane(updated)
+
+                                let s = updated
+                                Task {
+                                    await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
+                                    if prog == .protection {
+                                        await SegmentUpdateService.pushProtectionPierres(for: s, pierres: session.pierres)
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                return true
             }
-            return true
+            .alert(item: $pendingMutation) { mutation in
+                Alert(
+                    title: Text("Certification"),
+                    message: Text("Muter \(mutation.shamaneName) en \(mutation.newCode) certifiée et supprimer ses clés de formation ?\n\nLes clés de recherche importantes sont conservées par Patrick."),
+                    primaryButton: .destructive(Text("Confirmer")) {
+                        applyTierChange(shamaneCode: mutation.shamaneCode, newCode: mutation.newCode)
+                    },
+                    secondaryButton: .cancel(Text("Annuler"))
+                )
+            }
+    }
+
+    private func applyTierChange(shamaneCode: String, newCode: String) {
+        guard var shamane = session.shamaneProfiles.first(where: { $0.code == shamaneCode }) else { return }
+        session.removeShamane(shamane)
+        shamane.code = newCode
+        session.shamaneProfiles.append(shamane)
+
+        let s = shamane
+        Task {
+            await SegmentUpdateService.pushSegment(for: s, autoReply: s.tier == .lead)
         }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func conditionalDrop(category: PlancheCategory, session: SessionState) -> some View {
+        self.modifier(DropTargetModifier(category: category, session: session))
     }
 }
