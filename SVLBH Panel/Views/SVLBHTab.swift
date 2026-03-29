@@ -24,6 +24,9 @@ struct SVLBHTab: View {
     @State private var showPlanche = false
     @State private var showClosure = false
     @State private var showHistory = false
+
+    /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
+    private var isSubscriptionActive: Bool { true }
     @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var tracker: SessionTracker
@@ -108,10 +111,21 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // ── Code Patient / Système (éditable, défaut 12) ──
+                    // ── Clé électromagnétique Patient / Système / Historique ──
                     HStack(spacing: 8) {
-                        Text("Code Patient / Système")
-                            .font(.caption.bold()).foregroundColor(.secondary)
+                        HStack(spacing: 4) {
+                            Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique Patient / Syst\u{00e8}me")
+                                .font(.caption.bold()).foregroundColor(.secondary)
+                            Text("/")
+                                .font(.caption.bold()).foregroundColor(.secondary)
+                            Button("Historique") {
+                                showHistory = true
+                            }
+                            .font(.caption.bold())
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                            .disabled(!isSubscriptionActive)
+                            .opacity(isSubscriptionActive ? 1.0 : 0.4)
+                        }
                         Spacer()
                         TextField("\(SessionState.minPatientId)", text: $session.patientId)
                             .keyboardType(.numberPad)

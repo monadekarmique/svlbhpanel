@@ -280,7 +280,7 @@ class MakeSyncService: ObservableObject {
                         let (data, _) = try await URLSession.shared.data(for: req)
                         let text = String(data: data, encoding: .utf8) ?? ""
                         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                        let hasData = !trimmed.isEmpty && trimmed != "READ"
+                        let hasData = !trimmed.isEmpty && trimmed != "READ" && trimmed != "Accepted"
                         return (shamane, hasData)
                     } catch {
                         return (shamane, false)
