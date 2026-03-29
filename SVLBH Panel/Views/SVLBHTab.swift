@@ -137,32 +137,19 @@ struct SVLBHTab: View {
                     }
 
                     // ── Clé électromagnétique Patient / Système / Historique ──
-                    HStack(spacing: 8) {
-                        HStack(spacing: 4) {
-                            Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique Patient / Syst\u{00e8}me")
-                                .font(.caption.bold()).foregroundColor(.secondary)
-                            Text("/")
-                                .font(.caption.bold()).foregroundColor(.secondary)
-                            Button("Historique") {
-                                showHistory = true
-                            }
-                            .font(.caption.bold())
-                            .foregroundColor(Color(hex: "#8B3A62"))
-                            .disabled(!isSubscriptionActive)
-                            .opacity(isSubscriptionActive ? 1.0 : 0.4)
+                    HStack(spacing: 4) {
+                        Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique Patient / Syst\u{00e8}me")
+                            .font(.caption.bold()).foregroundColor(.secondary)
+                        Text("/")
+                            .font(.caption.bold()).foregroundColor(.secondary)
+                        Button("Historique") {
+                            showHistory = true
                         }
+                        .font(.caption.bold())
+                        .foregroundColor(Color(hex: "#8B3A62"))
+                        .disabled(!isSubscriptionActive)
+                        .opacity(isSubscriptionActive ? 1.0 : 0.4)
                         Spacer()
-                        TextField("\(SessionState.minPatientId)", text: $session.patientId)
-                            .keyboardType(.numberPad)
-                            .font(.headline.bold().monospaced())
-                            .foregroundColor(session.isPatientIdValid ? Color(hex: "#8B3A62") : Color(hex: "#E24B4A"))
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100)
-                        if !session.isPatientIdValid {
-                            Text("min \(SessionState.minPatientId)")
-                                .font(.caption2.bold())
-                                .foregroundColor(Color(hex: "#E24B4A"))
-                        }
                     }
                     .padding(.horizontal, 16)
 

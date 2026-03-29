@@ -5,10 +5,10 @@ import SwiftUI
 
 struct ProvocationView: View {
     @EnvironmentObject var session: SessionState
-    /// 3 sélections permanentes (gauche)
-    @State private var permanentSelections: [Int?] = [nil, nil, nil]
-    /// 5 sélections temporaires (droite)
-    @State private var temporarySelections: [Int?] = [nil, nil, nil, nil, nil]
+    /// 5 sélections permanentes (gauche)
+    @State private var permanentSelections: [Int?] = [nil, nil, nil, nil, nil]
+    /// 14 sélections temporaires (droite)
+    @State private var temporarySelections: [Int?] = Array(repeating: nil, count: 14)
 
     var body: some View {
         VStack(spacing: 12) {
@@ -47,7 +47,7 @@ struct ProvocationView: View {
                         Spacer()
                     }
 
-                    ForEach(0..<3, id: \.self) { idx in
+                    ForEach(0..<5, id: \.self) { idx in
                         EnergyPickerSlot(
                             slotIndex: idx,
                             selection: $permanentSelections[idx],
@@ -70,7 +70,7 @@ struct ProvocationView: View {
                         Spacer()
                     }
 
-                    ForEach(0..<5, id: \.self) { idx in
+                    ForEach(0..<14, id: \.self) { idx in
                         EnergyPickerSlot(
                             slotIndex: idx,
                             selection: $temporarySelections[idx],

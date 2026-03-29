@@ -17,19 +17,25 @@ struct SessionHistoryView: View {
     @State private var loadingKey: String?
     @State private var filterText = ""
     @State private var expandedPatients: Set<String> = []
+    @State private var showResetConfirm = false
+    @State private var showResumeConfirm = false
+    @State private var resumeKey: String?
 
     private static let historyURL = URL(string: "https://hook.eu2.make.com/73qifx9u3askirqjixgz7786hev2nxqh")!
+
+    /// Extract pure key (before |)
+    private func pureKey(_ raw: String) -> String {
+        raw.split(separator: "|").first.map(String.init) ?? raw
+    }
 
     /// Keys filtered for current practitioner
     private var filteredKeys: [String] {
         let code = session.role.code
         let keys: [String]
         if session.role.isPatrick {
-            // Patrick sees all session keys (not CT- or hex keys)
-            keys = allKeys.filter { $0.contains("-") && $0.first?.isNumber == true }
+            keys = allKeys.filter { let k = pureKey($0); return k.contains("-") && k.first?.isNumber == true }
         } else {
-            // Shamane sees only her own keys
-            keys = allKeys.filter { $0.hasSuffix("-\(code)") }
+            keys = allKeys.filter { pureKey($0).hasSuffix("-\(code)") }
         }
         if filterText.isEmpty { return keys }
         return keys.filter { $0.localizedCaseInsensitiveContains(filterText) }
@@ -37,10 +43,10 @@ struct SessionHistoryView: View {
 
     /// Group by patientId (second component of key)
     private var grouped: [(patientId: String, keys: [String])] {
-        let parsed = filteredKeys.compactMap { key -> (patient: String, key: String)? in
-            let parts = key.split(separator: "-")
+        let parsed = filteredKeys.compactMap { raw -> (patient: String, key: String)? in
+            let parts = pureKey(raw).split(separator: "-")
             guard parts.count >= 3 else { return nil }
-            return (patient: String(parts[1]), key: key)
+            return (patient: String(parts[1]), key: raw)
         }
         let dict = Dictionary(grouping: parsed) { $0.patient }
         return dict.map { (patientId: $0.key, keys: $0.value.map(\.key).sorted().reversed()) }
@@ -150,43 +156,92 @@ struct SessionHistoryView: View {
                     Button("Fermer") { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { Task { await loadHistory() } } label: {
-                        Image(systemName: "arrow.clockwise")
+                    HStack(spacing: 16) {
+                        Button { showResetConfirm = true } label: {
+                            Image(systemName: "trash.circle")
+                                .foregroundColor(.red)
+                        }
+                        Button { Task { await loadHistory() } } label: {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        .disabled(isLoading)
                     }
-                    .disabled(isLoading)
                 }
             }
             .sheet(isPresented: $showPayload) {
                 PayloadPreviewSheet(payload: payloadText, key: payloadKey)
             }
+            .alert("Reset complet", isPresented: $showResetConfirm) {
+                Button("Annuler", role: .cancel) {}
+                Button("Reset", role: .destructive) {
+                    session.resetForShamane()
+                    dismiss()
+                }
+            } message: {
+                Text("Remettre la session \u{00e0} z\u{00e9}ro pour un nouveau patient ?")
+            }
+            .alert("Reprendre cette session ?", isPresented: $showResumeConfirm) {
+                Button("Annuler", role: .cancel) { resumeKey = nil }
+                Button("Reprendre") {
+                    if let key = resumeKey {
+                        Task { await doResume(key) }
+                    }
+                }
+            } message: {
+                Text("La session active sera remplac\u{00e9}e par \(resumeKey ?? "")")
+            }
         }
     }
 
     private func keyRow(_ key: String) -> some View {
-        Button {
-            Task { await loadSession(key) }
-        } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(key)
-                        .font(.system(.subheadline, design: .monospaced))
-                    // Parse components for display
-                    let parts = key.split(separator: "-")
-                    if parts.count >= 4 {
-                        Text("Prog \(parts[0]) \u{00b7} S\(parts[2]) \u{00b7} Prat \(parts[3])")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
+        let pk = pureKey(key)
+        let header = key.split(separator: "|").dropFirst().first.map(String.init) ?? ""
+        let dateStr = extractDate(from: header)
+
+        return HStack(spacing: 10) {
+            if !dateStr.isEmpty {
+                Text(dateStr)
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .frame(width: 110, alignment: .leading)
+            }
+            Text(pk)
+                .font(.system(.subheadline, design: .monospaced))
+            Spacer()
+            if loadingKey == pk {
+                ProgressView()
+            } else {
+                // Reprendre (charger dans la session active)
+                Button {
+                    Task { await resumeSession(pk) }
+                } label: {
+                    Image(systemName: "play.circle")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color(hex: "#1D9E75"))
                 }
-                Spacer()
-                if loadingKey == key {
-                    ProgressView()
-                } else {
-                    Image(systemName: "arrow.down.circle").foregroundColor(.accentColor)
+                .buttonStyle(.plain)
+                // Voir (preview)
+                Button {
+                    Task { await loadSession(pk) }
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 18))
+                        .foregroundColor(.accentColor)
                 }
+                .buttonStyle(.plain)
             }
         }
-        .disabled(loadingKey != nil)
+        .opacity(loadingKey != nil && loadingKey != pk ? 0.5 : 1.0)
+    }
+
+    /// Extract date from header like "SVLBH·hDOM·P12·S002·Flavia·28.03.2026 08:55:53" or "PIN:1234"
+    private func extractDate(from header: String) -> String {
+        // Match dd.MM.yyyy HH:mm:ss pattern
+        let pattern = #"(\d{2}\.\d{2}\.\d{4}\s+\d{2}:\d{2}:\d{2})"#
+        if let range = header.range(of: pattern, options: .regularExpression) {
+            return String(header[range])
+        }
+        return ""
     }
 
     // MARK: - Network
@@ -217,6 +272,34 @@ struct SessionHistoryView: View {
                 errorMessage = error.localizedDescription
                 isLoading = false
             }
+        }
+    }
+
+    private func resumeSession(_ key: String) async {
+        resumeKey = key
+        await MainActor.run { showResumeConfirm = true }
+    }
+
+    private func doResume(_ key: String) async {
+        loadingKey = key
+        if let text = try? await syncService.pullSingleKey(key) {
+            await MainActor.run {
+                // Parse key components: programCode-patientId-sessionNum-practitionerCode
+                let parts = key.split(separator: "-")
+                if parts.count >= 3 {
+                    session.sessionProgramCode = String(parts[0])
+                    session.patientId = String(parts[1])
+                    session.sessionNum = String(parts[2])
+                }
+                // Reset then apply payload
+                session.resetForShamane()
+                syncService.applyPayload(text, to: session)
+                loadingKey = nil
+                resumeKey = nil
+                dismiss()
+            }
+        } else {
+            await MainActor.run { loadingKey = nil; resumeKey = nil }
         }
     }
 

@@ -31,16 +31,16 @@ struct PasserelleTab: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("PROTO \u{00b7} Passerelle VLBH \u{2194} M\u{00e9}decine")
-                .font(.title2.bold())
+        VStack(spacing: 3) {
+            Text("\u{25c8} Passerelle VLBH \u{2194} M\u{00e9}decine")
+                .font(.title2.bold()).foregroundColor(Color(hex: "#8B3A62"))
             Text("Yesod 9 \u{00b7} Dyspepsie-TOC \u{00b7} G\u{2212}15")
-                .font(.title3)
-                .foregroundColor(.secondary)
-            Text("Cas arch\u{00e9}type : Blessure d\u{2019}\u{00c2}me 9 Yesod \u{00b7} Inceste monadique \u{00b7} Dyspepsie fonctionnelle K30 \u{00b7} TOC sonores \u{00b7} G\u{2212}15 lign\u{00e9}e maternelle")
-                .font(.caption)
+                .font(.caption).foregroundColor(.secondary)
+            Text("Cas arch\u{00e9}type : Blessure d\u{2019}\u{00c2}me 9 Yesod \u{00b7} Inceste monadique \u{00b7} K30 \u{00b7} TOC sonores")
+                .font(.caption2)
                 .foregroundColor(.secondary)
         }
+        .padding(.top, 14)
     }
 
     // MARK: - 1. Architecture 4 couches
@@ -300,16 +300,16 @@ struct PasserelleTab: View {
         }
     }
 
-    // MARK: - Card wrapper
+    // MARK: - Section wrapper (style SLM)
 
     private func sectionCard<Content: View>(title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
+            Divider()
             Label(title, systemImage: icon)
                 .font(.headline)
+                .foregroundColor(Color(hex: "#8B3A62"))
             content()
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+        .padding(.horizontal, 16)
     }
 }
