@@ -63,21 +63,23 @@ struct MainTabView: View {
                     .tag(5)
                 if showPasserelle {
                     PasserelleTab()
-                        .overlay(alignment: .topTrailing) {
-                            Color.clear
-                                .contentShape(Rectangle())
-                                .frame(width: 100, height: 44)
-                                .onLongPressGesture(minimumDuration: 3) {
-                                    showPasserelleAccess = true
-                                }
-                        }
-                        .alert("Acc\u{00e8}s Passerelle", isPresented: $showPasserelleAccess) {
-                            Button("OK", role: .cancel) {}
-                        } message: {
-                            Text("Patrick Bays (superviseur)\nCornelia Althaus (0300)\nAnne Grangier Bays (0302)")
-                        }
-                        .tabItem { Label("PROTO Passerelle", systemImage: "arrow.left.arrow.right") }
+                        .tabItem { Label("PR 03 Dyspepsie", systemImage: "arrow.left.arrow.right") }
                         .tag(6)
+                    PR03EndometreTab()
+                        .tabItem { Label("PR 03 Endom\u{00e8}tre", systemImage: "arrow.left.arrow.right") }
+                        .tag(7)
+                    PR05GlycemiesTab()
+                        .tabItem { Label("PR 05 Glyc\u{00e9}mies", systemImage: "arrow.left.arrow.right") }
+                        .tag(8)
+                    PR07HistoriquesTab()
+                        .tabItem { Label("PR 07 Historiques", systemImage: "arrow.left.arrow.right") }
+                        .tag(9)
+                    PR09SclerosesTab()
+                        .tabItem { Label("PR 09 Scl\u{00e9}roses", systemImage: "arrow.left.arrow.right") }
+                        .tag(10)
+                    EtApresTab()
+                        .tabItem { Label("Et apr\u{00e8}s ?", systemImage: "sparkles") }
+                        .tag(11)
                 }
             }
             .modifier(TabBarOnlyModifier())

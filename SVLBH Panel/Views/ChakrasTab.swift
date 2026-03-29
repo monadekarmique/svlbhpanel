@@ -28,7 +28,7 @@ struct ChakrasTab: View {
                 VStack(spacing: 0) {
                     VStack(spacing: 4) {
                         HStack {
-                            Text("Chakras nettoyés")
+                            Text("Bloqueurs d\u{2019}ascensions")
                                 .font(.caption).foregroundColor(.secondary)
                             Spacer()
                             Text("\(session.cleanedChakrasCount) / \(session.totalChakras)")

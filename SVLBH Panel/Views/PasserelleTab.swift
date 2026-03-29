@@ -11,20 +11,20 @@ struct PasserelleTab: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
-                    architectureSection
+                    pedagogieSection
+                    mecanismeSection
                     mesuresSection
                     definitionSection
-                    mecanismeSection
+                    architectureSection
                     reglesSection
                     protocoleSection
                     correspondancesSection
                     parametresSection
-                    pedagogieSection
                 }
                 .padding()
                 .padding(.bottom, 80)
             }
-            .navigationTitle("Passerelle")
+            .navigationTitle("PR 03 : Dyspepsie")
             .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
@@ -37,10 +37,10 @@ struct PasserelleTab: View {
             Text("\u{25c8} Passerelle VLBH \u{2194} M\u{00e9}decine")
                 .font(.title2.bold()).foregroundColor(Color(hex: "#8B3A62"))
             Text("Yesod 9 \u{00b7} Dyspepsie-TOC \u{00b7} G\u{2212}15")
-                .font(.caption).foregroundColor(.secondary)
+                .font(.caption).foregroundColor(Color(hex: "#333333"))
             Text("Cas arch\u{00e9}type : Blessure d\u{2019}\u{00c2}me 9 Yesod \u{00b7} Inceste monadique \u{00b7} K30 \u{00b7} TOC sonores")
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(hex: "#333333"))
         }
         .padding(.top, 14)
     }
@@ -48,7 +48,7 @@ struct PasserelleTab: View {
     // MARK: - 1. Architecture 4 couches
 
     private var architectureSection: some View {
-        sectionCard(title: "1. Architecture passerelle \u{2014} 4 couches", icon: "square.stack.3d.up") {
+        sectionCard(title: "4. Architecture passerelle \u{2014} 4 couches", icon: "square.stack.3d.up") {
             VStack(spacing: 0) {
                 coucheRow(num: "1", system: "Sephiroth multig\u{00e9}n\u{00e9}rationnel", content: "Lecture lign\u{00e9}es n\u{2212}1 \u{00e0} G\u{2212}15+ \u{00b7} portes ouvertes \u{00b7} Gu identifi\u{00e9}s", color: .purple)
                 coucheRow(num: "2", system: "SVLBHPanel \u{2014} hDOM", content: "Scores SLA/SLSA/SLPMO/SLM \u{00b7} Solides de Platon \u{00b7} Linggui Bafa", color: .blue)
@@ -57,7 +57,7 @@ struct PasserelleTab: View {
             }
             Text("K30 r\u{00e9}fractaire aux traitements conventionnels = indicateur diagnostique VLBH.\nL\u{2019}\u{00e9}chec th\u{00e9}rapeutique occidental confirme l\u{2019}origine monadique.")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(hex: "#333333"))
                 .padding(.top, 8)
         }
     }
@@ -72,7 +72,7 @@ struct PasserelleTab: View {
                 .clipShape(Circle())
             VStack(alignment: .leading, spacing: 2) {
                 Text(system).font(.subheadline.bold())
-                Text(content).font(.caption).foregroundColor(.secondary)
+                Text(content).font(.caption).foregroundColor(Color(hex: "#333333"))
             }
             Spacer()
         }
@@ -98,9 +98,9 @@ struct PasserelleTab: View {
 
     private func mesureCell(param: String, val: String, detail: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(param).font(.caption2).foregroundColor(.secondary)
+            Text(param).font(.caption2).foregroundColor(Color(hex: "#333333"))
             Text(val).font(.system(.headline, design: .monospaced))
-            Text(detail).font(.caption2).foregroundColor(.secondary).lineLimit(2)
+            Text(detail).font(.caption2).foregroundColor(Color(hex: "#333333")).lineLimit(2)
         }
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -132,7 +132,7 @@ struct PasserelleTab: View {
     // MARK: - 4. Mécanisme physique
 
     private var mecanismeSection: some View {
-        sectionCard(title: "4. M\u{00e9}canisme pin\u{00e9}ale \u{2192} sphincters", icon: "arrow.down.right.and.arrow.up.left") {
+        sectionCard(title: "1. M\u{00e9}canisme pin\u{00e9}ale \u{2192} sphincters", icon: "arrow.down.right.and.arrow.up.left") {
             VStack(alignment: .leading, spacing: 12) {
                 Text("**4a. Chemin d\u{2019}allumage matinal bloqu\u{00e9}**").font(.subheadline)
                 Text("Pin\u{00e9}ale (pH 7.4) \u{2192} BLOQU\u{00c9}\n  \u{2193} [ne passe pas]\nPituitaire \u{2192} cascade endocrine \u{2192} cortisol\n  \u{2193}\nYang montant \u{2192} ST 7h\u{2013}9h \u{2192} descente Qi ST\n  \u{2193}\nDigestion normale")
@@ -161,7 +161,7 @@ struct PasserelleTab: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(name).font(.caption.bold())
             Text(status).font(.system(.caption, design: .monospaced)).foregroundColor(.orange)
-            Text(effect).font(.caption2).foregroundColor(.secondary)
+            Text(effect).font(.caption2).foregroundColor(Color(hex: "#333333"))
         }
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -172,7 +172,7 @@ struct PasserelleTab: View {
     // MARK: - 5. Règles cliniques
 
     private var reglesSection: some View {
-        sectionCard(title: "5. R\u{00e8}gles cliniques", icon: "list.number") {
+        sectionCard(title: "5. R\u{00e8}gles de d\u{00e9}codage", icon: "list.number") {
             VStack(alignment: .leading, spacing: 12) {
                 regleRow(num: 1, title: "Sens de d\u{00e9}sintrication", body: "La d\u{00e9}sintrication suit le sens de l\u{2019}accumulation.")
                 regleRow(num: 2, title: "Boucle ferm\u{00e9}e carotide / faux", body: "La carotide monte (Malkuth\u{2192}Kether) et la faux descend (Kether\u{2192}Malkuth). Signature d\u{2019}un syst\u{00e8}me G encod\u{00e9} sur l\u{2019}axe complet.")
@@ -185,7 +185,7 @@ struct PasserelleTab: View {
 
     private func regleRow(num: Int, title: String, body: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
-            Text("R\(num)")
+            Text("D\(num)")
                 .font(.system(.caption, design: .rounded).bold())
                 .foregroundColor(.white)
                 .padding(.horizontal, 6).padding(.vertical, 2)
@@ -193,7 +193,7 @@ struct PasserelleTab: View {
                 .cornerRadius(4)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.subheadline.bold())
-                Text(body).font(.caption).foregroundColor(.secondary)
+                Text(body).font(.caption).foregroundColor(Color(hex: "#333333"))
             }
         }
     }
@@ -286,14 +286,14 @@ struct PasserelleTab: View {
         HStack(spacing: 4) {
             Text("n\u{0153}ud.\(key)").font(.system(.caption2, design: .monospaced)).foregroundColor(.accentColor)
             Text(":").font(.caption2)
-            Text(value).font(.system(.caption2, design: .monospaced)).foregroundColor(.secondary)
+            Text(value).font(.system(.caption2, design: .monospaced)).foregroundColor(Color(hex: "#333333"))
         }
     }
 
     // MARK: - 9. Pédagogie
 
     private var pedagogieSection: some View {
-        sectionCard(title: "9. Valeur p\u{00e9}dagogique", icon: "lightbulb") {
+        sectionCard(title: "0. Introduction", icon: "lightbulb") {
             Text("Le gastroent\u{00e9}rologue observe une dyspepsie matinale r\u{00e9}fractaire K30. La cause r\u{00e9}elle est un Cube non-herm\u{00e9}tique G\u{2212}15 coupant l\u{2019}allumage pin\u{00e9}ale\u{2192}pituitaire \u{00e0} fr\u{00e9}quence orange, h\u{00e9}rit\u{00e9} d\u{2019}une transgression maternelle du XVIIe si\u{00e8}cle, produisant 15 consciences f\u{0153}tales logoïques D5 sur ST 9 gauche, un double verrou sphinct\u{00e9}rien, et des boucles TOC sonores sur la faux du cerveau.")
                 .font(.callout)
             Text("Quatre couches. Une seule origine.")

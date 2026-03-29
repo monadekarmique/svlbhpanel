@@ -17,6 +17,7 @@ struct ResearchProgramsView: View {
     @State private var payloadKey = ""
     @State private var loadingKey: String?
     @State private var expandedPrograms: Set<String> = []
+    @State private var selectedShamaneCode: String = "all"
 
     private static let historyURL = URL(string: "https://hook.eu2.make.com/73qifx9u3askirqjixgz7786hev2nxqh")!
 
@@ -35,12 +36,33 @@ struct ResearchProgramsView: View {
         return defaults + custom
     }
 
-    /// Filter keys by program code, grouped
+    /// Available shamanes from the keys
+    private var availableShamanes: [(code: String, name: String)] {
+        var codes = Set<String>()
+        for raw in allKeys {
+            let key = raw.split(separator: "|").first.map(String.init) ?? raw
+            let parts = key.split(separator: "-")
+            if parts.count >= 4 { codes.insert(String(parts.last!)) }
+        }
+        return codes.sorted().compactMap { code in
+            if let profile = session.shamaneProfiles.first(where: { $0.codeFormatted == code }) {
+                return (code: code, name: profile.displayName)
+            }
+            if code == ActiveRole.patrickCode { return (code: code, name: "\u{1f52c} Patrick") }
+            return (code: code, name: code)
+        }
+    }
+
+    /// Filter keys by program code and selected shamane
     private func keysForProgram(_ code: String) -> [String] {
         let myCode = session.role.code
         return allKeys.filter { raw in
             let key = raw.split(separator: "|").first.map(String.init) ?? raw
             guard key.hasPrefix("\(code)-") else { return false }
+            // Shamane filter
+            if selectedShamaneCode != "all" {
+                guard key.hasSuffix("-\(selectedShamaneCode)") else { return false }
+            }
             if session.role.isSuperviseur { return true }
             return key.hasSuffix("-\(myCode)")
         }
@@ -100,6 +122,23 @@ struct ResearchProgramsView: View {
                     }
                     Spacer()
                 } else {
+                    // Filtre shamane
+                    if session.role.isSuperviseur && !availableShamanes.isEmpty {
+                        HStack(spacing: 8) {
+                            Text("Shamane").font(.caption.bold()).foregroundColor(Color(hex: "#333333"))
+                            Picker("", selection: $selectedShamaneCode) {
+                                Text("Toutes").tag("all")
+                                ForEach(availableShamanes, id: \.code) { s in
+                                    Text(s.name).tag(s.code)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .tint(Color(hex: "#5B2C8E"))
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 4)
+                    }
+
                     List {
                         ForEach(activePrograms, id: \.code) { prog in
                             DisclosureGroup(

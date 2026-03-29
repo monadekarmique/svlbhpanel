@@ -10,12 +10,15 @@
 		0188CEEA9D6B1991B3AD447C /* SessionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D983E04A64C189A5DC0D8241 /* SessionHistory.swift */; };
 		07BC6F608F514688855FAE54 /* PasteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51514D0E567348A2BB0BBE53 /* PasteParser.swift */; };
 		131D886D7C8C7ADB6C3CD3CE /* SessionClosureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0FFBAA031EBC812F4DEF47 /* SessionClosureView.swift */; };
+		299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386FAEF548C6AD12E862A293 /* EtApresTab.swift */; };
 		2E118F7C59FEBE02688D7A0B /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */; };
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
+		4A8F67FA65B3C40B85467627 /* PR07HistoriquesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552FDB96338C7493E6435455 /* PR07HistoriquesTab.swift */; };
 		4C3372F287014F868EA82C30 /* MakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A33667F10A749C2B23E1403 /* MakeSyncService.swift */; };
 		4E5B663D5A6C1FB9E4ACCCC3 /* ResearchProgramsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */; };
 		6512716BF1D3ECAF2FA58EC4 /* PresenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298C62119865A99EDDEA7070 /* PresenceService.swift */; };
+		69A263770DAD3ED708F10A6E /* PR05GlycemiesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCECE0BAFE24CD3E968FC97 /* PR05GlycemiesTab.swift */; };
 		6BC32FDEF49244CCE17009F9 /* PorteEnergetiqueData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */; };
 		7C6D954A5F205EA1012A6096 /* ParasiteEnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */; };
 		82A46D9D05844DBE9D122144 /* PierresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C8036B3674B24AA785EC0 /* PierresTab.swift */; };
@@ -30,7 +33,9 @@
 		913D0B0F8A6A45E1A742C1FC /* DiffLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */; };
 		96FA78B46A38496C93D6083B /* SVLBHPanelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398A95DE26124552B401B80A /* SVLBHPanelApp.swift */; };
 		9C770E585E6E8752C77EE527 /* PorteSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A21B6576179D4CBD117499 /* PorteSelector.swift */; };
+		A27E60C24738A6B7DADC0466 /* PR09SclerosesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29202852DE5D9C6D4D507A8 /* PR09SclerosesTab.swift */; };
 		B08A4FB7DC9161909FD72C6D /* SubscriptionWallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B2B08BF080A80D78B9BFEF /* SubscriptionWallView.swift */; };
+		B3190A932FD48AA852197324 /* PR03EndometreTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FD2DBCE6114AB18D677019 /* PR03EndometreTab.swift */; };
 		BBA79F225B832B794210F148 /* ProvocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */; };
 		BE256CD665AC4C8BBC60C795 /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42822705CB334E3795AE1648 /* SessionData.swift */; };
 		BE3A34F085D7B202764622E0 /* ConditionsPortesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14F4DE41214AAADCA850495 /* ConditionsPortesView.swift */; };
@@ -80,6 +85,7 @@
 		165D3DC5CABA1DE7330C4084 /* SessionTimelinePanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionTimelinePanel.swift; sourceTree = "<group>"; };
 		298C62119865A99EDDEA7070 /* PresenceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresenceService.swift; sourceTree = "<group>"; };
 		2CC3751FB08544D692E1C695 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		386FAEF548C6AD12E862A293 /* EtApresTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EtApresTab.swift; sourceTree = "<group>"; };
 		3900240D6A13450BA9326F25 /* DecodageTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodageTab.swift; sourceTree = "<group>"; };
 		398A95DE26124552B401B80A /* SVLBHPanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHPanelApp.swift; sourceTree = "<group>"; };
 		3A33667F10A749C2B23E1403 /* MakeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeSyncService.swift; sourceTree = "<group>"; };
@@ -89,6 +95,7 @@
 		51514D0E567348A2BB0BBE53 /* PasteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteParser.swift; sourceTree = "<group>"; };
 		548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlancheFloatingView.swift; sourceTree = "<group>"; };
 		54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProvocationView.swift; sourceTree = "<group>"; };
+		552FDB96338C7493E6435455 /* PR07HistoriquesTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR07HistoriquesTab.swift; sourceTree = "<group>"; };
 		594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParasiteEnergyData.swift; sourceTree = "<group>"; };
 		6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResearchProgramsView.swift; sourceTree = "<group>"; };
 		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
@@ -111,12 +118,15 @@
 		A9B1C0AC86379A98F91710B1 /* SessionHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionHistoryView.swift; sourceTree = "<group>"; };
 		AB945055DBF440D689CC4DAA /* SVLBHTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBHTab.swift; sourceTree = "<group>"; };
 		B3D93D35E16BC40CB1968846 /* SessionTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionTracker.swift; sourceTree = "<group>"; };
+		BCCECE0BAFE24CD3E968FC97 /* PR05GlycemiesTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR05GlycemiesTab.swift; sourceTree = "<group>"; };
 		C14F4DE41214AAADCA850495 /* ConditionsPortesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConditionsPortesView.swift; sourceTree = "<group>"; };
 		CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PorteEnergetiqueData.swift; sourceTree = "<group>"; };
 		CE016A20B4C74FA8B7654321 /* SessionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionExporter.swift; sourceTree = "<group>"; };
 		D118F80AA4F347F0A9F10053 /* SyncBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBar.swift; sourceTree = "<group>"; };
 		D15TR1B0VIEW00010000002 /* DistributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionView.swift; sourceTree = "<group>"; };
 		D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PierreEnseignement.swift; sourceTree = "<group>"; };
+		D29202852DE5D9C6D4D507A8 /* PR09SclerosesTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR09SclerosesTab.swift; sourceTree = "<group>"; };
+		D4FD2DBCE6114AB18D677019 /* PR03EndometreTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR03EndometreTab.swift; sourceTree = "<group>"; };
 		D983E04A64C189A5DC0D8241 /* SessionHistory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionHistory.swift; sourceTree = "<group>"; };
 		E1A70032EXPORT0141BCCF02 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteImportView.swift; sourceTree = "<group>"; };
@@ -269,6 +279,11 @@
 				A9B1C0AC86379A98F91710B1 /* SessionHistoryView.swift */,
 				F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */,
 				6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */,
+				D4FD2DBCE6114AB18D677019 /* PR03EndometreTab.swift */,
+				BCCECE0BAFE24CD3E968FC97 /* PR05GlycemiesTab.swift */,
+				552FDB96338C7493E6435455 /* PR07HistoriquesTab.swift */,
+				D29202852DE5D9C6D4D507A8 /* PR09SclerosesTab.swift */,
+				386FAEF548C6AD12E862A293 /* EtApresTab.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -445,6 +460,11 @@
 				F20BE258FD441F4306FF6CD8 /* PasserelleTab.swift in Sources */,
 				4E5B663D5A6C1FB9E4ACCCC3 /* ResearchProgramsView.swift in Sources */,
 				DF02F1B950D17B7A58A2E421 /* PierreEnseignement.swift in Sources */,
+				B3190A932FD48AA852197324 /* PR03EndometreTab.swift in Sources */,
+				69A263770DAD3ED708F10A6E /* PR05GlycemiesTab.swift in Sources */,
+				4A8F67FA65B3C40B85467627 /* PR07HistoriquesTab.swift in Sources */,
+				A27E60C24738A6B7DADC0466 /* PR09SclerosesTab.swift in Sources */,
+				299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,7 +617,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -617,7 +637,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -636,7 +656,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -656,7 +676,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -674,12 +694,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -697,12 +717,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -719,12 +739,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -741,12 +761,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 61;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 5.0.4;
+				MARKETING_VERSION = 5.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;

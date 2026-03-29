@@ -434,14 +434,14 @@ struct PierreSpec: Identifiable {
 }
 
 let pierresReference: [PierreSpec] = [
-    PierreSpec(id:"tourm", nom:"Tourmaline noire", latin:"Schorl", tags:["ent","abus","cord"], role:"Bouclier n°1 · Gui 鬼 et Abuse Energy · 15 générations.", placement:"Périmètre cabinet + sous la table", purification:"Eau salée 12 h · Soleil 4 h", icon:"₩"),
-    PierreSpec(id:"obsid", nom:"Obsidienne noire", latin:"SiO₂", tags:["cord","abus","anc"], role:"Cordages Abuseur→Consultant.e · Black Magick.", placement:"Mains du consultant.e ou CV1", purification:"Eau froide 1 h · Pleine lune", icon:"₩"),
-    PierreSpec(id:"nuum", nom:"Nuummite (3.5 Ga)", latin:"Amphibolite", tags:["anc","jing","cord"], role:"Fork guerres galactiques C12 · Jing pré-biologique.", placement:"GV4 Mingmen ou KI1", purification:"Pleine lune uniquement. Pas d'eau.", icon:"₩"),
-    PierreSpec(id:"shung", nom:"Shungite élite I", latin:"C>98%", tags:["ent","prat"], role:"Incubus/Succubus G-1 · Spell G-8 · Protection praticien.", placement:"Poche praticien + coins cabinet", purification:"Eau froide 30 min hebdo", icon:"₩"),
-    PierreSpec(id:"aegir", nom:"Aegyrine", latin:"NaFe³⁺Si₂O₆", tags:["ent","abus"], role:"Archon/Reptilian G-10 · CUBE non-hermétique.", placement:"Grille 4 pointes autour de la table", purification:"Salvia 10 min · Pleine lune. Fragile.", icon:"₩"),
-    PierreSpec(id:"apache", nom:"Apache Tears", latin:"Perlite volcanique", tags:["anc","cord"], role:"In Limbo ×3 · Psychopompe · Deuil femmes victimes.", placement:"Cercle autour du consultant.e", purification:"Enterrer 48 h dans la terre après usage", icon:"₩"),
-    PierreSpec(id:"labra", nom:"Labradorite", latin:"(Ca,Na)(Si,Al)₄O₈", tags:["prat","ent"], role:"Aura praticien · Stern-Tetraeder · Pemphigus 15 G.", placement:"Portée praticien (cou ou poche)", purification:"Pleine lune mensuelle · Eau froide brève", icon:"₩"),
-    PierreSpec(id:"kyani", nom:"Kyanite noire", latin:"Al₂SiO₅", tags:["cord","jing"], role:"Tuyau masculin Adam→Consultant.e · Zéro rétention.", placement:"Tuyau Jing GV4↔KI3", purification:"Aucune purification nécessaire.", icon:"₩")
+    PierreSpec(id:"tourm", nom:"Tourmaline noire", latin:"Schorl", tags:["ent","abus","cord"], role:"Bouclier n°1 · Gui 鬼 et Abuse Energy · 15 générations.", placement:"Périmètre cabinet + sous la table", purification:"Eau salée 12 h · Soleil 4 h", icon:"\u{1FACC}"),
+    PierreSpec(id:"obsid", nom:"Obsidienne noire", latin:"SiO₂", tags:["cord","abus","anc"], role:"Cordages Abuseur→Consultant.e · Black Magick.", placement:"Mains du consultant.e ou CV1", purification:"Eau froide 1 h · Pleine lune", icon:"\u{1FACC}"),
+    PierreSpec(id:"nuum", nom:"Nuummite (3.5 Ga)", latin:"Amphibolite", tags:["anc","jing","cord"], role:"Fork guerres galactiques C12 · Jing pré-biologique.", placement:"GV4 Mingmen ou KI1", purification:"Pleine lune uniquement. Pas d'eau.", icon:"\u{1FACC}"),
+    PierreSpec(id:"shung", nom:"Shungite élite I", latin:"C>98%", tags:["ent","prat"], role:"Incubus/Succubus G-1 · Spell G-8 · Protection praticien.", placement:"Poche praticien + coins cabinet", purification:"Eau froide 30 min hebdo", icon:"\u{1FACC}"),
+    PierreSpec(id:"aegir", nom:"Aegyrine", latin:"NaFe³⁺Si₂O₆", tags:["ent","abus"], role:"Archon/Reptilian G-10 · CUBE non-hermétique.", placement:"Grille 4 pointes autour de la table", purification:"Salvia 10 min · Pleine lune. Fragile.", icon:"\u{1FACC}"),
+    PierreSpec(id:"apache", nom:"Apache Tears", latin:"Perlite volcanique", tags:["anc","cord"], role:"In Limbo ×3 · Psychopompe · Deuil femmes victimes.", placement:"Cercle autour du consultant.e", purification:"Enterrer 48 h dans la terre après usage", icon:"\u{1FACC}"),
+    PierreSpec(id:"labra", nom:"Labradorite", latin:"(Ca,Na)(Si,Al)₄O₈", tags:["prat","ent"], role:"Aura praticien · Stern-Tetraeder · Pemphigus 15 G.", placement:"Portée praticien (cou ou poche)", purification:"Pleine lune mensuelle · Eau froide brève", icon:"\u{1FACC}"),
+    PierreSpec(id:"kyani", nom:"Kyanite noire", latin:"Al₂SiO₅", tags:["cord","jing"], role:"Tuyau masculin Adam→Consultant.e · Zéro rétention.", placement:"Tuyau Jing GV4↔KI3", purification:"Aucune purification nécessaire.", icon:"\u{1FACC}")
 ]
 
 class PierreState: ObservableObject, Identifiable {

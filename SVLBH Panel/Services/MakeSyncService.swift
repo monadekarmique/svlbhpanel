@@ -79,7 +79,7 @@ class MakeSyncService: ObservableObject {
 
         var pin = ""
         var payload = serializeSession(session)
-        if session.role.isSuperviseur {
+        if session.role.isPatrick {
             pin = String(format: "%04d", Int.random(in: 1000...9999))
             payload = "PIN:\(pin)\n" + payload
         }
