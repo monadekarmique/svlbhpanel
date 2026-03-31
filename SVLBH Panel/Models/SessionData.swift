@@ -595,19 +595,8 @@ class PractitionerIdentity: ObservableObject {
         return (code: String(parts[0]), name: String(parts[1]))
     }
 
-    /// Mapping email Apple → (code praticien, prénom)
-    static let appleEmailMap: [String: (code: String, name: String)] = [
-        // Superviseur
-        "bays.patrick@icloud.com": (ActiveRole.patrickCode, "Patrick"),
-        "bays.patrick@gmail.com": (ActiveRole.patrickCode, "Patrick"),
-        "pb@vlbh.energy": (ActiveRole.patrickCode, "Patrick"),
-        // Certifiées
-        "cornelia.althaus@hotmail.com": ("300", "Cornelia"),
-        "anne.gr29@gmail.com": ("302", "Anne"),
-        "flaviaguift@icloud.com": ("301", "Flavia"),
-        // Lead
-        "chloegattlensar@me.com": ("303", "Chloé"),
-    ]
+    // appleEmailMap supprimé — la source de vérité est le datastore Make
+    // (Planche Tactique → svlbh-apple-identity webhook)
 
     @Published var isIdentified: Bool = false
     @Published var code: String = ""
@@ -638,19 +627,18 @@ class PractitionerIdentity: ObservableObject {
             [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
         }.flatMap { $0.isEmpty ? nil : $0 }
 
-        // 1. Email disponible et dans le map → liaison automatique + enregistrer sur Make
-        if let email = email, let match = Self.appleEmailMap[email] {
-            let name = appleName ?? match.name
+        // 1. Webhook Make — source de vérité (lookup par apple_user_id)
+        if let remote = await lookupAppleUserID(userID: userID) {
+            let name = appleName ?? remote.name
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
-            UserDefaults.standard.set(match.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(remote.code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
-            Self.keychainSave(userID: userID, code: match.code, name: name)
-            identify(code: match.code, name: name)
-            Task { await registerAppleUserID(userID: userID, code: match.code, name: name) }
+            Self.keychainSave(userID: userID, code: remote.code, name: name)
+            identify(code: remote.code, name: name)
             return
         }
 
-        // 2. UserID déjà lié via UserDefaults (login suivant, email = nil)
+        // 2. Fallback offline — UserDefaults (login suivant, email = nil)
         let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
         if savedAppleUser == userID, !userID.isEmpty,
            let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code"), !savedCode.isEmpty {
@@ -659,22 +647,12 @@ class PractitionerIdentity: ObservableObject {
             return
         }
 
-        // 3. UserID dans le Keychain (survit aux reinstalls)
+        // 3. Fallback offline — Keychain (survit aux reinstalls)
         if let saved = Self.keychainLoad(userID: userID) {
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(saved.code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(saved.name, forKey: "svlbh_apple_mapped_name")
             identify(code: saved.code, name: saved.name)
-            return
-        }
-
-        // 4. Webhook Make — lookup par apple_user_id (survit changement d'appareil)
-        if let remote = await lookupAppleUserID(userID: userID) {
-            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
-            UserDefaults.standard.set(remote.code, forKey: "svlbh_apple_mapped_code")
-            UserDefaults.standard.set(remote.name, forKey: "svlbh_apple_mapped_name")
-            Self.keychainSave(userID: userID, code: remote.code, name: remote.name)
-            identify(code: remote.code, name: remote.name)
             return
         }
 
