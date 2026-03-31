@@ -35,11 +35,12 @@ struct RoutineMatinTab: View {
     private var totalCompteurs: Int { certifiees.reduce(0) { $0 + $1.compteur } }
     private var totalMax: Int { certifiees.reduce(0) { $0 + $1.max } }
 
-    // Check 1 — Patrick couvre le cercle
-    private var check1Target: Int { totalMax + (totalMax - totalCompteurs) }
-    private var check1OK: Bool { patrickMax >= check1Target }
+    // Check 1 — Énergie masculine : Patrick couvre les certifiées
+    private var couvertureCheck1: Double {
+        totalMax == 0 ? 0 : Double(patrickMax) / Double(totalMax) * 100
+    }
 
-    // Check 2b — Cornelia + Anne vs Irène + Flavia + Chloé
+    // Check 2 — Énergie féminine : Cornelia + Anne couvrent Flavia + Chloé + Irène
     private var groupA: [CertifieeQuota] { certifiees.filter { ["0300", "0302"].contains($0.id) } }
     private var groupB: [CertifieeQuota] { certifiees.filter { !["0300", "0302"].contains($0.id) } }
     private var capaciteGroupeA: Int { groupA.reduce(0) { $0 + $1.quotaLibre } }
@@ -258,41 +259,54 @@ struct RoutineMatinTab: View {
 
     private var checksSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Checks")
+            Text("Cercle de Lumière — Checks")
                 .font(.subheadline.bold())
                 .foregroundColor(Color(hex: "#8B3A62"))
 
-            // Check 1 — Patrick
+            // Check 1 — Énergie masculine
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text(check1OK ? "✅" : "❌")
-                    Text("Check 1 — Patrick").font(.caption.bold())
+                    Text(couvertureCheck1 >= 100 ? "✅" : "❌")
+                    Text("Énergie masculine — Patrick").font(.caption.bold())
                 }
-                Text("Compteurs certifiées : \(totalCompteurs)")
-                    .font(.caption2).foregroundColor(.secondary)
-                Text("Si toutes remplissent max : \(check1Target) → Patrick (\(patrickMax)) \(check1OK ? "couvre" : "ne couvre pas")")
-                    .font(.caption2).foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    Text("Patrick max :").font(.caption2).foregroundColor(.secondary)
+                    Text("\(patrickMax)").font(.caption2.bold())
+                }
+                HStack(spacing: 4) {
+                    Text("Total max certifiées :").font(.caption2).foregroundColor(.secondary)
+                    Text("\(totalMax)").font(.caption2.bold())
+                }
+                Text("Couverture : \(String(format: "%.0f%%", couvertureCheck1))")
+                    .font(.caption.bold())
+                    .foregroundColor(couvertureCheck1 >= 100 ? Color(hex: "#1D9E75") : Color(hex: "#E24B4A"))
             }
             .padding(10)
-            .background(Color(hex: check1OK ? "#1D9E75" : "#E24B4A").opacity(0.06))
+            .background(Color(hex: couvertureCheck1 >= 100 ? "#1D9E75" : "#E24B4A").opacity(0.06))
             .cornerRadius(8)
 
-            // Check 2b — Cross-couverture
+            // Check 2 — Énergie féminine
+            let groupAMax = groupA.reduce(0) { $0 + $1.max }
+            let groupACompteur = groupA.reduce(0) { $0 + $1.compteur }
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text(couvertureCheck2 >= 50 ? "✅" : "❌")
-                    Text("Check 2b — Cornelia + Anne vs autres").font(.caption.bold())
+                    Text(couvertureCheck2 >= 100 ? "✅" : "❌")
+                    Text("Énergie féminine — Cornelia + Anne").font(.caption.bold())
                 }
-                Text("Compteurs à couvrir : \(compteurGroupeB)")
-                    .font(.caption2).foregroundColor(.secondary)
-                Text("Capacité combinée (Cornelia + Anne) : \(capaciteGroupeA)")
-                    .font(.caption2).foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    Text("Capacité :").font(.caption2).foregroundColor(.secondary)
+                    Text("\(groupAMax) - \(groupACompteur) = \(capaciteGroupeA)").font(.caption2.bold())
+                }
+                HStack(spacing: 4) {
+                    Text("Besoin (Flavia + Chloé + Irène) :").font(.caption2).foregroundColor(.secondary)
+                    Text("\(compteurGroupeB)").font(.caption2.bold())
+                }
                 Text("Couverture : \(String(format: "%.0f%%", couvertureCheck2))")
-                    .font(.caption2.bold())
-                    .foregroundColor(couvertureCheck2 >= 50 ? Color(hex: "#1D9E75") : Color(hex: "#E24B4A"))
+                    .font(.caption.bold())
+                    .foregroundColor(couvertureCheck2 >= 100 ? Color(hex: "#1D9E75") : Color(hex: "#E24B4A"))
             }
             .padding(10)
-            .background(Color(hex: couvertureCheck2 >= 50 ? "#1D9E75" : "#E24B4A").opacity(0.06))
+            .background(Color(hex: couvertureCheck2 >= 100 ? "#1D9E75" : "#E24B4A").opacity(0.06))
             .cornerRadius(8)
         }
     }
