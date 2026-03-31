@@ -25,6 +25,7 @@ struct SVLBHTab: View {
     @State private var showClosure = false
     @State private var showHistory = false
     @State private var showResearchPrograms = false
+    @State private var visiteurCount: Int = 0
 
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
     private var isSubscriptionActive: Bool { true }
@@ -378,11 +379,31 @@ struct SVLBHTab: View {
                         LeadSlotsView().environmentObject(session)
                     }
 
+                    // Visiteurs connectés
+                    if visiteurCount > 0 {
+                        HStack(spacing: 6) {
+                            Image(systemName: "person.2.fill")
+                                .font(.caption2)
+                                .foregroundColor(Color(hex: "#BA7517"))
+                            Text("\(visiteurCount) visiteur\(visiteurCount > 1 ? "s" : "") connecté\(visiteurCount > 1 ? "s" : "")")
+                                .font(.caption2.bold())
+                                .foregroundColor(Color(hex: "#BA7517"))
+                        }
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(Color(hex: "#BA7517").opacity(0.08))
+                        .cornerRadius(8)
+                        .padding(.horizontal, 16)
+                    }
+
                     Spacer().frame(height: 120)
                 }
             }
             .navigationTitle("SVLBH")
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                let status = await PresenceService.shared.check()
+                visiteurCount = status.activeCount
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
