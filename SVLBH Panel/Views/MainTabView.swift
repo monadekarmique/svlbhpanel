@@ -41,10 +41,15 @@ struct MainTabView: View {
                     SVLBHTab(selectedTab: $selectedTab)
                         .tabItem { Label("SVLBH", systemImage: "atom") }
                         .tag(0)
+                if session.currentTier.forkResolu || session.role.isPatrick {
+                    RoutineMatinTab()
+                        .tabItem { Label("Routine", systemImage: "sun.max") }
+                        .tag(1)
+                }
                 if isUnlistedUser {
                     LeadBubbleTab()
                         .tabItem { Label("Comment faire ?", systemImage: "person.wave.2") }
-                        .tag(1)
+                        .tag(12)
                 }
                 DecodageTab()
                     .tabItem { Label("Épuisement", systemImage: "list.bullet.rectangle") }
