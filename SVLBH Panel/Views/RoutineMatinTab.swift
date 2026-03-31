@@ -28,7 +28,7 @@ struct RoutineMatinTab: View {
     /// Webhook svlbh-sync-praticien — retourne les données billing
     private static let syncURL = URL(string: "https://hook.eu2.make.com/f5ezym67mfmywuwoov7fbb4gf3ufhqq8")!
 
-    private var certifiees: [CertifieeQuota] { allQuotas.filter { $0.categorie == "praticien" } }
+    private var certifiees: [CertifieeQuota] { allQuotas.filter { $0.categorie == "praticien" }.sorted { $0.compteur > $1.compteur } }
     private var patrick: CertifieeQuota? { allQuotas.first { $0.categorie == "superviseur" } }
     private var patrickMax: Int { patrick?.max ?? 0 }
 
@@ -233,8 +233,15 @@ struct RoutineMatinTab: View {
             ForEach(certifiees) { q in
                 HStack(spacing: 0) {
                     Text(q.indicateur).font(.caption).frame(width: 24)
-                    Text(q.nom).font(.caption).lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack(spacing: 4) {
+                        Text(q.nom.split(separator: " ").first.map(String.init) ?? q.nom)
+                            .font(.caption)
+                        Text(q.id)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                    }
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Text("\(q.max)").font(.system(.caption, design: .monospaced).bold())
                         .frame(width: 40)
                     Text("\(q.compteur)").font(.system(.caption, design: .monospaced))
