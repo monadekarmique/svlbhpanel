@@ -44,7 +44,7 @@ struct BuildGateView: View {
 
             Spacer()
 
-            Text("Build \(status.currentBuild) · Minimum requis : \(status.latestBuild - 4)")
+            Text("Build \(status.currentBuild) · Minimum requis : \(status.minBuild ?? (status.latestBuild - 4))")
                 .font(.caption2)
                 .foregroundColor(.secondary)
                 .padding(.bottom, 20)

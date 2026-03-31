@@ -15,7 +15,12 @@ actor BuildGateService {
     struct BuildStatus {
         let currentBuild: Int
         let latestBuild: Int
-        var isAllowed: Bool { currentBuild >= latestBuild - BuildGateService.tolerance }
+        /// Minimum imposé par le serveur (nil = tolérance par défaut)
+        let minBuild: Int?
+        var isAllowed: Bool {
+            if let min = minBuild { return currentBuild >= min }
+            return currentBuild >= latestBuild - BuildGateService.tolerance
+        }
     }
 
     func check() async -> BuildStatus {
@@ -29,13 +34,14 @@ actor BuildGateService {
             let (data, _) = try await URLSession.shared.data(for: req)
             if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let latest = json["latestBuild"] as? Int {
-                return BuildStatus(currentBuild: current, latestBuild: latest)
+                let min = json["minBuild"] as? Int
+                return BuildStatus(currentBuild: current, latestBuild: latest, minBuild: min)
             }
         } catch {
             // En cas d'erreur réseau, on laisse passer
         }
 
-        return BuildStatus(currentBuild: current, latestBuild: current)
+        return BuildStatus(currentBuild: current, latestBuild: current, minBuild: nil)
     }
 
     private func currentBuildNumber() -> Int {

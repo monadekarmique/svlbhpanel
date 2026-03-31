@@ -886,6 +886,8 @@ class SessionState: ObservableObject {
             rebuildGenerations()
         }
     }
+    /// true quand Patrick simule une shamane (set dans SVLBHTab segment picker)
+    var isPatrickSimulating: Bool = false
     @Published var pullSource: ShamaneProfile?
 
     // ── Scores duaux ──
@@ -957,7 +959,14 @@ class SessionState: ObservableObject {
     }
 
     // ── Clés sync ──
-    var pushKey: String { sessionId }
+    var pushKey: String {
+        // Patrick simulant une shamane → déposer sous clé Patrick
+        // (car la shamane pull toujours avec patrickCode)
+        if isPatrickSimulating {
+            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(ActiveRole.patrickCode)"
+        }
+        return sessionId
+    }
 
     var pullKey: String {
         if role.isPatrick, let src = pullSource {

@@ -56,6 +56,10 @@ struct SVLBHPanelApp: App {
             }
             if phase == .active {
                 UIApplication.shared.applicationIconBadgeNumber = 0
+                // Re-vérifier le build gate à chaque retour foreground
+                if identity.isIdentified, !identity.isPatrick {
+                    Task { await checkBuildGate() }
+                }
             }
             if phase == .active, identity.isIdentified, identity.tier == .lead {
                 let leadId = PresenceService.shared.leadId

@@ -19,6 +19,7 @@ struct SessionHistoryView: View {
     @State private var expandedPatients: Set<String> = []
     @State private var showResetConfirm = false
     @State private var showResumeConfirm = false
+    @State private var showMergeConfirm = false
     @State private var resumeKey: String?
 
     private static let historyURL = URL(string: "https://hook.eu2.make.com/73qifx9u3askirqjixgz7786hev2nxqh")!
@@ -190,6 +191,16 @@ struct SessionHistoryView: View {
             } message: {
                 Text("La session active sera remplac\u{00e9}e par \(resumeKey ?? "")")
             }
+            .alert("Fusionner avec la session active ?", isPresented: $showMergeConfirm) {
+                Button("Annuler", role: .cancel) { resumeKey = nil }
+                Button("Fusionner") {
+                    if let key = resumeKey {
+                        Task { await doMerge(key) }
+                    }
+                }
+            } message: {
+                Text("Les soins actifs seront conserv\u{00e9}s et compl\u{00e9}t\u{00e9}s avec \(resumeKey ?? "")")
+            }
         }
     }
 
@@ -220,6 +231,18 @@ struct SessionHistoryView: View {
                         .foregroundColor(Color(hex: "#1D9E75"))
                 }
                 .buttonStyle(.plain)
+                // Fusionner (merge avec soins actifs — certifiées/superviseurs)
+                if session.currentTier.forkResolu {
+                    Button {
+                        resumeKey = pk
+                        showMergeConfirm = true
+                    } label: {
+                        Image(systemName: "arrow.triangle.merge")
+                            .font(.system(size: 18))
+                            .foregroundColor(Color(hex: "#BA7517"))
+                    }
+                    .buttonStyle(.plain)
+                }
                 // Voir (preview)
                 Button {
                     Task { await loadSession(pk) }
@@ -293,6 +316,22 @@ struct SessionHistoryView: View {
                 }
                 // Reset then apply payload
                 session.resetForShamane()
+                syncService.applyPayload(text, to: session)
+                loadingKey = nil
+                resumeKey = nil
+                dismiss()
+            }
+        } else {
+            await MainActor.run { loadingKey = nil; resumeKey = nil }
+        }
+    }
+
+    /// Fusionne le payload historique avec les soins actifs (pas de reset)
+    private func doMerge(_ key: String) async {
+        loadingKey = key
+        if let text = try? await syncService.pullSingleKey(key) {
+            await MainActor.run {
+                // Merge sans reset — les soins actifs sont conservés
                 syncService.applyPayload(text, to: session)
                 loadingKey = nil
                 resumeKey = nil

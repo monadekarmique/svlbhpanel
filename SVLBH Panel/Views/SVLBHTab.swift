@@ -260,12 +260,16 @@ struct SVLBHTab: View {
                             Text("Segment")
                                 .font(.caption.bold()).foregroundColor(.secondary)
                             Menu {
-                                Button("Superviseur (réel)") { simulatedTier = nil }
+                                Button("Superviseur (réel)") {
+                                    simulatedTier = nil
+                                    session.isPatrickSimulating = false
+                                }
                                 Divider()
                                 ForEach(session.shamaneProfiles, id: \.code) { profile in
                                     Button("\(profile.displayName) · \(profile.tier.label) (\(profile.codeFormatted))") {
                                         simulatedTier = profile.tier
                                         session.role = .shamane(profile)
+                                        session.isPatrickSimulating = true
                                     }
                                 }
                             } label: {
@@ -284,6 +288,7 @@ struct SVLBHTab: View {
                                 Button {
                                     simulatedTier = nil
                                     session.role = .patrick
+                                    session.isPatrickSimulating = false
                                 } label: {
                                     Text("↩").font(.caption.bold()).foregroundColor(.secondary)
                                 }
