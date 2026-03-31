@@ -115,37 +115,52 @@ struct RoutineMatinTab: View {
         .task { await fetchQuotas() }
     }
 
-    // MARK: - Fetch depuis webhook
+    // MARK: - Fetch depuis webhook (action=get par praticienne)
+
+    /// Clés billing connues : certifiées + superviseur
+    private static let billingKeys = ["0300", "0301", "0302", "0303", "0304", "455000"]
 
     private func fetchQuotas() async {
         isLoading = true
+        var results: [CertifieeQuota] = []
+
+        await withTaskGroup(of: CertifieeQuota?.self) { group in
+            for key in Self.billingKeys {
+                group.addTask { await self.fetchSingle(key: key) }
+            }
+            for await result in group {
+                if let q = result { results.append(q) }
+            }
+        }
+
+        await MainActor.run {
+            allQuotas = results
+            lastRefresh = Date()
+            isLoading = false
+        }
+    }
+
+    private func fetchSingle(key: String) async -> CertifieeQuota? {
+        let body: [String: String] = ["action": "get", "billing_key": key]
         do {
-            let body: [String: String] = ["action": "list_billing"]
             var req = URLRequest(url: Self.syncURL)
             req.httpMethod = "POST"
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
             req.httpBody = try JSONSerialization.data(withJSONObject: body)
-            req.timeoutInterval = 15
+            req.timeoutInterval = 10
             let (data, _) = try await URLSession.shared.data(for: req)
-
-            if let records = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-                let parsed = records.compactMap { rec -> CertifieeQuota? in
-                    guard let code = rec["code"] as? String ?? rec["key"] as? String,
-                          let nom = rec["nom_praticien"] as? String,
-                          let max = rec["compteur_max_patient"] as? Int,
-                          let compteur = rec["compteur"] as? Int else { return nil }
-                    let cat = rec["categorie"] as? String ?? "praticien"
-                    return CertifieeQuota(id: code, nom: nom, categorie: cat, max: max, compteur: compteur)
-                }
-                await MainActor.run {
-                    allQuotas = parsed
-                    lastRefresh = Date()
-                }
+            if let rec = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let code = rec["code"] as? String,
+               let nom = rec["nom_praticien"] as? String,
+               let max = rec["compteur_max_patient"] as? Int,
+               let compteur = rec["compteur"] as? Int {
+                let cat = rec["categorie"] as? String ?? "praticien"
+                return CertifieeQuota(id: code, nom: nom, categorie: cat, max: max, compteur: compteur)
             }
         } catch {
-            print("[RoutineMatinTab] fetchQuotas error: \(error.localizedDescription)")
+            print("[RoutineMatinTab] fetchSingle \(key) error: \(error.localizedDescription)")
         }
-        await MainActor.run { isLoading = false }
+        return nil
     }
 
     // MARK: - Cercle de Lumière
