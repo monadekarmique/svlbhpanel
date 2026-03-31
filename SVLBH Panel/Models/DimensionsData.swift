@@ -59,7 +59,30 @@ struct DimensionInfo: Identifiable {
 }
 
 // MARK: - allDimensions
+// MARK: - Programmes de Protection (D22)
+struct ProgrammeProtection: Identifiable {
+    let id: String
+    let label: String
+}
+
+let programmesProtectionGui: [ProgrammeProtection] = [
+    ProgrammeProtection(id: "pp_dyspepsie", label: "Dyspépsie"),
+    ProgrammeProtection(id: "pp_cpp_dyspepsie", label: "Consultante Programme de Protection Dyspépsie"),
+    ProgrammeProtection(id: "pp_endometre", label: "Endomètre"),
+    ProgrammeProtection(id: "pp_cpp_endometre", label: "Consultante Programme de Protection Endomètre"),
+    ProgrammeProtection(id: "pp_glycemies_tdah_tumeurs", label: "Glycémies, TDAH, Tumeurs malignes cancéreuses internes"),
+]
+
 let allDimensions: [DimensionInfo] = [
+
+    DimensionInfo(id: "d22", num: 22,
+        label: "D22 — SVLBH Bash",
+        description: "Bloqueurs d\u{2019}ascensions méta-dimensionnels qui mènent à l\u{2019}Épuisement",
+        defaultCollapsed: false,
+        chakras: [
+            ChakraInfo(num: nil, icon: "◈", nom: "Consultante Programmes de Protection Gui",
+                issues: [], hasCIM: false, cimCodes: []),
+        ]),
 
     DimensionInfo(id: "d9", num: 9,
         label: "D9 — Source créatrice · Temps",

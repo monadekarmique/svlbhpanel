@@ -912,6 +912,8 @@ class SessionState: ObservableObject {
     // F16 — CIM-11 sélectionnés par chakra
     @Published var selectedCIM: [String: Set<String>] = [:]
     @Published var porteSelections: [String: Int] = [:]  // chakraKey_temp / chakraKey_perm → numero porte
+    // D22 — Programmes de Protection sélectionnés (id programme → true)
+    @Published var programmeProtectionSelections: Set<String> = []
     @Published var syncStatus: String = "🔴 Off"
     @Published var lastPin: String = ""
     private var cancellables = Set<AnyCancellable>()
@@ -1006,7 +1008,7 @@ class SessionState: ObservableObject {
         scoresTherapist = ScoresLumiere(); scoresPatrick = ScoresLumiere()
         for g in generations { g.abuseur = ""; g.victime = ""; g.phases = []; g.gu = []; g.meridiens = []; g.statuts = []; g.validated = false; g.clearSuggestions() }
         for p in pierres { p.selected = false; p.validated = false; p.volume = 1; p.unit = "kg"; p.durationMin = 30; p.durationDays = p.spec.defaultDays; p.clearSuggestions() }
-        chakraStates = initialChakraStates(); sugChakraStates = [:]; selectedCIM = [:]
+        chakraStates = initialChakraStates(); sugChakraStates = [:]; selectedCIM = [:]; programmeProtectionSelections = []
         rebuildGenerations()
     }
 

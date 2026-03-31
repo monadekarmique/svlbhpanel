@@ -195,6 +195,12 @@ struct ChakraRow: View {
                     }
                 }
 
+                // D22 — Programmes de Protection Gui
+                if dim.id == "d22" {
+                    ProgrammeProtectionGroup()
+                        .environmentObject(session)
+                }
+
                 // F16/F30 — Codes CIM-11 toggles (clé fixée au chakra)
                 if !chakra.cimCodes.isEmpty {
                     CIMToggleGroup(chakraKey: key, codes: chakra.cimCodes)
@@ -259,5 +265,39 @@ struct CIMToggleRow: View {
             }
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - D22 Programmes de Protection Gui
+struct ProgrammeProtectionGroup: View {
+    @EnvironmentObject var session: SessionState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            ForEach(programmesProtectionGui) { prog in
+                Button {
+                    if session.programmeProtectionSelections.contains(prog.id) {
+                        session.programmeProtectionSelections.remove(prog.id)
+                    } else {
+                        session.programmeProtectionSelections.insert(prog.id)
+                    }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: session.programmeProtectionSelections.contains(prog.id)
+                              ? "checkmark.square.fill" : "square")
+                            .font(.caption2)
+                            .foregroundColor(session.programmeProtectionSelections.contains(prog.id)
+                                             ? Color(hex: "#8B3A62") : .secondary)
+                        Text(prog.label)
+                            .font(.caption2)
+                            .foregroundColor(session.programmeProtectionSelections.contains(prog.id)
+                                             ? Color(hex: "#8B3A62") : .secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.top, 2)
     }
 }
