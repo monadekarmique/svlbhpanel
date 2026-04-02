@@ -18,6 +18,8 @@ class MakeSyncService: ObservableObject {
     @Published var isScanning = false
     @Published var lastError: String?
     @Published var lastPin: String?
+    /// Historique PINs par shamane (code shamane → [(pin, date)])
+    @Published var pinsByShamane: [String: [(pin: String, date: Date)]] = [:]
     @Published var pushSuccess: Bool = false
     @Published var diffLog: [String] = []
     @Published var diffs: TabDiffs = TabDiffs()
@@ -67,7 +69,7 @@ class MakeSyncService: ObservableObject {
     }
 
     // MARK: - PUSH
-    func push(session: SessionState) async -> Bool {
+    func push(session: SessionState, forShamaneCode: String? = nil) async -> Bool {
         // Guard: patientId must be set before building any key
         guard session.isPatientIdValid else {
             await MainActor.run { lastError = "PUSH aborted: patientId invalid (min \(SessionState.minPatientId))" }
@@ -79,7 +81,8 @@ class MakeSyncService: ObservableObject {
 
         var pin = ""
         var payload = serializeSession(session)
-        if session.role.isPatrick {
+        // PIN pour Patrick ou Patrick simulant une shamane
+        if session.role.isPatrick || session.isPatrickSimulating {
             pin = String(format: "%04d", Int.random(in: 1000...9999))
             payload = "PIN:\(pin)\n" + payload
         }
@@ -93,9 +96,18 @@ class MakeSyncService: ObservableObject {
             let (_, response) = try await URLSession.shared.data(for: req)
             let ok = (response as? HTTPURLResponse)?.statusCode == 200
             let finalPin = pin  // capture before MainActor hop
+            let shamaneCode = forShamaneCode
+            let now = Date()
             await MainActor.run {
                 isSending = false
-                if ok && !finalPin.isEmpty { lastPin = finalPin }
+                if ok && !finalPin.isEmpty {
+                    lastPin = finalPin
+                    if let code = shamaneCode {
+                        var history = pinsByShamane[code] ?? []
+                        history.append((pin: finalPin, date: now))
+                        pinsByShamane[code] = history
+                    }
+                }
                 if ok { pushSuccess = true }
             }
             guard ok else { return false }

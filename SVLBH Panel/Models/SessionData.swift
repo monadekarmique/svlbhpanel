@@ -662,7 +662,7 @@ class PractitionerIdentity: ObservableObject {
             UserDefaults.standard.set(code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(displayName, forKey: "svlbh_apple_mapped_name")
             Self.keychainSave(userID: userID, code: code, name: displayName)
-            Task { await registerAppleUserID(userID: userID, code: code, name: displayName) }
+            Task { await registerAppleUserID(userID: userID, code: code, name: displayName, email: email) }
             isIdentified = true
             return
         }
@@ -673,19 +673,21 @@ class PractitionerIdentity: ObservableObject {
 
     // MARK: - Apple Identity ↔ Make.com
 
-    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device (appelé depuis OnboardingView lors de la liaison manuelle)
-    func registerAppleUserIDFromLink(userID: String, code: String, name: String) async {
-        await registerAppleUserID(userID: userID, code: code, name: name)
+    /// Enregistre apple_user_id → code/name/email sur Make pour lookup cross-device (appelé depuis OnboardingView lors de la liaison manuelle)
+    func registerAppleUserIDFromLink(userID: String, code: String, name: String, email: String? = nil) async {
+        await registerAppleUserID(userID: userID, code: code, name: name, email: email)
     }
 
-    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device
-    private func registerAppleUserID(userID: String, code: String, name: String) async {
-        let body: [String: String] = [
+    /// Enregistre apple_user_id → code/name/email/categorie sur Make pour lookup cross-device
+    private func registerAppleUserID(userID: String, code: String, name: String, email: String? = nil) async {
+        var body: [String: String] = [
             "action": "apple_register",
             "apple_user_id": userID,
             "code": code,
-            "name": name
+            "name": name,
+            "categorie": PractitionerTier.from(code: Int(code) ?? 0).rawValue
         ]
+        if let email = email { body["email"] = email }
         do {
             var req = URLRequest(url: Self.appleIdentityURL)
             req.httpMethod = "POST"

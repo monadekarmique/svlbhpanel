@@ -129,7 +129,20 @@ struct SyncBar: View {
                         .transition(.opacity)
                         .animation(.easeInOut, value: sync.pushSuccess)
                 }
-                if let pin = sync.lastPin, !pin.isEmpty {
+                // PINs de la shamane sélectionnée
+                if let code = selectedShamane?.rawValue,
+                   let pins = sync.pinsByShamane[code], !pins.isEmpty {
+                    let df = DateFormatter()
+                    let _ = df.dateFormat = "HH:mm"
+                    ForEach(Array(pins.enumerated()), id: \.offset) { _, entry in
+                        Text("📌 \(entry.pin) · \(df.string(from: entry.date))")
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(Color(hex: "#8B3A62"))
+                            .cornerRadius(4)
+                    }
+                } else if let pin = sync.lastPin, !pin.isEmpty, selectedShamane == nil {
                     Text("📌 \(pin)")
                         .font(.caption.bold())
                         .foregroundColor(.white)
@@ -322,7 +335,7 @@ struct SyncBar: View {
                 session.pullSource = profile
             }
         }
-        _ = await sync.push(session: session)
+        _ = await sync.push(session: session, forShamaneCode: selectedShamane?.rawValue)
     }
 
     /// ↺ Refaire un cycle relay : efface les clés READ puis renvoie le soin
