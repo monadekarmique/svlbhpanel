@@ -96,6 +96,12 @@ struct SVLBHTab: View {
                                 .font(.system(size: 10)).foregroundColor(.secondary)
                             if let err = sync.lastError {
                                 Text("⚠ \(err)").font(.system(size: 9)).foregroundColor(.red).lineLimit(1)
+                                    .onAppear {
+                                        Task { @MainActor in
+                                            try? await Task.sleep(nanoseconds: 5_000_000_000)
+                                            sync.lastError = nil
+                                        }
+                                    }
                             }
                         }
                         Text("◈ SVLBH Panel")

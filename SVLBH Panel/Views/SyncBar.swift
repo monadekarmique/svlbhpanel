@@ -9,7 +9,7 @@ struct SyncBar: View {
     @Binding var showDiffLog: Bool
     @Binding var showPINAlert: Bool
     @Binding var pendingPayload: String
-    @State private var selectedShamane: Shamane? = Shamane.lastUsed
+    @State private var selectedShamane: ShamaneProfile?
     @State private var isRenvoyer: Bool = false  // true = clé existante, pas de dropdown
     @State private var showTierWarning = false
     @State private var tierWarningMessage = ""
@@ -130,7 +130,7 @@ struct SyncBar: View {
                         .animation(.easeInOut, value: sync.pushSuccess)
                 }
                 // PINs de la shamane sélectionnée
-                if let code = selectedShamane?.rawValue,
+                if let code = selectedShamane?.codeFormatted,
                    let pins = sync.pinsByShamane[code], !pins.isEmpty {
                     let df = DateFormatter()
                     let _ = df.dateFormat = "HH:mm"
@@ -216,29 +216,33 @@ struct SyncBar: View {
 
                 // ── Shamane dropdown (mode B "Décoder et Envoyer") ──
                 if session.role.isSuperviseur && !isRenvoyer {
+                    let certifiees = session.shamaneProfiles.filter { $0.tier == .certifiee }
+                    let formation = session.shamaneProfiles.filter { $0.tier == .formation }
                     Menu {
-                        Section("Certifiées") {
-                            ForEach(Shamane.certifiees) { s in
-                                Button {
-                                    selectedShamane = s
-                                    Shamane.saveLastUsed(s)
-                                } label: {
-                                    HStack {
-                                        Text(s.displayName)
-                                        if selectedShamane == s { Image(systemName: "checkmark") }
+                        if !certifiees.isEmpty {
+                            Section("Certifiées") {
+                                ForEach(certifiees) { s in
+                                    Button {
+                                        selectedShamane = s
+                                    } label: {
+                                        HStack {
+                                            Text("\(s.displayName) · \(s.codeFormatted)")
+                                            if selectedShamane?.code == s.code { Image(systemName: "checkmark") }
+                                        }
                                     }
                                 }
                             }
                         }
-                        Section("En formation") {
-                            ForEach(Shamane.enFormation) { s in
-                                Button {
-                                    selectedShamane = s
-                                    Shamane.saveLastUsed(s)
-                                } label: {
-                                    HStack {
-                                        Text(s.displayName)
-                                        if selectedShamane == s { Image(systemName: "checkmark") }
+                        if !formation.isEmpty {
+                            Section("En formation") {
+                                ForEach(formation) { s in
+                                    Button {
+                                        selectedShamane = s
+                                    } label: {
+                                        HStack {
+                                            Text("\(s.displayName) · \(s.codeFormatted)")
+                                            if selectedShamane?.code == s.code { Image(systemName: "checkmark") }
+                                        }
                                     }
                                 }
                             }
@@ -302,17 +306,12 @@ struct SyncBar: View {
     private func checkTierAndPush() {
         // Vérifier si la shamane destinataire a un tier limité
         if session.role.isSuperviseur, let shamane = selectedShamane {
-            let profile = session.shamaneProfiles.first {
-                $0.codeFormatted == shamane.rawValue || $0.code == shamane.rawValue
-            }
-            if let profile = profile {
-                let shamaneMax = profile.tier.maxGenerations
-                let patrickCount = session.visibleGenerations.filter(\.validated).count
-                if patrickCount > shamaneMax {
-                    tierWarningMessage = "\(profile.displayName) (\(profile.tier.label)) ne verra que \(shamaneMax)/\(patrickCount) générations"
-                    showTierWarning = true
-                    return
-                }
+            let shamaneMax = shamane.tier.maxGenerations
+            let patrickCount = session.visibleGenerations.filter(\.validated).count
+            if patrickCount > shamaneMax {
+                tierWarningMessage = "\(shamane.displayName) (\(shamane.tier.label)) ne verra que \(shamaneMax)/\(patrickCount) générations"
+                showTierWarning = true
+                return
             }
         }
         Task { await doPush() }
@@ -328,14 +327,11 @@ struct SyncBar: View {
     }
 
     private func doPush() async {
-        // Mode B: override pullSource with selected shamane's code
+        // Mode B: override pullSource with selected shamane's profile
         if session.role.isSuperviseur, !isRenvoyer, let shamane = selectedShamane {
-            // Find or create a matching ShamaneProfile for the key
-            if let profile = session.shamaneProfiles.first(where: { $0.codeFormatted == shamane.rawValue || $0.code == shamane.rawValue }) {
-                session.pullSource = profile
-            }
+            session.pullSource = shamane
         }
-        _ = await sync.push(session: session, forShamaneCode: selectedShamane?.rawValue)
+        _ = await sync.push(session: session, forShamaneCode: selectedShamane?.codeFormatted)
     }
 
     /// ↺ Refaire un cycle relay : efface les clés READ puis renvoie le soin

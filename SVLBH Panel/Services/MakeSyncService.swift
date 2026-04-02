@@ -72,7 +72,6 @@ class MakeSyncService: ObservableObject {
     func push(session: SessionState, forShamaneCode: String? = nil) async -> Bool {
         // Guard: patientId must be set before building any key
         guard session.isPatientIdValid else {
-            await MainActor.run { lastError = "PUSH aborted: patientId invalid (min \(SessionState.minPatientId))" }
             print("[MakeSyncService] PUSH aborted: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")
             return false
         }
@@ -183,8 +182,8 @@ class MakeSyncService: ObservableObject {
     // MARK: - PULL
     func pull(session: SessionState, manual: Bool = true) async -> String? {
         guard session.isPatientIdValid else {
-            await MainActor.run { lastError = "PULL skipped: patientId invalid (min \(SessionState.minPatientId))" }
-            print("[MakeSyncService] PULL skipped: patientId '\(session.patientId)' invalid")
+            // Ne pas bloquer visuellement — juste loguer
+            print("[MakeSyncService] PULL skipped: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")
             return nil
         }
         let key = session.pullKey
