@@ -231,8 +231,10 @@ class MakeSyncService: ObservableObject {
                 detectedPin = String(first.dropFirst(4)).trimmingCharacters(in: .whitespaces)
                 lines.removeFirst()
             }
-            if detectedPin != nil && !manual { return "PIN_PENDING" }
-            if let pin = detectedPin, manual {
+            // Patrick ne doit jamais valider ses propres PINs
+            let isSelfPull = session.role.isPatrick && key.hasSuffix("-\(ActiveRole.patrickCode)")
+            if detectedPin != nil && !manual && !isSelfPull { return "PIN_PENDING" }
+            if let pin = detectedPin, manual, !isSelfPull {
                 return "PIN:\(pin)\n" + lines.joined(separator: "\n")
             }
             return lines.joined(separator: "\n")
