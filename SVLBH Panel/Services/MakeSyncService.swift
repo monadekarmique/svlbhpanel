@@ -233,10 +233,16 @@ class MakeSyncService: ObservableObject {
             }
             // Patrick ne doit jamais valider ses propres PINs
             let isSelfPull = session.role.isPatrick && key.hasSuffix("-\(ActiveRole.patrickCode)")
-            if detectedPin != nil && !manual && !isSelfPull { return "PIN_PENDING" }
+            if detectedPin != nil && !manual && !isSelfPull {
+                // Auto-scan avec PIN d'un tiers → marquer READ pour ne pas boucler
+                Task { await self.markAsRead(sessionId: key) }
+                return "PIN_PENDING"
+            }
             if let pin = detectedPin, manual, !isSelfPull {
                 return "PIN:\(pin)\n" + lines.joined(separator: "\n")
             }
+            // Self-pull ou pas de PIN → marquer READ
+            Task { await self.markAsRead(sessionId: key) }
             return lines.joined(separator: "\n")
         } catch {
             await MainActor.run { isReceiving = false; lastError = error.localizedDescription }

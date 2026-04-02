@@ -380,7 +380,7 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // F01 — Leads connectés (Superviseur + Certifiées)
+                    // F01 — Visiteurs (Superviseur + Certifiées)
                     if session.role.isPatrick || currentTier == .certifiee {
                         LeadSlotsView().environmentObject(session)
                     }
@@ -881,16 +881,16 @@ struct MeridianHelpView: View {
     }
 }
 
-// MARK: - F01 — Leads actifs / en attente
+// MARK: - F01 — Visiteurs actifs / en attente
 struct LeadSlotsView: View {
     @EnvironmentObject var session: SessionState
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("Leads connectés")
+                Text("Visiteurs")
                     .font(.caption.bold()).foregroundColor(Color(hex: "#E24B4A"))
                 Spacer()
-                Text("\(session.activeLeadCount)/\(SessionState.maxActiveLeads)")
+                Text("\(session.activeLeadCount)/\(session.maxActiveLeads)")
                     .font(.caption.bold().monospaced())
                     .foregroundColor(session.canAcceptLead ? Color(hex: "#1D9E75") : Color(hex: "#E24B4A"))
             }

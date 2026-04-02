@@ -882,7 +882,10 @@ class SessionState: ObservableObject {
     @Published var thematicGroups: [ThematicGroup] = [] { didSet { saveGroups() } }
     @Published var referenceImageSets: [ReferenceImageSet] = [] { didSet { saveImageSets() } }
     @Published var leadSlots: [LeadSlot] = [] { didSet { saveLeadSlots() } }
-    static let maxActiveLeads = 5
+    @Published var maxActiveLeads: Int = 5 {
+        didSet { UserDefaults.standard.set(maxActiveLeads, forKey: "svlbh_max_active_leads") }
+    }
+    static let defaultMaxActiveLeads = 5
 
     // ── Données session ──
     @Published var generations: [Generation] = []
@@ -912,6 +915,8 @@ class SessionState: ObservableObject {
         loadGroups()
         loadImageSets()
         loadLeadSlots()
+        let savedMax = UserDefaults.standard.integer(forKey: "svlbh_max_active_leads")
+        if savedMax > 0 { maxActiveLeads = savedMax }
         subscribeToPierres()
     }
 
@@ -1085,7 +1090,7 @@ class SessionState: ObservableObject {
 
     var activeLeadCount: Int { leadSlots.filter { $0.status == .active }.count }
     var waitingLeads: [LeadSlot] { leadSlots.filter { $0.status == .waiting } }
-    var canAcceptLead: Bool { activeLeadCount < Self.maxActiveLeads }
+    var canAcceptLead: Bool { activeLeadCount < maxActiveLeads }
 
     func receiveLead(shamaneCode: String) {
         guard !leadSlots.contains(where: { $0.shamaneCode == shamaneCode }) else { return }

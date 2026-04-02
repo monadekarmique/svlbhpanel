@@ -11,6 +11,7 @@ struct PlancheFloatingView: View {
     @State private var selectedProfile: ShamaneProfile?
     @State private var showTherapists = false
     @State private var showDistribution = false
+    @State private var showVisiteurs = false
 
     var body: some View {
         if isVisible && (session.role.isSuperviseur || session.currentTier == .certifiee) {
@@ -62,6 +63,25 @@ struct PlancheFloatingView: View {
                     .padding(.horizontal, 12).padding(.bottom, 4)
                 }
 
+                // Visiteurs (superviseurs + certifiées autorisées)
+                if session.role.isSuperviseur || VisiteursSettingsView.hasAccess(code: session.role.code) {
+                HStack(spacing: 8) {
+                    Button { showVisiteurs = true } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: "person.2.fill").font(.system(size: 10))
+                            Text("Visiteurs (\(session.activeLeadCount)/\(session.maxActiveLeads))")
+                                .font(.system(size: 10, weight: .medium))
+                        }
+                        .foregroundColor(Color(hex: "#BA7517"))
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(Color(hex: "#BA7517").opacity(0.1))
+                        .cornerRadius(6)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 12).padding(.bottom, 4)
+                }
+
                 Divider()
 
                 // Segments avec numéros
@@ -104,6 +124,9 @@ struct PlancheFloatingView: View {
             }
             .sheet(isPresented: $showDistribution) {
                 DistributionView().environmentObject(session)
+            }
+            .sheet(isPresented: $showVisiteurs) {
+                VisiteursSettingsView().environmentObject(session)
             }
         }
     }
