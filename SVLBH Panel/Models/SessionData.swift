@@ -267,45 +267,7 @@ enum BroadcastTarget: Equatable {
 // MARK: - Shamane enum (dropdown "Décoder et Envoyer")
 // ═══════════════════════════════════════════════════════════════════
 
-enum Shamane: String, CaseIterable, Identifiable {
-    case cornelia  = "0300"  // certifiée
-    case anne      = "302"   // certifiée
-    case flavia    = "301"   // certifiée
-    case chloe     = "22"    // lead
-    case veronique = "21"    // lead
-    case irene     = "103"   // formation
-
-    var id: String { rawValue }
-    var displayName: String {
-        switch self {
-        case .cornelia:  return "Cornelia"
-        case .anne:      return "Anne"
-        case .flavia:    return "Flavia"
-        case .chloe:     return "Chloé"
-        case .veronique: return "Véronique"
-        case .irene:     return "Irène"
-        }
-    }
-    var isCertifiee: Bool {
-        switch self {
-        case .cornelia, .anne, .flavia: return true
-        case .chloe, .veronique, .irene: return false
-        }
-    }
-
-    static var certifiees: [Shamane] { allCases.filter { $0.isCertifiee } }
-    static var enFormation: [Shamane] { allCases.filter { !$0.isCertifiee } }
-
-    // Persistence dernière sélection
-    private static let lastUsedKey = "svlbh_lastShamane"
-    static var lastUsed: Shamane? {
-        guard let raw = UserDefaults.standard.string(forKey: lastUsedKey) else { return nil }
-        return Shamane(rawValue: raw)
-    }
-    static func saveLastUsed(_ s: Shamane) {
-        UserDefaults.standard.set(s.rawValue, forKey: lastUsedKey)
-    }
-}
+// enum Shamane supprimé — la source de vérité est shamaneProfiles (Planche Tactique)
 
 // Migration ancien format CertifiedTherapist → ShamaneProfile
 private struct LegacyCertifiedTherapist: Codable {
