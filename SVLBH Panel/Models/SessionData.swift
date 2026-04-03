@@ -1115,6 +1115,9 @@ class SessionState: ObservableObject {
         "01": "455000",   // Patrick v3
         "2601": "302",    // Anne artefact
         "2701": "301",    // Flavia artefact
+        "103": "0304",    // Irène formation → certifiée
+        "22": "0303",     // Chloé lead → certifiée
+        "21": "0105",     // Véronique lead → formée
     ]
 
     private func loadShamanes() {
