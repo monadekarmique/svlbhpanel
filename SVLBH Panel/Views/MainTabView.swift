@@ -143,7 +143,8 @@ struct MainTabView: View {
             if pinInput == expected {
                 let payload = lines.dropFirst().joined(separator: "\n")
                 sync.applyPayload(payload, to: session)
-                session.incrementSession()  // P2 — auto-increment séance
+                // sessionNum reste stable pendant le cycle correctif
+                // (l'incrément se fait manuellement via nouveau patient/séance)
                 sync.lastPin = nil          // P2 fix — effacer le PIN après validation
                 showDiffLog = true
             }
