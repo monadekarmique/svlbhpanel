@@ -24,6 +24,7 @@ struct RoutineMatinTab: View {
     @State private var allQuotas: [CertifieeQuota] = []
     @State private var isLoading = false
     @State private var lastRefresh: Date?
+    @State private var showPaletteDeLumiere = false
 
     /// Webhook svlbh-sync-praticien — retourne les données billing
     private static let syncURL = URL(string: "https://hook.eu2.make.com/f5ezym67mfmywuwoov7fbb4gf3ufhqq8")!
@@ -114,6 +115,9 @@ struct RoutineMatinTab: View {
         }
         .navigationViewStyle(.stack)
         .task { await fetchQuotas() }
+        .sheet(isPresented: $showPaletteDeLumiere) {
+            PaletteDeLumiereView()
+        }
     }
 
     // MARK: - Fetch depuis webhook (action=get par praticienne)
@@ -172,9 +176,15 @@ struct RoutineMatinTab: View {
                 .font(.system(size: 40))
                 .foregroundColor(Color(hex: "#BA7517"))
 
-            Text("Cercle de Lumière")
-                .font(.title3.bold())
+            Button { showPaletteDeLumiere = true } label: {
+                HStack(spacing: 6) {
+                    Text("Cercle de Lumière")
+                        .font(.title3.bold())
+                    Image(systemName: "paintpalette.fill")
+                        .font(.subheadline)
+                }
                 .foregroundColor(Color(hex: "#8B3A62"))
+            }
 
             Text("Le travail de chacune compte")
                 .font(.caption)

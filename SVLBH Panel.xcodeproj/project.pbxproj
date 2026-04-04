@@ -14,6 +14,16 @@
 		B1A2C3D4E5F60001A1B2C3D4 /* BuildGateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60002A1B2C3D4 /* BuildGateService.swift */; };
 		B1A2C3D4E5F60003A1B2C3D4 /* BuildGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60004A1B2C3D4 /* BuildGateView.swift */; };
 		P1ERR3SHE3TBTN00000001 /* PierresSheetButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = P1ERR3SHE3TBTN00000002 /* PierresSheetButton.swift */; };
+		PDL00000001A /* FiveElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000001B /* FiveElements.swift */; };
+		PDL00000002A /* Chromotherapy.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000002B /* Chromotherapy.swift */; };
+		PDL00000003A /* ChromotherapyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000003B /* ChromotherapyManager.swift */; };
+		PDL00000004A /* FiveElementsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000004B /* FiveElementsManager.swift */; };
+		PDL00000005A /* ColorToHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000005B /* ColorToHex.swift */; };
+		PDL00000006A /* PDLPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000006B /* PDLPaletteView.swift */; };
+		PDL00000007A /* PDLDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000007B /* PDLDiagnosticView.swift */; };
+		PDL00000008A /* PDLSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000008B /* PDLSessionView.swift */; };
+		PDL00000009A /* PDLDecodageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL00000009B /* PDLDecodageView.swift */; };
+		PDL0000000AA /* PaletteDeLumiereView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDL0000000AB /* PaletteDeLumiereView.swift */; };
 		2E118F7C59FEBE02688D7A0B /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */; };
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
@@ -107,6 +117,16 @@
 		6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResearchProgramsView.swift; sourceTree = "<group>"; };
 		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
 		P1ERR3SHE3TBTN00000002 /* PierresSheetButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresSheetButton.swift; sourceTree = "<group>"; };
+		PDL00000001B /* FiveElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiveElements.swift; sourceTree = "<group>"; };
+		PDL00000002B /* Chromotherapy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chromotherapy.swift; sourceTree = "<group>"; };
+		PDL00000003B /* ChromotherapyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromotherapyManager.swift; sourceTree = "<group>"; };
+		PDL00000004B /* FiveElementsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiveElementsManager.swift; sourceTree = "<group>"; };
+		PDL00000005B /* ColorToHex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToHex.swift; sourceTree = "<group>"; };
+		PDL00000006B /* PDLPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDLPaletteView.swift; sourceTree = "<group>"; };
+		PDL00000007B /* PDLDiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDLDiagnosticView.swift; sourceTree = "<group>"; };
+		PDL00000008B /* PDLSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDLSessionView.swift; sourceTree = "<group>"; };
+		PDL00000009B /* PDLDecodageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDLDecodageView.swift; sourceTree = "<group>"; };
+		PDL0000000AB /* PaletteDeLumiereView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteDeLumiereView.swift; sourceTree = "<group>"; };
 		8E4D14342F6E9E0900F9996A /* SLMTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SLMTab.swift; path = "SVLBH Panel/Views/SLMTab.swift"; sourceTree = "<group>"; };
 		8E7964C52F6E4D110051060A /* SVLBH Panel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SVLBH Panel.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7964C82F6E4D110051060A /* SVLBH_PanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelApp.swift; sourceTree = "<group>"; };
@@ -215,6 +235,7 @@
 				567E65D9DB58443D9115DB93 /* Models */,
 				CB6A903E60E9453B814FED4F /* Services */,
 				D73360B41006421B9DE7938F /* Views */,
+				PDL00000GRP0 /* PaletteDeLumiere */,
 				8E7964D12F6E4D120051060A /* Assets.xcassets */,
 				8E7964D32F6E4D120051060A /* SVLBH_Panel.entitlements */,
 				8E7964D42F6E4D120051060A /* Preview Content */,
@@ -259,6 +280,23 @@
 				B1A2C3D4E5F60002A1B2C3D4 /* BuildGateService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		PDL00000GRP0 /* PaletteDeLumiere */ = {
+			isa = PBXGroup;
+			children = (
+				PDL00000001B /* FiveElements.swift */,
+				PDL00000002B /* Chromotherapy.swift */,
+				PDL00000003B /* ChromotherapyManager.swift */,
+				PDL00000004B /* FiveElementsManager.swift */,
+				PDL00000005B /* ColorToHex.swift */,
+				PDL00000006B /* PDLPaletteView.swift */,
+				PDL00000007B /* PDLDiagnosticView.swift */,
+				PDL00000008B /* PDLSessionView.swift */,
+				PDL00000009B /* PDLDecodageView.swift */,
+				PDL0000000AB /* PaletteDeLumiereView.swift */,
+			);
+			path = PaletteDeLumiere;
 			sourceTree = "<group>";
 		};
 		D73360B41006421B9DE7938F /* Views */ = {
@@ -485,6 +523,16 @@
 				299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */,
 				B1A2C3D4E5F60001A1B2C3D4 /* BuildGateService.swift in Sources */,
 				B1A2C3D4E5F60003A1B2C3D4 /* BuildGateView.swift in Sources */,
+				PDL00000001A /* FiveElements.swift in Sources */,
+				PDL00000002A /* Chromotherapy.swift in Sources */,
+				PDL00000003A /* ChromotherapyManager.swift in Sources */,
+				PDL00000004A /* FiveElementsManager.swift in Sources */,
+				PDL00000005A /* ColorToHex.swift in Sources */,
+				PDL00000006A /* PDLPaletteView.swift in Sources */,
+				PDL00000007A /* PDLDiagnosticView.swift in Sources */,
+				PDL00000008A /* PDLSessionView.swift in Sources */,
+				PDL00000009A /* PDLDecodageView.swift in Sources */,
+				PDL0000000AA /* PaletteDeLumiereView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
