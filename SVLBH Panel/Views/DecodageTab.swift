@@ -5,6 +5,7 @@ import SwiftUI
 
 struct DecodageTab: View {
     @EnvironmentObject var session: SessionState
+    @State private var showPierres = false
 
     var currentTier: PractitionerTier {
         switch session.role {
@@ -25,6 +26,10 @@ struct DecodageTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
+                    // ── Bouton Pierres (haut) ──
+                    PierresSheetButton(showPierres: $showPierres)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+
                     // ── Énergies parasitaires ──
                     ProvocationView()
                         .frame(minHeight: 400)
@@ -53,6 +58,10 @@ struct DecodageTab: View {
                         GenerationRow(g: g)
                         Divider().padding(.leading, 16)
                     }
+                    // ── Bouton Pierres (bas) ──
+                    PierresSheetButton(showPierres: $showPierres)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+
                     // ── Footer ORCID ──
                     VStack(spacing: 4) {
                         Divider().padding(.horizontal, 40)
@@ -76,6 +85,9 @@ struct DecodageTab: View {
             .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }
         }
         .navigationViewStyle(.stack)
+        .sheet(isPresented: $showPierres) {
+            PierresTab().environmentObject(session)
+        }
     }
 }
 

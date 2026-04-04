@@ -13,6 +13,7 @@
 		299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386FAEF548C6AD12E862A293 /* EtApresTab.swift */; };
 		B1A2C3D4E5F60001A1B2C3D4 /* BuildGateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60002A1B2C3D4 /* BuildGateService.swift */; };
 		B1A2C3D4E5F60003A1B2C3D4 /* BuildGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60004A1B2C3D4 /* BuildGateView.swift */; };
+		P1ERR3SHE3TBTN00000001 /* PierresSheetButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = P1ERR3SHE3TBTN00000002 /* PierresSheetButton.swift */; };
 		2E118F7C59FEBE02688D7A0B /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */; };
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
@@ -105,6 +106,7 @@
 		594AD209FEA0F3343E316DD9 /* ParasiteEnergyData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParasiteEnergyData.swift; sourceTree = "<group>"; };
 		6CEFC36F616E341659BAB2AC /* ResearchProgramsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResearchProgramsView.swift; sourceTree = "<group>"; };
 		8E3C8036B3674B24AA785EC0 /* PierresTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresTab.swift; sourceTree = "<group>"; };
+		P1ERR3SHE3TBTN00000002 /* PierresSheetButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PierresSheetButton.swift; sourceTree = "<group>"; };
 		8E4D14342F6E9E0900F9996A /* SLMTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SLMTab.swift; path = "SVLBH Panel/Views/SLMTab.swift"; sourceTree = "<group>"; };
 		8E7964C52F6E4D110051060A /* SVLBH Panel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SVLBH Panel.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7964C82F6E4D110051060A /* SVLBH_PanelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelApp.swift; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				ONBO0001BBBB00000001BBBB /* OnboardingView.swift */,
 				A10CF5DB221742EFABD40371 /* ChakrasTab.swift */,
 				8E3C8036B3674B24AA785EC0 /* PierresTab.swift */,
+				P1ERR3SHE3TBTN00000002 /* PierresSheetButton.swift */,
 				3900240D6A13450BA9326F25 /* DecodageTab.swift */,
 				F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */,
 				E1A70032EXPORT0141BCCF02 /* ExportView.swift */,
@@ -446,6 +449,7 @@
 				8E4D14352F6E9E0900F9996A /* SLMTab.swift in Sources */,
 				C679E1BE195E44EDBDBA2DC3 /* ChakrasTab.swift in Sources */,
 				82A46D9D05844DBE9D122144 /* PierresTab.swift in Sources */,
+				P1ERR3SHE3TBTN00000001 /* PierresSheetButton.swift in Sources */,
 				3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */,
 				FA496127934948D69587803F /* PasteImportView.swift in Sources */,
 				E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */,

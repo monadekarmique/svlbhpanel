@@ -41,11 +41,6 @@ struct MainTabView: View {
                     SVLBHTab(selectedTab: $selectedTab)
                         .tabItem { Label("SVLBH", systemImage: "atom") }
                         .tag(0)
-                if session.currentTier.forkResolu || session.role.isPatrick {
-                    RoutineMatinTab()
-                        .tabItem { Label("Routine", systemImage: "sun.max") }
-                        .tag(1)
-                }
                 if isUnlistedUser {
                     LeadBubbleTab()
                         .tabItem { Label("Comment faire ?", systemImage: "person.wave.2") }
@@ -58,10 +53,6 @@ struct MainTabView: View {
                 SLMTab()
                     .tabItem { Label("SLM", systemImage: "light.max") }
                     .tag(3)
-                PierresTab()
-                    .tabItem { Label("Pierres", systemImage: "diamond") }
-                    .badge(sync.diffs.pierres > 0 ? sync.diffs.pierres : 0)
-                    .tag(4)
                 ChakrasTab()
                     .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)

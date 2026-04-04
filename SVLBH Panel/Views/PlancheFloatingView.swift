@@ -12,6 +12,7 @@ struct PlancheFloatingView: View {
     @State private var showTherapists = false
     @State private var showDistribution = false
     @State private var showVisiteurs = false
+    @State private var showRoutine = false
 
     var body: some View {
         if isVisible && (session.role.isSuperviseur || session.currentTier == .certifiee) {
@@ -34,6 +35,24 @@ struct PlancheFloatingView: View {
                     }
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8)
+
+                // Routine (certifiées + Patrick)
+                if session.currentTier.forkResolu || session.role.isPatrick {
+                    HStack(spacing: 8) {
+                        Button { showRoutine = true } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: "sun.max").font(.system(size: 10))
+                                Text("Routine").font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(Color(hex: "#D4A017"))
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(Color(hex: "#D4A017").opacity(0.1))
+                            .cornerRadius(6)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 12).padding(.bottom, 4)
+                }
 
                 // Shamanes + Distribution (superviseurs)
                 if session.role.isSuperviseur {
@@ -119,6 +138,9 @@ struct PlancheFloatingView: View {
             .padding(.leading, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .transition(.move(edge: .leading).combined(with: .opacity))
+            .sheet(isPresented: $showRoutine) {
+                RoutineMatinTab().environmentObject(session)
+            }
             .sheet(isPresented: $showTherapists) {
                 TherapistManagerView().environmentObject(session)
             }

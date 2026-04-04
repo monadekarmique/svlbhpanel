@@ -6,6 +6,7 @@ import SwiftUI
 struct ChakrasTab: View {
     @EnvironmentObject var session: SessionState
     @State private var collapseToken = UUID()
+    @State private var showPierres = false
 
     /// D0 (C34-C45) visible uniquement pour Patrick et Cornelia, placé au-dessus de D9
     private var filteredDimensions: [DimensionInfo] {
@@ -26,6 +27,10 @@ struct ChakrasTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
+                    // ── Bouton Pierres (haut) ──
+                    PierresSheetButton(showPierres: $showPierres)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+
                     VStack(spacing: 4) {
                         HStack {
                             Text("Bloqueurs d\u{2019}ascensions")
@@ -46,6 +51,10 @@ struct ChakrasTab: View {
                         DimensionSection(dim: dim, collapseToken: collapseToken)
                             .environmentObject(session)
                     }
+                    // ── Bouton Pierres (bas) ──
+                    PierresSheetButton(showPierres: $showPierres)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+
                     Spacer().frame(height: 80)
                 }
             }
@@ -64,6 +73,9 @@ struct ChakrasTab: View {
             }
         }
         .navigationViewStyle(.stack)
+        .sheet(isPresented: $showPierres) {
+            PierresTab().environmentObject(session)
+        }
     }
 }
 
