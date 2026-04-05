@@ -162,6 +162,7 @@ struct ShamaneProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var photoSetId: String? = nil       // lien vers ReferenceImageSet.id
     var sephirothCodes: [String] = []   // max 5 codes séphirothiques
     var programmes: [ShamaneProgramme] = []
+    var lastModified: Date = Date()
 
     var tier: PractitionerTier { PractitionerTier.from(code: Int(code) ?? 0) }
 
@@ -267,7 +268,38 @@ enum BroadcastTarget: Equatable {
 // MARK: - Shamane enum (dropdown "Décoder et Envoyer")
 // ═══════════════════════════════════════════════════════════════════
 
-// enum Shamane supprimé — la source de vérité est shamaneProfiles (Planche Tactique)
+enum Shamane: String, CaseIterable, Identifiable {
+    case cornelia  = "0300"  // certifiée
+    case anne      = "302"   // certifiée
+    case flavia    = "301"   // certifiée
+    case chloe     = "303"   // certifiée
+    case irene     = "304"   // certifiée
+
+    var id: String { rawValue }
+    var displayName: String {
+        switch self {
+        case .cornelia:  return "Cornelia"
+        case .anne:      return "Anne"
+        case .flavia:    return "Flavia"
+        case .chloe:     return "Chloé"
+        case .irene:     return "Irène"
+        }
+    }
+    var isCertifiee: Bool { true }
+
+    static var certifiees: [Shamane] { allCases }
+    static var enFormation: [Shamane] { [] }
+
+    // Persistence dernière sélection
+    private static let lastUsedKey = "svlbh_lastShamane"
+    static var lastUsed: Shamane? {
+        guard let raw = UserDefaults.standard.string(forKey: lastUsedKey) else { return nil }
+        return Shamane(rawValue: raw)
+    }
+    static func saveLastUsed(_ s: Shamane) {
+        UserDefaults.standard.set(s.rawValue, forKey: lastUsedKey)
+    }
+}
 
 // Migration ancien format CertifiedTherapist → ShamaneProfile
 private struct LegacyCertifiedTherapist: Codable {
@@ -557,8 +589,19 @@ class PractitionerIdentity: ObservableObject {
         return (code: String(parts[0]), name: String(parts[1]))
     }
 
-    // appleEmailMap supprimé — la source de vérité est le datastore Make
-    // (Planche Tactique → svlbh-apple-identity webhook)
+    /// Mapping email Apple → (code praticien, prénom)
+    static let appleEmailMap: [String: (code: String, name: String)] = [
+        // Superviseur
+        "bays.patrick@icloud.com": (ActiveRole.patrickCode, "Patrick"),
+        "bays.patrick@gmail.com": (ActiveRole.patrickCode, "Patrick"),
+        "pb@vlbh.energy": (ActiveRole.patrickCode, "Patrick"),
+        // Certifiées
+        "cornelia.althaus@hotmail.com": ("300", "Cornelia"),
+        "anne.gr29@gmail.com": ("302", "Anne"),
+        "flaviaguift@icloud.com": ("301", "Flavia"),
+        // Lead
+        "chloegattlensar@me.com": ("303", "Chloé"),
+    ]
 
     @Published var isIdentified: Bool = false
     @Published var code: String = ""
@@ -579,6 +622,7 @@ class PractitionerIdentity: ObservableObject {
         UserDefaults.standard.set(code, forKey: Self.codeKey)
         UserDefaults.standard.set(name, forKey: Self.nameKey)
         isIdentified = true
+        print("[Identity] identify code='\(code)' name='\(name)' tier=\(PractitionerTier.from(code: Int(code) ?? 0)) isPatrick=\(code == ActiveRole.patrickCode)")
         // Enregistrer le vendorID sur Make pour les prochains lancements
         Task { await registerVendorID(code: code, name: name) }
     }
@@ -589,18 +633,19 @@ class PractitionerIdentity: ObservableObject {
             [$0.givenName, $0.familyName].compactMap { $0 }.joined(separator: " ")
         }.flatMap { $0.isEmpty ? nil : $0 }
 
-        // 1. Webhook Make — source de vérité (lookup par apple_user_id)
-        if let remote = await lookupAppleUserID(userID: userID) {
-            let name = appleName ?? remote.name
+        // 1. Email disponible et dans le map → liaison automatique + enregistrer sur Make
+        if let email = email, let match = Self.appleEmailMap[email] {
+            let name = appleName ?? match.name
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
-            UserDefaults.standard.set(remote.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(match.code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
-            Self.keychainSave(userID: userID, code: remote.code, name: name)
-            identify(code: remote.code, name: name)
+            Self.keychainSave(userID: userID, code: match.code, name: name)
+            identify(code: match.code, name: name)
+            Task { await registerAppleUserID(userID: userID, code: match.code, name: name) }
             return
         }
 
-        // 2. Fallback offline — UserDefaults (login suivant, email = nil)
+        // 2. UserID déjà lié via UserDefaults (login suivant, email = nil)
         let savedAppleUser = UserDefaults.standard.string(forKey: Self.appleUserKey)
         if savedAppleUser == userID, !userID.isEmpty,
            let savedCode = UserDefaults.standard.string(forKey: "svlbh_apple_mapped_code"), !savedCode.isEmpty {
@@ -609,12 +654,22 @@ class PractitionerIdentity: ObservableObject {
             return
         }
 
-        // 3. Fallback offline — Keychain (survit aux reinstalls)
+        // 3. UserID dans le Keychain (survit aux reinstalls)
         if let saved = Self.keychainLoad(userID: userID) {
             UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
             UserDefaults.standard.set(saved.code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(saved.name, forKey: "svlbh_apple_mapped_name")
             identify(code: saved.code, name: saved.name)
+            return
+        }
+
+        // 4. Webhook Make — lookup par apple_user_id (survit changement d'appareil)
+        if let remote = await lookupAppleUserID(userID: userID) {
+            UserDefaults.standard.set(userID, forKey: Self.appleUserKey)
+            UserDefaults.standard.set(remote.code, forKey: "svlbh_apple_mapped_code")
+            UserDefaults.standard.set(remote.name, forKey: "svlbh_apple_mapped_name")
+            Self.keychainSave(userID: userID, code: remote.code, name: remote.name)
+            identify(code: remote.code, name: remote.name)
             return
         }
 
@@ -624,7 +679,7 @@ class PractitionerIdentity: ObservableObject {
             UserDefaults.standard.set(code, forKey: "svlbh_apple_mapped_code")
             UserDefaults.standard.set(displayName, forKey: "svlbh_apple_mapped_name")
             Self.keychainSave(userID: userID, code: code, name: displayName)
-            Task { await registerAppleUserID(userID: userID, code: code, name: displayName, email: email) }
+            Task { await registerAppleUserID(userID: userID, code: code, name: displayName) }
             isIdentified = true
             return
         }
@@ -635,21 +690,19 @@ class PractitionerIdentity: ObservableObject {
 
     // MARK: - Apple Identity ↔ Make.com
 
-    /// Enregistre apple_user_id → code/name/email sur Make pour lookup cross-device (appelé depuis OnboardingView lors de la liaison manuelle)
-    func registerAppleUserIDFromLink(userID: String, code: String, name: String, email: String? = nil) async {
-        await registerAppleUserID(userID: userID, code: code, name: name, email: email)
+    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device (appelé depuis OnboardingView lors de la liaison manuelle)
+    func registerAppleUserIDFromLink(userID: String, code: String, name: String) async {
+        await registerAppleUserID(userID: userID, code: code, name: name)
     }
 
-    /// Enregistre apple_user_id → code/name/email/categorie sur Make pour lookup cross-device
-    private func registerAppleUserID(userID: String, code: String, name: String, email: String? = nil) async {
-        var body: [String: String] = [
+    /// Enregistre apple_user_id → code/name sur Make pour lookup cross-device
+    private func registerAppleUserID(userID: String, code: String, name: String) async {
+        let body: [String: String] = [
             "action": "apple_register",
             "apple_user_id": userID,
             "code": code,
-            "name": name,
-            "categorie": PractitionerTier.from(code: Int(code) ?? 0).rawValue
+            "name": name
         ]
-        if let email = email { body["email"] = email }
         do {
             var req = URLRequest(url: Self.appleIdentityURL)
             req.httpMethod = "POST"
@@ -717,11 +770,14 @@ class PractitionerIdentity: ObservableObject {
     func applyTo(_ session: SessionState) {
         if isPatrick {
             session.role = .patrick
+            print("[Identity] applyTo → .patrick code='\(ActiveRole.patrickCode)'")
         } else {
-            let profile = session.shamaneProfiles.first { $0.code == code }
+            let existingProfile = session.shamaneProfiles.first { $0.code == code }
+            let profile = existingProfile
                 ?? ShamaneProfile(code: code, prenom: displayName, nom: "",
                                   whatsapp: "", email: "", abonnement: "")
             session.role = .shamane(profile)
+            print("[Identity] applyTo → .shamane code='\(code)' codeFormatted='\(profile.codeFormatted)' tier=\(profile.tier) profileFound=\(existingProfile != nil)")
         }
     }
 
@@ -798,6 +854,8 @@ class SessionState: ObservableObject {
 
     @Published var patientId: String = "12" { didSet { PatientRegistry.seed(with: patientId) } }
     @Published var sessionNum: String = "001"
+    @Published var ratio4D: Double? = nil
+    @Published var passeport = Passeport4DData()
     @Published var isSysteme: Bool = false
     @Published var sessionProgramCode: String = "00"  // F30 — "00" = non classifiée, "01" = Recherche
     var sessionId: String { "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(role.code)" }
@@ -828,8 +886,6 @@ class SessionState: ObservableObject {
             rebuildGenerations()
         }
     }
-    /// true quand Patrick simule une shamane (set dans SVLBHTab segment picker)
-    var isPatrickSimulating: Bool = false
     @Published var pullSource: ShamaneProfile?
 
     // ── Scores duaux ──
@@ -844,10 +900,7 @@ class SessionState: ObservableObject {
     @Published var thematicGroups: [ThematicGroup] = [] { didSet { saveGroups() } }
     @Published var referenceImageSets: [ReferenceImageSet] = [] { didSet { saveImageSets() } }
     @Published var leadSlots: [LeadSlot] = [] { didSet { saveLeadSlots() } }
-    @Published var maxActiveLeads: Int = 5 {
-        didSet { UserDefaults.standard.set(maxActiveLeads, forKey: "svlbh_max_active_leads") }
-    }
-    static let defaultMaxActiveLeads = 5
+    static let maxActiveLeads = 5
 
     // ── Données session ──
     @Published var generations: [Generation] = []
@@ -857,11 +910,10 @@ class SessionState: ObservableObject {
     // F16 — CIM-11 sélectionnés par chakra
     @Published var selectedCIM: [String: Set<String>] = [:]
     @Published var porteSelections: [String: Int] = [:]  // chakraKey_temp / chakraKey_perm → numero porte
-    // D22 — Programmes de Protection sélectionnés (id programme → true)
-    @Published var programmeProtectionSelections: Set<String> = []
     @Published var syncStatus: String = "🔴 Off"
     @Published var lastPin: String = ""
     private var cancellables = Set<AnyCancellable>()
+    private var iCloudObserver: Any?
 
     // Cache pour visibleGenerations (évite filtre+sort à chaque render)
     @Published private(set) var visibleGenerations: [Generation] = []
@@ -877,9 +929,8 @@ class SessionState: ObservableObject {
         loadGroups()
         loadImageSets()
         loadLeadSlots()
-        let savedMax = UserDefaults.standard.integer(forKey: "svlbh_max_active_leads")
-        if savedMax > 0 { maxActiveLeads = savedMax }
         subscribeToPierres()
+        setupICloudSync()
     }
 
     /// Propager les changements de chaque PierreState vers SessionState
@@ -908,14 +959,7 @@ class SessionState: ObservableObject {
     }
 
     // ── Clés sync ──
-    var pushKey: String {
-        // Patrick simulant une shamane → déposer sous clé Patrick
-        // (car la shamane pull toujours avec patrickCode)
-        if isPatrickSimulating {
-            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(ActiveRole.patrickCode)"
-        }
-        return sessionId
-    }
+    var pushKey: String { sessionId }
 
     var pullKey: String {
         if role.isPatrick, let src = pullSource {
@@ -955,7 +999,7 @@ class SessionState: ObservableObject {
         scoresTherapist = ScoresLumiere(); scoresPatrick = ScoresLumiere()
         for g in generations { g.abuseur = ""; g.victime = ""; g.phases = []; g.gu = []; g.meridiens = []; g.statuts = []; g.validated = false; g.clearSuggestions() }
         for p in pierres { p.selected = false; p.validated = false; p.volume = 1; p.unit = "kg"; p.durationMin = 30; p.durationDays = p.spec.defaultDays; p.clearSuggestions() }
-        chakraStates = initialChakraStates(); sugChakraStates = [:]; selectedCIM = [:]; programmeProtectionSelections = []
+        chakraStates = initialChakraStates(); sugChakraStates = [:]; selectedCIM = [:]
         rebuildGenerations()
     }
 
@@ -977,7 +1021,9 @@ class SessionState: ObservableObject {
 
     func updateShamane(_ updated: ShamaneProfile) {
         guard let idx = shamaneProfiles.firstIndex(where: { $0.code == updated.code }) else { return }
-        shamaneProfiles[idx] = updated
+        var stamped = updated
+        stamped.lastModified = Date()
+        shamaneProfiles[idx] = stamped
     }
 
     var shamanesCertifiees: [ShamaneProfile] { shamaneProfiles.filter { $0.tier == .certifiee } }
@@ -1052,7 +1098,7 @@ class SessionState: ObservableObject {
 
     var activeLeadCount: Int { leadSlots.filter { $0.status == .active }.count }
     var waitingLeads: [LeadSlot] { leadSlots.filter { $0.status == .waiting } }
-    var canAcceptLead: Bool { activeLeadCount < maxActiveLeads }
+    var canAcceptLead: Bool { activeLeadCount < Self.maxActiveLeads }
 
     func receiveLead(shamaneCode: String) {
         guard !leadSlots.contains(where: { $0.shamaneCode == shamaneCode }) else { return }
@@ -1103,7 +1149,56 @@ class SessionState: ObservableObject {
     private func saveShamanes() {
         if let data = try? JSONEncoder().encode(shamaneProfiles) {
             UserDefaults.standard.set(data, forKey: "svlbh_shamanes")
+            NSUbiquitousKeyValueStore.default.set(data, forKey: "svlbh_shamanes")
         }
+    }
+
+    // MARK: - iCloud KVS Sync
+
+    private func setupICloudSync() {
+        iCloudObserver = NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: NSUbiquitousKeyValueStore.default,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let userInfo = notification.userInfo,
+                  let reason = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
+                  (reason == NSUbiquitousKeyValueStoreServerChange ||
+                   reason == NSUbiquitousKeyValueStoreInitialSyncChange),
+                  let keys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String],
+                  keys.contains("svlbh_shamanes"),
+                  let cloudData = NSUbiquitousKeyValueStore.default.data(forKey: "svlbh_shamanes")
+            else { return }
+            self.mergeShamanesFromCloud(cloudData)
+        }
+        NSUbiquitousKeyValueStore.default.synchronize()
+        // Merge anything already in iCloud
+        if let cloudData = NSUbiquitousKeyValueStore.default.data(forKey: "svlbh_shamanes") {
+            mergeShamanesFromCloud(cloudData)
+        }
+    }
+
+    private func mergeShamanesFromCloud(_ cloudData: Data) {
+        guard let cloudProfiles = try? JSONDecoder().decode([ShamaneProfile].self, from: cloudData) else { return }
+        var merged = shamaneProfiles
+        var changed = false
+        for remote in cloudProfiles {
+            if let idx = merged.firstIndex(where: { $0.code == remote.code }) {
+                // Profile exists locally — keep the most recently modified
+                if remote.lastModified > merged[idx].lastModified {
+                    merged[idx] = remote
+                    changed = true
+                    print("[iCloud] Updated profile \(remote.code) (\(remote.prenom)) from cloud")
+                }
+            } else {
+                // New profile from cloud — add it
+                merged.append(remote)
+                changed = true
+                print("[iCloud] Added profile \(remote.code) (\(remote.prenom)) from cloud")
+            }
+        }
+        if changed { shamaneProfiles = merged }
     }
     // F28 — Migration codes v3 → v4.0.0 (inclut artefacts iPad)
     private static let codesMigration: [String: String] = [
@@ -1115,9 +1210,6 @@ class SessionState: ObservableObject {
         "01": "455000",   // Patrick v3
         "2601": "302",    // Anne artefact
         "2701": "301",    // Flavia artefact
-        "103": "0304",    // Irène formation → certifiée
-        "22": "0303",     // Chloé lead → certifiée
-        "21": "0105",     // Véronique lead → formée
     ]
 
     private func loadShamanes() {
@@ -1131,6 +1223,13 @@ class SessionState: ObservableObject {
                     list[i].code = newCode
                     migrated = true
                 }
+            }
+            // Purge profil 754545 (artefact migration Apple Sign-In)
+            let beforeCount = list.count
+            list.removeAll { $0.code == "754545" }
+            if list.count != beforeCount {
+                print("[Migration] Removed phantom profile 754545")
+                migrated = true
             }
             shamaneProfiles = list
             if migrated { saveShamanes() }
@@ -1154,16 +1253,11 @@ class SessionState: ObservableObject {
                 ShamaneProfile(code: "303", prenom: "Chloé", nom: "",
                                whatsapp: "", email: "", abonnement: "",
                                programmes: [.mySha, .protection]),
-                ShamaneProfile(code: "21", prenom: "Véronique", nom: "",
-                               whatsapp: "", email: "", abonnement: ""),
-                ShamaneProfile(code: "103", prenom: "Irène", nom: "Bays-Marion",
-                               whatsapp: "", email: "", abonnement: "",
+                ShamaneProfile(code: "304", prenom: "Irène", nom: "Bays-Marion",
+                               whatsapp: "", email: "irene@vlbh.energy", abonnement: "",
                                programmes: [.myShaFa]),
                 ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
                                whatsapp: "", email: "", abonnement: "Superviseur"),
-                ShamaneProfile(code: "754545", prenom: "Patrick", nom: "Bays",
-                               whatsapp: "", email: "bays.patrick@icloud.com", abonnement: "Protection",
-                               programmes: [.protection]),
             ]
         }
     }

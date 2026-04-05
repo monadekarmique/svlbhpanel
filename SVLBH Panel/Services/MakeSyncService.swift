@@ -86,6 +86,7 @@ class MakeSyncService: ObservableObject {
             payload = "PIN:\(pin)\n" + payload
         }
         let cleanKey = session.pushKey
+        print("[MakeSyncService] PUSH key='\(cleanKey)' role.code='\(session.role.code)' prog='\(session.sessionProgramCode)' patient='\(session.patientId)' session='\(session.sessionNum)' isPatrick=\(session.role.isPatrick)")
         let body: [String: String] = ["session_id": cleanKey, "payload": payload]
         do {
             var req = URLRequest(url: Self.pushURL)
@@ -187,6 +188,7 @@ class MakeSyncService: ObservableObject {
             return nil
         }
         let key = session.pullKey
+        print("[MakeSyncService] PULL key='\(key)' role.code='\(session.role.code)' pullSource='\(session.pullSource?.code ?? "nil")' pullSource.codeFormatted='\(session.pullSource?.codeFormatted ?? "nil")' isPatrick=\(session.role.isPatrick)")
         guard !key.isEmpty, !key.hasPrefix("00--"), !key.contains("--") else {
             await MainActor.run { lastError = "PULL aborted: pullKey invalide '\(key)'" }
             print("[MakeSyncService] PULL aborted: pullKey invalide '\(key)'")
@@ -333,6 +335,17 @@ class MakeSyncService: ObservableObject {
         // P1 — ScoresLumiere complets (SLA / SLSA / SLM / TotSLM)
         lines.append(serializeScores(s.scoresTherapist, suffix: "T"))
         lines.append(serializeScores(s.scoresPatrick,   suffix: "P"))
+        // Ratio 4D (Passeport SVLBH)
+        if let r = s.passeport.ratio4D {
+            let cluster = s.passeport.cluster ?? ""
+            let pays = s.passeport.paysOrigine ?? ""
+            let baseline = s.passeport.slsaChBaseline ?? 0
+            let sltdaO = s.passeport.sltdaOrigine ?? 0
+            let sltdaC = s.passeport.sltdaCh ?? 0
+            let hist = s.passeport.slsaHistorique ?? 0
+            let trauma = s.passeport.dateTrauma ?? ""
+            lines.append("R4D:\(String(format: "%.2f", r))|\(cluster)|\(pays)|\(baseline)|\(sltdaO)|\(sltdaC)|\(hist)|\(trauma)")
+        }
         // Sérialiser uniquement les générations avec contenu
         let activeGens = s.visibleGenerations.filter {
             $0.validated || !$0.abLabel.isEmpty || !$0.viLabel.isEmpty
@@ -389,6 +402,24 @@ class MakeSyncService: ObservableObject {
         for line in text.split(separator: "\n").map(String.init) {
             if line.hasPrefix("SVLBH") { log.append("⏱ \(line)"); continue }
             if parseScoresLine(line, session: session) { continue }
+            // Ratio 4D (Passeport SVLBH)
+            if line.hasPrefix("R4D:") {
+                let parts = String(line.dropFirst(4)).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if let val = Double(parts[0]) {
+                    session.ratio4D = val
+                    let p = session.passeport
+                    p.ratio4D = val
+                    if parts.count > 1 { p.cluster = parts[1] }
+                    if parts.count > 2 { p.paysOrigine = parts[2] }
+                    if parts.count > 3 { p.slsaChBaseline = Int(parts[3]) }
+                    if parts.count > 4 { p.sltdaOrigine = Int(parts[4]) }
+                    if parts.count > 5 { p.sltdaCh = Int(parts[5]) }
+                    if parts.count > 6 { p.slsaHistorique = Int(parts[6]) }
+                    if parts.count > 7 { p.dateTrauma = parts[7] }
+                    log.append("📐 Ratio 4D: \(String(format: "%.2f", val))× [\(p.clusterDisplay)]")
+                }
+                continue
+            }
             let gResult = mergeGeneration(line, session: session)
             sugCount += gResult.suggestions; mergeCount += gResult.merged
             let pResult = mergePierre(line, session: session)

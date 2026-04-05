@@ -176,14 +176,10 @@ struct SVLBHTab: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 Divider().frame(height: 28).padding(.horizontal, 8)
-                                VStack(alignment: .center, spacing: 2) {
-                                    Text("Niveau").font(.caption2).foregroundColor(.secondary)
-                                    Text(session.sessionNum)
-                                        .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
-                                }
+                                Ratio4DCardSection(passeport: session.passeport)
                                 .frame(maxWidth: .infinity)
                                 Divider().frame(height: 28).padding(.horizontal, 8)
-                                VStack(alignment: .trailing, spacing: 2) {
+                                VStack(alignment: .center, spacing: 2) {
                                     Text(currentTier.label)
                                         .font(.system(size: 8, weight: .bold))
                                         .foregroundColor(.white)
@@ -192,6 +188,13 @@ struct SVLBHTab: View {
                                         .cornerRadius(3)
                                     Text(session.role.code)
                                         .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
+                                }
+                                .frame(maxWidth: .infinity)
+                                Divider().frame(height: 28).padding(.horizontal, 8)
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text("Niveau").font(.caption2).foregroundColor(.secondary)
+                                    Text(session.sessionNum)
+                                        .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 if session.role.isPatrick {
