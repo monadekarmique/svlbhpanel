@@ -59,6 +59,7 @@ struct SVLBHTab: View {
     var currentTier: PractitionerTier {
         if let sim = simulatedTier { return sim }
         switch session.role {
+        case .unidentified: return .lead
         case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
@@ -73,6 +74,7 @@ struct SVLBHTab: View {
     }
     var currentTierForkResolu: Bool {
         switch session.role {
+        case .unidentified: return false
         case .patrick: return true
         case .shamane(let s): return s.tier.forkResolu
         }
@@ -814,6 +816,7 @@ struct TierHeaderView: View {
 
     private var tier: PractitionerTier {
         switch session.role {
+        case .unidentified: return .lead
         case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }

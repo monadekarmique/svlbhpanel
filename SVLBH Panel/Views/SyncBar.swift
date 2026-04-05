@@ -18,17 +18,35 @@ struct SyncBar: View {
 
     private var currentTier: PractitionerTier {
         switch session.role {
+        case .unidentified: return .lead
         case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }
 
     var body: some View {
-        if currentTier == .lead {
+        if !session.role.isIdentified {
+            unidentifiedBar
+        } else if currentTier == .lead {
             leadSyncBar
         } else {
             fullSyncBar
         }
+    }
+
+    // Non identifié : bloquer tout sync
+    private var unidentifiedBar: some View {
+        VStack(spacing: 8) {
+            Divider()
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.orange)
+                Text("Identifiez-vous pour envoyer et recevoir des soins")
+                    .font(.caption).foregroundColor(Color(hex: "#8B3A62"))
+            }
+            .padding(.horizontal, 16).padding(.vertical, 12)
+        }
+        .background(Color(hex: "#8B3A62").opacity(0.08))
     }
 
     // Leads : pas de sync, juste le contact WhatsApp

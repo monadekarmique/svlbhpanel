@@ -70,6 +70,12 @@ class MakeSyncService: ObservableObject {
 
     // MARK: - PUSH
     func push(session: SessionState, forShamaneCode: String? = nil) async -> Bool {
+        // Guard: must be identified
+        guard session.role.isIdentified else {
+            await MainActor.run { lastError = "Identifiez-vous avant d'envoyer" }
+            print("[MakeSyncService] PUSH blocked: role is unidentified")
+            return false
+        }
         // Guard: patientId must be set before building any key
         guard session.isPatientIdValid else {
             print("[MakeSyncService] PUSH aborted: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")
@@ -182,6 +188,11 @@ class MakeSyncService: ObservableObject {
 
     // MARK: - PULL
     func pull(session: SessionState, manual: Bool = true) async -> String? {
+        guard session.role.isIdentified else {
+            await MainActor.run { lastError = "Identifiez-vous avant de recevoir" }
+            print("[MakeSyncService] PULL blocked: role is unidentified")
+            return nil
+        }
         guard session.isPatientIdValid else {
             // Ne pas bloquer visuellement — juste loguer
             print("[MakeSyncService] PULL skipped: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")

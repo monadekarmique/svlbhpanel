@@ -10,6 +10,7 @@ import UIKit
 // ═══════════════════════════════════════════════════════════════════
 
 enum ActiveRole: Equatable {
+    case unidentified
     case patrick
     case shamane(ShamaneProfile)
 
@@ -17,6 +18,7 @@ enum ActiveRole: Equatable {
 
     var code: String {
         switch self {
+        case .unidentified: return ""
         case .patrick: return Self.patrickCode
         case .shamane(let s): return s.codeFormatted
         }
@@ -24,6 +26,7 @@ enum ActiveRole: Equatable {
 
     var displayName: String {
         switch self {
+        case .unidentified: return "Non identifié"
         case .patrick: return "🔬 Patrick"
         case .shamane(let s): return s.displayName
         }
@@ -32,6 +35,11 @@ enum ActiveRole: Equatable {
     var isPatrick: Bool {
         if case .patrick = self { return true }
         return false
+    }
+
+    var isIdentified: Bool {
+        if case .unidentified = self { return false }
+        return true
     }
 
     var isSuperviseur: Bool {
@@ -715,6 +723,10 @@ class PractitionerIdentity: ObservableObject {
 
     /// Configurer le SessionState avec l'identité
     func applyTo(_ session: SessionState) {
+        guard isIdentified, !code.isEmpty else {
+            session.role = .unidentified
+            return
+        }
         if isPatrick {
             session.role = .patrick
         } else {
@@ -813,13 +825,14 @@ class SessionState: ObservableObject {
     // ── Tier actuel ──
     var currentTier: PractitionerTier {
         switch role {
+        case .unidentified: return .lead
         case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }
 
     // ── Rôle actif ──
-    @Published var role: ActiveRole = .patrick {
+    @Published var role: ActiveRole = .unidentified {
         didSet {
             // F32 — Reset auto quand on switch vers une shamane
             if case .shamane(let p) = role {
