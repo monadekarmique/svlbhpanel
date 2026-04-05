@@ -176,9 +176,11 @@ struct SVLBHTab: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 Divider().frame(height: 28).padding(.horizontal, 8)
-                                Ratio4DCardSection(passeport: session.passeport)
-                                .frame(maxWidth: .infinity)
-                                Divider().frame(height: 28).padding(.horizontal, 8)
+                                if currentTier == .superviseur || currentTier == .certifiee {
+                                    Ratio4DCardSection(passeport: session.passeport)
+                                    .frame(maxWidth: .infinity)
+                                    Divider().frame(height: 28).padding(.horizontal, 8)
+                                }
                                 VStack(alignment: .center, spacing: 2) {
                                     Text(currentTier.label)
                                         .font(.system(size: 8, weight: .bold))
