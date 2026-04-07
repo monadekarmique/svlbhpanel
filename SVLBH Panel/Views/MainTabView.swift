@@ -57,6 +57,9 @@ struct MainTabView: View {
                     .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
+                ToresLumiereTab()
+                    .tabItem { Label("Tores", systemImage: "hurricane") }
+                    .tag(13)
                 if showPasserelle {
                     ToreGlycemieScleroseView()
                         .tabItem { Label("Tore", systemImage: "hurricane") }

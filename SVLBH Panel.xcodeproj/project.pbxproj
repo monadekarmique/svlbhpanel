@@ -87,6 +87,8 @@
 		DEMA000100AA00000001 /* DemandesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000100BB00000001 /* DemandesModels.swift */; };
 		DEMA000200AA00000001 /* DemandesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000200BB00000001 /* DemandesService.swift */; };
 		DEMA000300AA00000001 /* DemandesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000300BB00000001 /* DemandesView.swift */; };
+		T0RE5LUM1E7AB00000000001 /* ToresLumiereTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */; };
+		T0RE5HTML0AB00000000001 /* tores-lumiere.html in Resources */ = {isa = PBXBuildFile; fileRef = T0RE5HTML0AB00000000002 /* tores-lumiere.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,6 +194,8 @@
 		DEMA000100BB00000001 /* DemandesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesModels.swift; sourceTree = "<group>"; };
 		DEMA000200BB00000001 /* DemandesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesService.swift; sourceTree = "<group>"; };
 		DEMA000300BB00000001 /* DemandesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesView.swift; sourceTree = "<group>"; };
+		T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToresLumiereTab.swift; sourceTree = "<group>"; };
+		T0RE5HTML0AB00000000002 /* tores-lumiere.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "tores-lumiere.html"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +279,7 @@
 				E4FB57C8B3FBEB3852695D3E /* PaletteDeLumiere */,
 				TOREGRP00000000000001 /* Tore */,
 				DEMAGRP00000000000001 /* Demandes */,
+				T0RE5RES0GRP00000000001 /* Resources */,
 			);
 			path = "SVLBH Panel";
 			sourceTree = "<group>";
@@ -377,6 +382,7 @@
 				A3321BF7833AE0EFDBB44D5B /* RoutineMatinTab.swift */,
 				B0D3681763B8DCC716CE4FA0 /* VisiteursSettingsView.swift */,
 				F0C2CD7102E63969B835268F /* PierresSheetButton.swift */,
+				T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -397,6 +403,14 @@
 			);
 			name = PaletteDeLumiere;
 			path = PaletteDeLumiere;
+			sourceTree = "<group>";
+		};
+		T0RE5RES0GRP00000000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				T0RE5HTML0AB00000000002 /* tores-lumiere.html */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -505,6 +519,7 @@
 			files = (
 				8E7964D62F6E4D120051060A /* Preview Assets.xcassets in Resources */,
 				8E7964D22F6E4D120051060A /* Assets.xcassets in Resources */,
+				T0RE5HTML0AB00000000001 /* tores-lumiere.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,6 +619,7 @@
 				DEMA000100AA00000001 /* DemandesModels.swift in Sources */,
 				DEMA000200AA00000001 /* DemandesService.swift in Sources */,
 				DEMA000300AA00000001 /* DemandesView.swift in Sources */,
+				T0RE5LUM1E7AB00000000001 /* ToresLumiereTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -756,7 +772,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -776,7 +792,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -795,7 +811,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -815,7 +831,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -833,12 +849,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -856,12 +872,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -878,12 +894,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -900,12 +916,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.0.1;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
