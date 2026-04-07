@@ -53,6 +53,9 @@ struct MainTabView: View {
                 SLMTab()
                     .tabItem { Label("SLM", systemImage: "light.max") }
                     .tag(3)
+                ChronoFuTab()
+                    .tabItem { Label("Chrono 六腑", systemImage: "clock.arrow.circlepath") }
+                    .tag(4)
                 ChakrasTab()
                     .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
