@@ -15,9 +15,9 @@ struct MainTabView: View {
     @State private var showTimeline = false
     @State private var showPasserelleAccess = false
 
-    /// Onglet Passerelle visible pour Patrick, Cornelia (0300), Anne (0302)
+    /// Onglet Passerelle visible pour superviseur, Cornelia (0300), Anne (0302)
     private var showPasserelle: Bool {
-        if session.role.isPatrick { return true }
+        if session.role.isSuperviseur { return true }
         if case .shamane(let p) = session.role {
             return ["0300", "0302"].contains(p.codeFormatted)
         }
@@ -26,7 +26,7 @@ struct MainTabView: View {
 
     /// L'utilisateur courant n'apparaît pas dans la Planche Tactique
     private var isUnlistedUser: Bool {
-        if session.role.isPatrick { return false }
+        if session.role.isSuperviseur { return false }
         if case .shamane(let p) = session.role {
             return !session.shamaneProfiles.contains(where: { $0.code == p.code })
         }
@@ -114,8 +114,8 @@ struct MainTabView: View {
                 }
                 .ignoresSafeArea(.container, edges: .bottom)
                 .task {
-                    // Auto-scan au lancement si Patrick
-                    if session.role.isPatrick && sync.pendingSources.isEmpty && !sync.isScanning {
+                    // Auto-scan au lancement si superviseur
+                    if session.role.isSuperviseur && sync.pendingSources.isEmpty && !sync.isScanning {
                         await sync.scanSources(session: session)
                     }
                 }

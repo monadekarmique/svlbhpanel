@@ -57,7 +57,7 @@ struct SVLBHPanelApp: App {
             if phase == .active {
                 UIApplication.shared.applicationIconBadgeNumber = 0
                 // Re-vérifier le build gate à chaque retour foreground
-                if identity.isIdentified, !identity.isPatrick {
+                if identity.isIdentified, !identity.isSuperviseur {
                     Task { await checkBuildGate() }
                 }
             }
@@ -69,8 +69,8 @@ struct SVLBHPanelApp: App {
     }
 
     private func checkBuildGate() async {
-        // Patrick (superviseur) n'est jamais bloqué
-        guard !identity.isPatrick else { return }
+        // Superviseur n'est jamais bloqué
+        guard !identity.isSuperviseur else { return }
         let status = await BuildGateService.shared.check()
         await MainActor.run {
             buildStatus = status
@@ -82,7 +82,7 @@ struct SVLBHPanelApp: App {
         let code = identity.code
         guard !code.isEmpty else { return }
         // Superviseur = toujours actif
-        if identity.isPatrick {
+        if identity.isSuperviseur {
             await MainActor.run {
                 subscriptionStatus = SubscriptionStatus(code: code, status: "active",
                                                         paidUntil: "2099-12-31", trialDaysLeft: nil)

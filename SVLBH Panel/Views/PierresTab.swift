@@ -35,13 +35,13 @@ struct PierresTab: View {
         }
         .navigationViewStyle(.stack)
         .overlay {
-            if session.role.isPatrick {
+            if session.role.isSuperviseur {
                 PlancheFloatingView(isVisible: $showPlanche)
                     .environmentObject(session)
             }
         }
         .toolbar {
-            if session.role.isPatrick {
+            if session.role.isSuperviseur {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
