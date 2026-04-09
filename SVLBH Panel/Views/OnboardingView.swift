@@ -14,6 +14,9 @@ struct OnboardingView: View {
     @State private var presenceBlocked = false
     @State private var pendingAppleUserID: String?
     @State private var showAppleLinkAlert = false
+    @State private var showClientAccess = false
+    @State private var clientIdDraft = ""
+    @State private var clientNameDraft = ""
 
     private var codeInt: Int? { Int(codeDraft) }
     private var isValid: Bool {
@@ -134,6 +137,9 @@ struct OnboardingView: View {
 
                 // ── Sign in with Apple ──
                 appleSignInSection
+
+                // ── Accès Client (Demandes) ──
+                clientAccessSection
             }
             .padding(24)
             .background(Color(UIColor.systemBackground))
@@ -243,6 +249,92 @@ struct OnboardingView: View {
             .signInWithAppleButtonStyle(.black)
             .frame(height: 44)
             .cornerRadius(10)
+        }
+    }
+
+    // MARK: - Accès Client (Demandes)
+    private var clientAccessSection: some View {
+        VStack(spacing: 8) {
+            Divider().padding(.vertical, 4)
+            Text("Accès Patient / Client")
+                .font(.caption.bold()).foregroundColor(.secondary)
+
+            Button {
+                showClientAccess = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "doc.text.fill")
+                    Text("Mes Demandes / Factures")
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(Color(hex: "#8B3A62"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color(hex: "#8B3A62").opacity(0.1))
+                .cornerRadius(10)
+            }
+        }
+        .sheet(isPresented: $showClientAccess) {
+            NavigationView {
+                VStack(spacing: 20) {
+                    Text("Accès Client")
+                        .font(.title2.bold())
+                        .foregroundColor(Color(hex: "#8B3A62"))
+
+                    Text("Entrez votre identifiant patient et votre nom pour accéder à vos factures et demandes.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ID Patient").font(.caption.bold()).foregroundColor(.secondary)
+                        TextField("Ex: 14968", text: $clientIdDraft)
+                            .keyboardType(.numberPad)
+                            .font(.title2.bold().monospaced())
+                            .foregroundColor(Color(hex: "#8B3A62"))
+                            .padding(12)
+                            .background(Color(hex: "#8B3A62").opacity(0.08))
+                            .cornerRadius(10)
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Votre nom").font(.caption.bold()).foregroundColor(.secondary)
+                        TextField("Prénom Nom", text: $clientNameDraft)
+                            .font(.body)
+                            .padding(12)
+                            .background(Color(hex: "#8B3A62").opacity(0.08))
+                            .cornerRadius(10)
+                    }
+
+                    Button {
+                        let id = clientIdDraft.trimmingCharacters(in: .whitespaces)
+                        let name = clientNameDraft.trimmingCharacters(in: .whitespaces)
+                        guard !id.isEmpty, !name.isEmpty else { return }
+                        identity.identifyAsClient(patientId: id, name: name)
+                        showClientAccess = false
+                    } label: {
+                        Text("Accéder à mes demandes")
+                            .font(.headline.bold())
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(!clientIdDraft.isEmpty && !clientNameDraft.isEmpty
+                                        ? Color(hex: "#8B3A62") : .gray)
+                            .cornerRadius(12)
+                    }
+                    .disabled(clientIdDraft.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              clientNameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                    Spacer()
+                }
+                .padding(24)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Fermer") { showClientAccess = false }
+                    }
+                }
+            }
         }
     }
 }

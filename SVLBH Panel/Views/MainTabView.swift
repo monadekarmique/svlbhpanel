@@ -58,6 +58,9 @@ struct MainTabView: View {
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
                 if showPasserelle {
+                    ToreGlycemieScleroseView()
+                        .tabItem { Label("Tore", systemImage: "hurricane") }
+                        .tag(13)
                     PasserelleTab()
                         .tabItem { Label("PR 03 Dyspepsie", systemImage: "arrow.left.arrow.right") }
                         .tag(6)
