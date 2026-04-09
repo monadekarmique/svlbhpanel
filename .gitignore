@@ -52,3 +52,7 @@ Config.xcconfig
 # ── Exports temporaires ────────────────────────
 /tmp/
 *.zip
+Xcode-beta.app/
+*.xcuserstate
+.DS_Store
+DerivedData/
