@@ -80,6 +80,13 @@
 		ONBO0001AAAA00000001AAAA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBO0001BBBB00000001BBBB /* OnboardingView.swift */; };
 		PTAC0001AAAA00000001AAAA /* PlancheTactiqueTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */; };
 		R3F5Y5T3M0VIEW0000001 /* ReferenceSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */; };
+		TORE000100AA00000001 /* ToreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000100BB00000001 /* ToreModels.swift */; };
+		TORE000200AA00000001 /* ToreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000200BB00000001 /* ToreService.swift */; };
+		TORE000300AA00000001 /* ToreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000300BB00000001 /* ToreViewModel.swift */; };
+		TORE000400AA00000001 /* ToreGlycemieScleroseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */; };
+		DEMA000100AA00000001 /* DemandesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000100BB00000001 /* DemandesModels.swift */; };
+		DEMA000200AA00000001 /* DemandesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000200BB00000001 /* DemandesService.swift */; };
+		DEMA000300AA00000001 /* DemandesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000300BB00000001 /* DemandesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -178,6 +185,13 @@
 		ONBO0001BBBB00000001BBBB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlancheTactiqueTab.swift; sourceTree = "<group>"; };
 		R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceSystemView.swift; sourceTree = "<group>"; };
+		TORE000100BB00000001 /* ToreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreModels.swift; sourceTree = "<group>"; };
+		TORE000200BB00000001 /* ToreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreService.swift; sourceTree = "<group>"; };
+		TORE000300BB00000001 /* ToreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreViewModel.swift; sourceTree = "<group>"; };
+		TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreGlycemieScleroseView.swift; sourceTree = "<group>"; };
+		DEMA000100BB00000001 /* DemandesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesModels.swift; sourceTree = "<group>"; };
+		DEMA000200BB00000001 /* DemandesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesService.swift; sourceTree = "<group>"; };
+		DEMA000300BB00000001 /* DemandesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,8 +273,31 @@
 				2DE7C5097C86ECE75CA7CE0D /* ShamanesOverviewView.swift */,
 				94BFD78FD5CAB27584C839F3 /* INTEGRATION_PATCHES.swift */,
 				E4FB57C8B3FBEB3852695D3E /* PaletteDeLumiere */,
+				TOREGRP00000000000001 /* Tore */,
+				DEMAGRP00000000000001 /* Demandes */,
 			);
 			path = "SVLBH Panel";
+			sourceTree = "<group>";
+		};
+		TOREGRP00000000000001 /* Tore */ = {
+			isa = PBXGroup;
+			children = (
+				TORE000100BB00000001 /* ToreModels.swift */,
+				TORE000200BB00000001 /* ToreService.swift */,
+				TORE000300BB00000001 /* ToreViewModel.swift */,
+				TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */,
+			);
+			path = Tore;
+			sourceTree = "<group>";
+		};
+		DEMAGRP00000000000001 /* Demandes */ = {
+			isa = PBXGroup;
+			children = (
+				DEMA000100BB00000001 /* DemandesModels.swift */,
+				DEMA000200BB00000001 /* DemandesService.swift */,
+				DEMA000300BB00000001 /* DemandesView.swift */,
+			);
+			path = Demandes;
 			sourceTree = "<group>";
 		};
 		8E7964D42F6E4D120051060A /* Preview Content */ = {
@@ -560,6 +597,13 @@
 				E052F34693FB488160E2DBC3 /* ChromotherapyManager.swift in Sources */,
 				3D9CBDFB9DE52DFD1148D7BC /* PaletteDeLumiereView.swift in Sources */,
 				9F323A40E93A26BACF485090 /* PierresSheetButton.swift in Sources */,
+				TORE000100AA00000001 /* ToreModels.swift in Sources */,
+				TORE000200AA00000001 /* ToreService.swift in Sources */,
+				TORE000300AA00000001 /* ToreViewModel.swift in Sources */,
+				TORE000400AA00000001 /* ToreGlycemieScleroseView.swift in Sources */,
+				DEMA000100AA00000001 /* DemandesModels.swift in Sources */,
+				DEMA000200AA00000001 /* DemandesService.swift in Sources */,
+				DEMA000300AA00000001 /* DemandesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
