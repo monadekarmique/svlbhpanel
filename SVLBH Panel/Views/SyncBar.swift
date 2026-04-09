@@ -19,7 +19,6 @@ struct SyncBar: View {
     private var currentTier: PractitionerTier {
         switch session.role {
         case .unidentified: return .lead
-        case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }

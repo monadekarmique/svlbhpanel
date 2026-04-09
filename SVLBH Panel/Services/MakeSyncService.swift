@@ -57,9 +57,9 @@ class MakeSyncService: ObservableObject {
         let sNum = session.sessionNum
         let pId  = session.patientId
         let prog = session.sessionProgramCode
-        // Clé Patrick
-        let keyPatrick = "\(prog)-\(pId)-\(sNum)-\(ActiveRole.patrickCode)"
-        await deleteReadKey(keyPatrick)
+        // Clé superviseur
+        let keySuperviseur = "\(prog)-\(pId)-\(sNum)-\(session.supervisorCode)"
+        await deleteReadKey(keySuperviseur)
         // Clés de chaque shamane
         for s in profiles {
             let key = "\(prog)-\(pId)-\(sNum)-\(s.codeFormatted)"
@@ -86,13 +86,13 @@ class MakeSyncService: ObservableObject {
 
         var pin = ""
         var payload = serializeSession(session)
-        // PIN pour Patrick ou Patrick simulant une shamane
-        if session.role.isPatrick || session.isPatrickSimulating {
+        // PIN pour superviseur ou superviseur simulant une shamane
+        if session.role.isSuperviseur || session.isSuperviseurSimulating {
             pin = String(format: "%04d", Int.random(in: 1000...9999))
             payload = "PIN:\(pin)\n" + payload
         }
         let cleanKey = session.pushKey
-        print("[MakeSyncService] PUSH key='\(cleanKey)' role.code='\(session.role.code)' prog='\(session.sessionProgramCode)' patient='\(session.patientId)' session='\(session.sessionNum)' isPatrick=\(session.role.isPatrick)")
+        print("[MakeSyncService] PUSH key='\(cleanKey)' role.code='\(session.role.code)' prog='\(session.sessionProgramCode)' patient='\(session.patientId)' session='\(session.sessionNum)' isSuperviseur=\(session.role.isSuperviseur)")
         let body: [String: String] = ["session_id": cleanKey, "payload": payload]
         do {
             var req = URLRequest(url: Self.pushURL)
@@ -199,7 +199,7 @@ class MakeSyncService: ObservableObject {
             return nil
         }
         let key = session.pullKey
-        print("[MakeSyncService] PULL key='\(key)' role.code='\(session.role.code)' pullSource='\(session.pullSource?.code ?? "nil")' pullSource.codeFormatted='\(session.pullSource?.codeFormatted ?? "nil")' isPatrick=\(session.role.isPatrick)")
+        print("[MakeSyncService] PULL key='\(key)' role.code='\(session.role.code)' pullSource='\(session.pullSource?.code ?? "nil")' pullSource.codeFormatted='\(session.pullSource?.codeFormatted ?? "nil")' isSuperviseur=\(session.role.isSuperviseur)")
         guard !key.isEmpty, !key.hasPrefix("00--"), !key.contains("--") else {
             await MainActor.run { lastError = "PULL aborted: pullKey invalide '\(key)'" }
             print("[MakeSyncService] PULL aborted: pullKey invalide '\(key)'")
@@ -244,8 +244,8 @@ class MakeSyncService: ObservableObject {
                 detectedPin = String(first.dropFirst(4)).trimmingCharacters(in: .whitespaces)
                 lines.removeFirst()
             }
-            // Patrick ne doit jamais valider ses propres PINs
-            let isSelfPull = session.role.isPatrick && key.hasSuffix("-\(ActiveRole.patrickCode)")
+            // Superviseur ne doit jamais valider ses propres PINs
+            let isSelfPull = session.role.isSuperviseur && key.hasSuffix("-\(session.role.code)")
             if detectedPin != nil && !manual && !isSelfPull {
                 // Auto-scan avec PIN d'un tiers → NE PAS marquer READ (la shamane doit encore le lire)
                 return "PIN_PENDING"

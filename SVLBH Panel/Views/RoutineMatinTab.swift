@@ -122,8 +122,8 @@ struct RoutineMatinTab: View {
 
     // MARK: - Fetch depuis webhook (action=get par praticienne)
 
-    /// Clés billing connues : certifiées + superviseur
-    private static let billingKeys = ["0300", "0301", "0302", "0303", "0304", "455000"]
+    /// Clés billing connues : formation + certifiées + superviseurs
+    private static let billingKeys = ["200", "0300", "0301", "0302", "0303", "0304", "455000", "754545"]
 
     private func fetchQuotas() async {
         isLoading = true

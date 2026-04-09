@@ -30,10 +30,14 @@ struct SVLBHTab: View {
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
     private var isSubscriptionActive: Bool { true }
 
+    /// Comptes superviseur disponibles (Service API Key pattern : 1 compte = 1 fonction)
+    private var supervisorAccounts: [ShamaneProfile] {
+        session.shamaneProfiles.filter { $0.tier == .superviseur }
+    }
+
     /// Programmes de recherche visibles pour certifiées et superviseurs
     private var showResearchAccess: Bool {
-        if session.role.isPatrick { return true }
-        return currentTier == .certifiee
+        return session.role.isSuperviseur || currentTier == .certifiee
     }
     @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
@@ -60,7 +64,6 @@ struct SVLBHTab: View {
         if let sim = simulatedTier { return sim }
         switch session.role {
         case .unidentified: return .lead
-        case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }
@@ -75,7 +78,6 @@ struct SVLBHTab: View {
     var currentTierForkResolu: Bool {
         switch session.role {
         case .unidentified: return false
-        case .patrick: return true
         case .shamane(let s): return s.tier.forkResolu
         }
     }
@@ -190,8 +192,28 @@ struct SVLBHTab: View {
                                         .padding(.horizontal, 5).padding(.vertical, 2)
                                         .background(Color(hex: currentTier.badgeColor))
                                         .cornerRadius(3)
-                                    Text(session.role.code)
-                                        .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
+                                    // Switch compte superviseur (Service API Key pattern)
+                                    if identity.isSuperviseur, supervisorAccounts.count > 1 {
+                                        Menu {
+                                            ForEach(supervisorAccounts, id: \.code) { acct in
+                                                Button("\(acct.codeFormatted) · \(acct.abonnement.isEmpty ? "Superviseur" : acct.abonnement)") {
+                                                    identity.identify(code: acct.code, name: acct.prenom)
+                                                    identity.applyTo(session)
+                                                }
+                                            }
+                                        } label: {
+                                            HStack(spacing: 2) {
+                                                Text(session.role.code)
+                                                    .font(.headline.bold())
+                                                Image(systemName: "arrow.left.arrow.right")
+                                                    .font(.system(size: 9, weight: .bold))
+                                            }
+                                            .foregroundColor(Color(hex: "#185FA5"))
+                                        }
+                                    } else {
+                                        Text(session.role.code)
+                                            .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
+                                    }
                                 }
                                 .frame(maxWidth: .infinity)
                                 Divider().frame(height: 28).padding(.horizontal, 8)
@@ -201,7 +223,7 @@ struct SVLBHTab: View {
                                         .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                if session.role.isPatrick {
+                                if session.role.isSuperviseur {
                                     Button {
                                         showResetConfirm = true
                                     } label: {
@@ -254,8 +276,8 @@ struct SVLBHTab: View {
                     }
                     .padding(.horizontal, 16)
 
-                    // F30 — Programme (Patrick only : 00 ↔ 01)
-                    if session.role.isPatrick || simulatedTier != nil {
+                    // F30 — Programme (Superviseur only : 00 ↔ 01)
+                    if session.role.isSuperviseur || simulatedTier != nil {
                         HStack(spacing: 10) {
                             Text("Programme")
                                 .font(.caption.bold()).foregroundColor(.secondary)
@@ -269,21 +291,22 @@ struct SVLBHTab: View {
                     }
 
                     // Sélecteur de segment (Superviseur only)
-                    if identity.isPatrick {
+                    if identity.isSuperviseur {
                         HStack(spacing: 10) {
                             Text("Segment")
                                 .font(.caption.bold()).foregroundColor(.secondary)
                             Menu {
                                 Button("Superviseur (réel)") {
                                     simulatedTier = nil
-                                    session.isPatrickSimulating = false
+                                    identity.applyTo(session)
+                                    session.isSuperviseurSimulating = false
                                 }
                                 Divider()
-                                ForEach(session.shamaneProfiles, id: \.code) { profile in
+                                ForEach(session.shamaneProfiles.filter { $0.tier != .superviseur }, id: \.code) { profile in
                                     Button("\(profile.displayName) · \(profile.tier.label) (\(profile.codeFormatted))") {
                                         simulatedTier = profile.tier
                                         session.role = .shamane(profile)
-                                        session.isPatrickSimulating = true
+                                        session.isSuperviseurSimulating = true
                                     }
                                 }
                             } label: {
@@ -301,8 +324,8 @@ struct SVLBHTab: View {
                             if simulatedTier != nil {
                                 Button {
                                     simulatedTier = nil
-                                    session.role = .patrick
-                                    session.isPatrickSimulating = false
+                                    identity.applyTo(session)
+                                    session.isSuperviseurSimulating = false
                                 } label: {
                                     Text("↩").font(.caption.bold()).foregroundColor(.secondary)
                                 }
@@ -388,7 +411,7 @@ struct SVLBHTab: View {
                     }
 
                     // F01 — Visiteurs (Superviseur + Certifiées)
-                    if session.role.isPatrick || currentTier == .certifiee {
+                    if session.role.isSuperviseur || currentTier == .certifiee {
                         LeadSlotsView().environmentObject(session)
                     }
 
@@ -817,7 +840,6 @@ struct TierHeaderView: View {
     private var tier: PractitionerTier {
         switch session.role {
         case .unidentified: return .lead
-        case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }

@@ -11,15 +11,11 @@ import UIKit
 
 enum ActiveRole: Equatable {
     case unidentified
-    case patrick
     case shamane(ShamaneProfile)
-
-    static let patrickCode = "455000"
 
     var code: String {
         switch self {
         case .unidentified: return ""
-        case .patrick: return Self.patrickCode
         case .shamane(let s): return s.codeFormatted
         }
     }
@@ -27,14 +23,8 @@ enum ActiveRole: Equatable {
     var displayName: String {
         switch self {
         case .unidentified: return "Non identifié"
-        case .patrick: return "🔬 Patrick"
         case .shamane(let s): return s.displayName
         }
-    }
-
-    var isPatrick: Bool {
-        if case .patrick = self { return true }
-        return false
     }
 
     var isIdentified: Bool {
@@ -43,7 +33,6 @@ enum ActiveRole: Equatable {
     }
 
     var isSuperviseur: Bool {
-        if isPatrick { return true }
         if case .shamane(let s) = self { return s.tier == .superviseur }
         return false
     }
@@ -719,7 +708,7 @@ class PractitionerIdentity: ObservableObject {
         PractitionerTier.from(code: Int(code) ?? 0)
     }
 
-    var isPatrick: Bool { code == ActiveRole.patrickCode }
+    var isSuperviseur: Bool { tier == .superviseur }
 
     /// Configurer le SessionState avec l'identité
     func applyTo(_ session: SessionState) {
@@ -727,13 +716,13 @@ class PractitionerIdentity: ObservableObject {
             session.role = .unidentified
             return
         }
-        if isPatrick {
-            session.role = .patrick
-        } else {
-            let profile = session.shamaneProfiles.first { $0.code == code }
-                ?? ShamaneProfile(code: code, prenom: displayName, nom: "",
-                                  whatsapp: "", email: "", abonnement: "")
-            session.role = .shamane(profile)
+        let profile = session.shamaneProfiles.first { $0.code == code }
+            ?? ShamaneProfile(code: code, prenom: displayName, nom: "",
+                              whatsapp: "", email: "", abonnement: "")
+        session.role = .shamane(profile)
+        // Superviseur : enregistrer son code pour les clés sync
+        if profile.tier == .superviseur {
+            session.supervisorCode = profile.codeFormatted
         }
     }
 
@@ -826,7 +815,6 @@ class SessionState: ObservableObject {
     var currentTier: PractitionerTier {
         switch role {
         case .unidentified: return .lead
-        case .patrick: return .superviseur
         case .shamane(let s): return s.tier
         }
     }
@@ -836,15 +824,20 @@ class SessionState: ObservableObject {
         didSet {
             // F32 — Reset auto quand on switch vers une shamane
             if case .shamane(let p) = role {
-                if case .patrick = oldValue { resetForShamane() }
+                // Reset quand superviseur switch vers un tier inférieur (simulation)
+                if oldValue.isSuperviseur && p.tier != .superviseur {
+                    resetForShamane()
+                }
                 patientId = String(max(p.patientId, Self.minPatientId))
             }
             // Adapter le nombre de générations au tier
             rebuildGenerations()
         }
     }
-    /// true quand Patrick simule une shamane (set dans SVLBHTab segment picker)
-    var isPatrickSimulating: Bool = false
+    /// true quand un superviseur simule une shamane (set dans SVLBHTab segment picker)
+    var isSuperviseurSimulating: Bool = false
+    /// Code du superviseur qui gère cette session (pour les clés shamane pull)
+    var supervisorCode: String = "455000"
     @Published var pullSource: ShamaneProfile?
 
     // ── Scores duaux ──
@@ -924,19 +917,24 @@ class SessionState: ObservableObject {
 
     // ── Clés sync ──
     var pushKey: String {
-        // Patrick simulant une shamane → déposer sous clé Patrick
-        // (car la shamane pull toujours avec patrickCode)
-        if isPatrickSimulating {
-            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(ActiveRole.patrickCode)"
+        // Superviseur simulant une shamane → déposer sous clé superviseur
+        // (car la shamane pull toujours avec supervisorCode)
+        if isSuperviseurSimulating {
+            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(supervisorCode)"
         }
         return sessionId
     }
 
     var pullKey: String {
-        if role.isPatrick, let src = pullSource {
+        if role.isSuperviseur, let src = pullSource {
+            // Superviseur pull depuis une shamane
             return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(src.codeFormatted)"
+        } else if role.isSuperviseur {
+            // Superviseur self-pull (pas de pullSource)
+            return sessionId
         } else {
-            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(ActiveRole.patrickCode)"
+            // Shamane pull depuis son superviseur
+            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(supervisorCode)"
         }
     }
 
@@ -1130,9 +1128,9 @@ class SessionState: ObservableObject {
         "01": "455000",   // Patrick v3
         "2601": "302",    // Anne artefact
         "2701": "301",    // Flavia artefact
-        "103": "0304",    // Irène formation → certifiée
+        "103": "304",     // Irène formation → certifiée
         "22": "0303",     // Chloé lead → certifiée
-        "21": "0105",     // Véronique lead → formée
+        "21": "200",      // Véronique lead → formation
     ]
 
     private func loadShamanes() {
@@ -1169,10 +1167,10 @@ class SessionState: ObservableObject {
                 ShamaneProfile(code: "303", prenom: "Chloé", nom: "",
                                whatsapp: "", email: "", abonnement: "",
                                programmes: [.mySha, .protection]),
-                ShamaneProfile(code: "21", prenom: "Véronique", nom: "",
-                               whatsapp: "", email: "", abonnement: ""),
-                ShamaneProfile(code: "103", prenom: "Irène", nom: "Bays-Marion",
-                               whatsapp: "", email: "", abonnement: "",
+                ShamaneProfile(code: "200", prenom: "Véronique", nom: "",
+                               whatsapp: "", email: "", abonnement: "Formation"),
+                ShamaneProfile(code: "304", prenom: "Irène", nom: "Bays-Marion",
+                               whatsapp: "", email: "", abonnement: "Certifiée",
                                programmes: [.myShaFa]),
                 ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
                                whatsapp: "", email: "", abonnement: "Superviseur"),

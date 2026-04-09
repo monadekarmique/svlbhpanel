@@ -89,18 +89,41 @@ final class SVLBHPanelQATests: XCTestCase {
         XCTAssertTrue(PractitionerTier.from(code: 455000).forkResolu)
     }
 
-    // T07 — Patrick code = 455000 (spec F29)
-    func testPatrickCodeIs455000() {
-        XCTAssertEqual(ActiveRole.patrickCode, "455000")
-        let role = ActiveRole.patrick
+    // T07 — Superviseur 455000 via ShamaneProfile (Service API Key pattern)
+    func testSuperviseurRoleViaShamaneProfile() {
+        let profile = ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
+                                     whatsapp: "", email: "", abonnement: "Superviseur")
+        let role = ActiveRole.shamane(profile)
         XCTAssertEqual(role.code, "455000")
-        XCTAssertTrue(role.isPatrick)
         XCTAssertTrue(role.isSuperviseur)
         let session = SessionState()
+        session.role = role
         session.patientId = "42"
         session.sessionNum = "003"
         session.sessionProgramCode = "00"
         XCTAssertEqual(session.sessionId, "00-42-003-455000")
+    }
+
+    // T07b — Protection 754545 : clés sync séparées du superviseur
+    func testProtectionAccountSeparateKeys() {
+        let profile = ShamaneProfile(code: "754545", prenom: "Patrick", nom: "Bays",
+                                     whatsapp: "", email: "", abonnement: "Protection")
+        let role = ActiveRole.shamane(profile)
+        XCTAssertEqual(role.code, "754545")
+        XCTAssertTrue(role.isSuperviseur)
+        let session = SessionState()
+        session.role = role
+        session.supervisorCode = "754545"
+        session.patientId = "42"
+        session.sessionNum = "001"
+        session.sessionProgramCode = "00"
+        XCTAssertEqual(session.sessionId, "00-42-001-754545")
+        XCTAssertEqual(session.pushKey, "00-42-001-754545")
+        // Protection self-pull (no pullSource)
+        XCTAssertEqual(session.pullKey, "00-42-001-754545")
+        // Keys must NOT contain 455000
+        XCTAssertFalse(session.pushKey.contains("455000"))
+        XCTAssertFalse(session.pullKey.contains("455000"))
     }
 
     // T08 — Migration codes v3 → v4 (F28)
@@ -150,6 +173,9 @@ final class SVLBHPanelQATests: XCTestCase {
     // Bug couvert : B01 — format Make
     func testSessionIdFormat() {
         let session = SessionState()
+        let sup = ShamaneProfile(code: "455000", prenom: "Patrick", nom: "Bays",
+                                 whatsapp: "", email: "", abonnement: "Superviseur")
+        session.role = .shamane(sup)
         session.sessionProgramCode = "00"
         session.patientId = "14968"
         session.sessionNum = "003"

@@ -10,7 +10,6 @@ struct DecodageTab: View {
     var currentTier: PractitionerTier {
         switch session.role {
         case .unidentified: return .lead
-        case .patrick: return .superviseur
         case .shamane(let p): return p.tier
         }
     }

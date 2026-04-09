@@ -48,7 +48,7 @@ struct ResearchProgramsView: View {
             if let profile = session.shamaneProfiles.first(where: { $0.codeFormatted == code }) {
                 return (code: code, name: profile.displayName)
             }
-            if code == ActiveRole.patrickCode { return (code: code, name: "\u{1f52c} Patrick") }
+            if PractitionerTier.from(code: Int(code) ?? 0) == .superviseur { return (code: code, name: "\u{1f52c} \(code)") }
             return (code: code, name: code)
         }
     }

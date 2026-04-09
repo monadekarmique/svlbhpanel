@@ -8,11 +8,11 @@ struct ChakrasTab: View {
     @State private var collapseToken = UUID()
     @State private var showPierres = false
 
-    /// D0 (C34-C45) visible uniquement pour Patrick et Cornelia, placé au-dessus de D9
+    /// D0 (C34-C45) visible uniquement pour superviseur et Cornelia, placé au-dessus de D9
     private var filteredDimensions: [DimensionInfo] {
-        let isPatrickOrCornelia = session.role.isPatrick || session.role.code == "300"
+        let canSeeD0 = session.role.isSuperviseur || session.role.code == "0300"
         var dims = allDimensions.filter { $0.id != "d0" }
-        if isPatrickOrCornelia, let d0 = allDimensions.first(where: { $0.id == "d0" }) {
+        if canSeeD0, let d0 = allDimensions.first(where: { $0.id == "d0" }) {
             // Insérer D0 juste avant D9
             if let d9idx = dims.firstIndex(where: { $0.id == "d9" }) {
                 dims.insert(d0, at: d9idx)

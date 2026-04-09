@@ -37,7 +37,7 @@ struct PlancheFloatingView: View {
                 .padding(.horizontal, 12).padding(.vertical, 8)
 
                 // Routine (certifiées + Patrick)
-                if session.currentTier.forkResolu || session.role.isPatrick {
+                if session.currentTier.forkResolu || session.role.isSuperviseur {
                     HStack(spacing: 8) {
                         Button { showRoutine = true } label: {
                             HStack(spacing: 3) {

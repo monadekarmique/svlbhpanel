@@ -19,11 +19,14 @@ class ShamanesPendingManager: ObservableObject {
     @Published var badges: [String: Int] = [:]  // code → count
 
     static let shamanes: [(code: String, name: String, emoji: String)] = [
+        ("200", "V\u{00e9}ronique", "\u{1F52E}"),
         ("0300", "Cornelia", "\u{1F431}"),
         ("0301", "Flavia", "\u{2728}"),
         ("0302", "Anne", "\u{1F338}"),
         ("0303", "Chlo\u{00e9}", "\u{1F4AB}"),
+        ("0304", "Ir\u{00e8}ne", "\u{1F33F}"),
         ("455000", "Patrick", "\u{1F52C}"),
+        ("754545", "Patrick P.", "\u{1F6E1}"),
     ]
 
     // Call this when the receive/pull menu opens

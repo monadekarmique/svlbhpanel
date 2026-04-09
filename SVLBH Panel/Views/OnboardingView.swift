@@ -18,7 +18,7 @@ struct OnboardingView: View {
     private var codeInt: Int? { Int(codeDraft) }
     private var isValid: Bool {
         guard let n = codeInt else { return false }
-        return (1...30000).contains(n) || n >= 455000
+        return n >= 1
     }
     private var tierPreview: PractitionerTier? {
         guard let n = codeInt else { return nil }
@@ -79,7 +79,7 @@ struct OnboardingView: View {
 
                 Button {
                     guard isValid else {
-                        error = "Code invalide (1–30000 ou 455000)"
+                        error = "Code invalide"
                         return
                     }
                     guard !nameDraft.trimmingCharacters(in: .whitespaces).isEmpty else {
@@ -181,7 +181,7 @@ struct OnboardingView: View {
             TextField("Prénom", text: $nameDraft)
             Button("Lier") {
                 guard let userID = pendingAppleUserID,
-                      let code = Int(codeDraft), (1...30000).contains(code) || code == 455000,
+                      let code = Int(codeDraft), code >= 1,
                       !nameDraft.trimmingCharacters(in: .whitespaces).isEmpty else {
                     error = "Code invalide"
                     return
