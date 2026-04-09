@@ -24,6 +24,11 @@ struct SVLBHPanelApp: App {
                     .environmentObject(identity)
                     .environmentObject(session)
                     .preferredColorScheme(.light)
+            } else if identity.isClientMode {
+                DemandesView(patientId: identity.clientPatientId,
+                             patientName: identity.displayName)
+                    .environmentObject(identity)
+                    .preferredColorScheme(.light)
             } else if let sub = subscriptionStatus, !sub.isActive {
                 SubscriptionWallView(status: sub) {
                     Task { await checkSubscription() }

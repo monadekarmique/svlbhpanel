@@ -561,6 +561,12 @@ class PractitionerIdentity: ObservableObject {
     @Published var code: String = ""
     @Published var displayName: String = ""
     @Published var isAutoIdentifying: Bool = false
+    /// Mode client (Demandes) — point d'entrée séparé pour les patients
+    @Published var isClientMode: Bool = false
+    @Published var clientPatientId: String = ""
+
+    private static let clientModeKey = "svlbh_client_mode"
+    private static let clientPatientIdKey = "svlbh_client_patient_id"
 
     init() { load() }
 
@@ -568,6 +574,8 @@ class PractitionerIdentity: ObservableObject {
         code = UserDefaults.standard.string(forKey: Self.codeKey) ?? ""
         displayName = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         isIdentified = !code.isEmpty
+        isClientMode = UserDefaults.standard.bool(forKey: Self.clientModeKey)
+        clientPatientId = UserDefaults.standard.string(forKey: Self.clientPatientIdKey) ?? ""
     }
 
     func identify(code: String, name: String) {
@@ -576,8 +584,21 @@ class PractitionerIdentity: ObservableObject {
         UserDefaults.standard.set(code, forKey: Self.codeKey)
         UserDefaults.standard.set(name, forKey: Self.nameKey)
         isIdentified = true
+        isClientMode = false
+        UserDefaults.standard.set(false, forKey: Self.clientModeKey)
         // Enregistrer le vendorID sur Make pour les prochains lancements
         Task { await registerVendorID(code: code, name: name) }
+    }
+
+    /// Identifier en mode client (Demandes)
+    func identifyAsClient(patientId: String, name: String) {
+        self.clientPatientId = patientId
+        self.displayName = name
+        self.isClientMode = true
+        self.isIdentified = true
+        UserDefaults.standard.set(true, forKey: Self.clientModeKey)
+        UserDefaults.standard.set(patientId, forKey: Self.clientPatientIdKey)
+        UserDefaults.standard.set(name, forKey: Self.nameKey)
     }
 
     /// Sign in with Apple — identifie via email mappé, cache local, ou webhook Make
@@ -699,8 +720,12 @@ class PractitionerIdentity: ObservableObject {
         }
         code = ""
         displayName = ""
+        clientPatientId = ""
+        isClientMode = false
         UserDefaults.standard.removeObject(forKey: Self.codeKey)
         UserDefaults.standard.removeObject(forKey: Self.nameKey)
+        UserDefaults.standard.removeObject(forKey: Self.clientModeKey)
+        UserDefaults.standard.removeObject(forKey: Self.clientPatientIdKey)
         isIdentified = false
     }
 
