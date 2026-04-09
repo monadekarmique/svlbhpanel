@@ -80,15 +80,9 @@
 		ONBO0001AAAA00000001AAAA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBO0001BBBB00000001BBBB /* OnboardingView.swift */; };
 		PTAC0001AAAA00000001AAAA /* PlancheTactiqueTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */; };
 		R3F5Y5T3M0VIEW0000001 /* ReferenceSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */; };
-		TORE000100AA00000001 /* ToreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000100BB00000001 /* ToreModels.swift */; };
-		TORE000200AA00000001 /* ToreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000200BB00000001 /* ToreService.swift */; };
-		TORE000300AA00000001 /* ToreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000300BB00000001 /* ToreViewModel.swift */; };
-		TORE000400AA00000001 /* ToreGlycemieScleroseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */; };
-		DEMA000100AA00000001 /* DemandesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000100BB00000001 /* DemandesModels.swift */; };
-		DEMA000200AA00000001 /* DemandesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000200BB00000001 /* DemandesService.swift */; };
-		DEMA000300AA00000001 /* DemandesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMA000300BB00000001 /* DemandesView.swift */; };
-		T0RE5LUM1E7AB00000000001 /* ToresLumiereTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */; };
-		T0RE5HTML0AB00000000001 /* tores-lumiere.html in Resources */ = {isa = PBXBuildFile; fileRef = T0RE5HTML0AB00000000002 /* tores-lumiere.html */; };
+		CHR0N0FUD4TA0000000001 /* ChronoFuData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHR0N0FUD4TA0000000002 /* ChronoFuData.swift */; };
+		CHR0N0CL0CK0000000001 /* ChronoClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHR0N0CL0CK0000000002 /* ChronoClockView.swift */; };
+		CHR0N0FUT4B00000000001 /* ChronoFuTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHR0N0FUT4B00000000002 /* ChronoFuTab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,15 +181,9 @@
 		ONBO0001BBBB00000001BBBB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		PTAC0001BBBB00000001BBBB /* PlancheTactiqueTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlancheTactiqueTab.swift; sourceTree = "<group>"; };
 		R3F5Y5T3M0VIEW0000002 /* ReferenceSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceSystemView.swift; sourceTree = "<group>"; };
-		TORE000100BB00000001 /* ToreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreModels.swift; sourceTree = "<group>"; };
-		TORE000200BB00000001 /* ToreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreService.swift; sourceTree = "<group>"; };
-		TORE000300BB00000001 /* ToreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreViewModel.swift; sourceTree = "<group>"; };
-		TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToreGlycemieScleroseView.swift; sourceTree = "<group>"; };
-		DEMA000100BB00000001 /* DemandesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesModels.swift; sourceTree = "<group>"; };
-		DEMA000200BB00000001 /* DemandesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesService.swift; sourceTree = "<group>"; };
-		DEMA000300BB00000001 /* DemandesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemandesView.swift; sourceTree = "<group>"; };
-		T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToresLumiereTab.swift; sourceTree = "<group>"; };
-		T0RE5HTML0AB00000000002 /* tores-lumiere.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "tores-lumiere.html"; sourceTree = "<group>"; };
+		CHR0N0FUD4TA0000000002 /* ChronoFuData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoFuData.swift; sourceTree = "<group>"; };
+		CHR0N0CL0CK0000000002 /* ChronoClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoClockView.swift; sourceTree = "<group>"; };
+		CHR0N0FUT4B00000000002 /* ChronoFuTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoFuTab.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,6 +221,7 @@
 				CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */,
 				D983E04A64C189A5DC0D8241 /* SessionHistory.swift */,
 				D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */,
+				CHR0N0FUD4TA0000000002 /* ChronoFuData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -277,32 +266,8 @@
 				2DE7C5097C86ECE75CA7CE0D /* ShamanesOverviewView.swift */,
 				94BFD78FD5CAB27584C839F3 /* INTEGRATION_PATCHES.swift */,
 				E4FB57C8B3FBEB3852695D3E /* PaletteDeLumiere */,
-				TOREGRP00000000000001 /* Tore */,
-				DEMAGRP00000000000001 /* Demandes */,
-				T0RE5RES0GRP00000000001 /* Resources */,
 			);
 			path = "SVLBH Panel";
-			sourceTree = "<group>";
-		};
-		TOREGRP00000000000001 /* Tore */ = {
-			isa = PBXGroup;
-			children = (
-				TORE000100BB00000001 /* ToreModels.swift */,
-				TORE000200BB00000001 /* ToreService.swift */,
-				TORE000300BB00000001 /* ToreViewModel.swift */,
-				TORE000400BB00000001 /* ToreGlycemieScleroseView.swift */,
-			);
-			path = Tore;
-			sourceTree = "<group>";
-		};
-		DEMAGRP00000000000001 /* Demandes */ = {
-			isa = PBXGroup;
-			children = (
-				DEMA000100BB00000001 /* DemandesModels.swift */,
-				DEMA000200BB00000001 /* DemandesService.swift */,
-				DEMA000300BB00000001 /* DemandesView.swift */,
-			);
-			path = Demandes;
 			sourceTree = "<group>";
 		};
 		8E7964D42F6E4D120051060A /* Preview Content */ = {
@@ -382,7 +347,8 @@
 				A3321BF7833AE0EFDBB44D5B /* RoutineMatinTab.swift */,
 				B0D3681763B8DCC716CE4FA0 /* VisiteursSettingsView.swift */,
 				F0C2CD7102E63969B835268F /* PierresSheetButton.swift */,
-				T0RE5LUM1E7AB00000000002 /* ToresLumiereTab.swift */,
+				CHR0N0CL0CK0000000002 /* ChronoClockView.swift */,
+				CHR0N0FUT4B00000000002 /* ChronoFuTab.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -403,14 +369,6 @@
 			);
 			name = PaletteDeLumiere;
 			path = PaletteDeLumiere;
-			sourceTree = "<group>";
-		};
-		T0RE5RES0GRP00000000001 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				T0RE5HTML0AB00000000002 /* tores-lumiere.html */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -519,7 +477,6 @@
 			files = (
 				8E7964D62F6E4D120051060A /* Preview Assets.xcassets in Resources */,
 				8E7964D22F6E4D120051060A /* Assets.xcassets in Resources */,
-				T0RE5HTML0AB00000000001 /* tores-lumiere.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,14 +569,9 @@
 				E052F34693FB488160E2DBC3 /* ChromotherapyManager.swift in Sources */,
 				3D9CBDFB9DE52DFD1148D7BC /* PaletteDeLumiereView.swift in Sources */,
 				9F323A40E93A26BACF485090 /* PierresSheetButton.swift in Sources */,
-				TORE000100AA00000001 /* ToreModels.swift in Sources */,
-				TORE000200AA00000001 /* ToreService.swift in Sources */,
-				TORE000300AA00000001 /* ToreViewModel.swift in Sources */,
-				TORE000400AA00000001 /* ToreGlycemieScleroseView.swift in Sources */,
-				DEMA000100AA00000001 /* DemandesModels.swift in Sources */,
-				DEMA000200AA00000001 /* DemandesService.swift in Sources */,
-				DEMA000300AA00000001 /* DemandesView.swift in Sources */,
-				T0RE5LUM1E7AB00000000001 /* ToresLumiereTab.swift in Sources */,
+				CHR0N0FUD4TA0000000001 /* ChronoFuData.swift in Sources */,
+				CHR0N0CL0CK0000000001 /* ChronoClockView.swift in Sources */,
+				CHR0N0FUT4B00000000001 /* ChronoFuTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -772,7 +724,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -792,7 +744,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -811,7 +763,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -831,7 +783,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -849,12 +801,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -872,12 +824,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -894,12 +846,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -916,12 +868,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 83;
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 7.5.0;
+				MARKETING_VERSION = 7.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-PanelUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
