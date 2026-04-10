@@ -67,8 +67,8 @@ struct Ratio4DDetailView: View {
                 VStack(spacing: 20) {
                     ratioHeader
                     inputSection
-                    if selectedEntry != nil {
-                        baselineCard
+                    if let entry = selectedEntry {
+                        baselineCard(entry: entry)
                     }
                     referenceTable
                     explanationCard
@@ -188,9 +188,8 @@ struct Ratio4DDetailView: View {
 
     // MARK: - Baseline Card (auto after country selection)
 
-    private var baselineCard: some View {
-        let entry = selectedEntry!
-        return VStack(spacing: 0) {
+    private func baselineCard(entry: (pays: String, slsaCh: Int, sltdaOrig: Int, sltdaCh: Int)) -> some View {
+        VStack(spacing: 0) {
             sectionHeader("Baseline 21S \u{2014} \(entry.pays)")
 
             row("SLTdA-CH\u{2192}\(entry.pays) Baseline", "\(entry.slsaCh)%",
