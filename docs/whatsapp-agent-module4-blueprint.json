@@ -1,0 +1,67 @@
+{
+  "_comment": "Snippet Make blueprint — module HTTP 4 du scénario #8944541 (Router WhatsApp). À copier dans l'éditeur blueprint JSON de Make, ou à répliquer via l'UI. Remplace l'appel direct Anthropic complete/messages par un appel Managed Agents /v1/sessions. Prérequis : deux Team Variables Make définies (ANTHROPIC_API_KEY + ANTHROPIC_AGENT_WHATSAPP_VLBH) et senderPhone normalisé en amont (voir module Set Variable proposé dans whatsapp-router-migration.md).",
+
+  "id": 4,
+  "module": "http:MakeRequest",
+  "version": 4,
+  "parameters": {},
+  "mapper": {
+    "url": "https://api.anthropic.com/v1/sessions",
+    "method": "post",
+    "headers": [
+      { "name": "Content-Type", "value": "application/json" },
+      { "name": "x-api-key", "value": "{{getVariable(\"ANTHROPIC_API_KEY\")}}" },
+      { "name": "anthropic-version", "value": "2023-06-01" },
+      { "name": "anthropic-beta", "value": "managed-agents-2026-04-01" },
+      { "name": "User-Agent", "value": "Mozilla/5.0 (compatible; SVLBHMakeRouter/1.0)" }
+    ],
+    "qs": [],
+    "bodyType": "raw",
+    "contentType": "application/json",
+    "parseResponse": true,
+    "timeout": 60,
+    "followRedirect": true,
+    "useMtls": false,
+    "rejectUnauthorized": true,
+    "gzipContent": false,
+    "shareCookies": false,
+    "saveCookies": false,
+    "inputMethod": "jsonString",
+    "jsonStringBodyContent": "{\n  \"agent_id\": \"{{getVariable(\\\"ANTHROPIC_AGENT_WHATSAPP_VLBH\\\")}}\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"PROFIL PATIENTE (lookup svlbh-v2 #155674):\\n- phone: {{senderPhone}}\\n- segment: {{ifempty(2.segment; \\\"nouveau_contact\\\")}}\\n- display_name: \\\"{{ifempty(2.display_name; \\\"\\\")}}\\\"\\n- last_seen: \\\"{{ifempty(2.last_seen; \\\"\\\")}}\\\"\\n- notes: \\\"{{ifempty(2.notes; \\\"\\\")}}\\\"\\n\\nMESSAGE ENTRANT:\\n{{1.text}}\"\n    }\n  ]\n}"
+  },
+
+  "_notes_configuration": {
+    "team_variables_requises": [
+      {
+        "name": "ANTHROPIC_API_KEY",
+        "type": "secret",
+        "description": "Clé API Anthropic dédiée Make (SVLBH-Make-Router). PAS la même que la clé iOS."
+      },
+      {
+        "name": "ANTHROPIC_AGENT_WHATSAPP_VLBH",
+        "type": "text",
+        "description": "ID de l'agent retourné par POST /v1/agents après sync_agents.swift. Format agent_01XXXXXXXX..."
+      }
+    ],
+    "dependances_modules": {
+      "1": "gateway:CustomWebHook — hook 4000349 — trigger entrant, fournit 1.from et 1.text",
+      "2": "datastore:GetRecord — lookup svlbh-v2 par clé CT-{{senderPhone}} — fournit 2.segment, 2.display_name, 2.last_seen, 2.notes",
+      "senderPhone": "Variable Make définie en amont via module util:SetVariable, valeur = '+' + replace(replace(1.from; '@s.whatsapp.net'; ''); '@lid'; '')"
+    },
+    "parsing_reponse_attendu": {
+      "chemin": "4.body.content[0].text (ou 4.body.messages[0].content selon format Managed Agents)",
+      "format_attendu_from_agent": "JSON string contenant { reply, segment_detected, alert_patrick, alert_reason, recommended_follow_up }",
+      "next_modules": {
+        "5": "util:ParseJSON sur le texte retourné pour obtenir l'objet structuré",
+        "6": "gateway:WebhookRespond avec body = 5.reply (plain text envoyé au bridge Go)",
+        "7": "(conditionnel) si 5.alert_patrick == true → branche qui POST vers le webhook WA Router lllo1g6bt... pour notifier Patrick via sa propre notification WhatsApp"
+      }
+    },
+    "troubleshooting": {
+      "403_Forbidden": "Accès bêta managed-agents-2026-04-01 non activé sur le compte. Vérifier console.anthropic.com → Settings → Beta features.",
+      "401_Unauthorized": "Clé API invalide ou mal récupérée. Vérifier getVariable(\"ANTHROPIC_API_KEY\") dans le log de l'exécution Make.",
+      "400_InvalidSchema": "Le mapping local → API /v1/agents/sessions a changé côté Anthropic. Lire le body de la réponse 4.body, ajuster jsonStringBodyContent selon le nouveau schema.",
+      "parse_error": "L'agent n'a pas retourné du JSON strict. Ouvrir la réponse 4.body.content[0].text, vérifier. Le system prompt v0.2 exige un JSON strict — si l'agent dévie, ajuster le prompt puis re-run sync_agents.swift."
+    }
+  }
+}
