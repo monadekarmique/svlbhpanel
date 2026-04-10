@@ -18,3 +18,6 @@
 - Data store : svlbh-v2 (id: 155674)
 - Segment update : `jl32rcoregoc34xeekj3cldngj9rkhh9`
 - Push v2 : `1xhfk4o1l5pu4h23m0x26zql6oe8c3ns`
+
+## TODO / Attente backend
+- **User skills persistence** : ne pas bricoler de contournement local. On attend qu'Anthropic persiste nativement les user skills entre sessions côté backend. Branche de suivi : `claude/user-skills-persistence-ta0Js`.
