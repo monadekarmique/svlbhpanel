@@ -1,5 +1,9 @@
 // SVLBHPanel — Models/HDOMPayload.swift
 // Phase 1 Managed Agents — DTOs envoyés à / reçus de `hdom-session-agent`.
+//
+// Schema v0.1 aligné sur le system prompt hdom-session-agent v0.1 produit
+// par Claude.ai (protocole radiesthésique : propositions Type A chromatiques
+// + Type B lymphatiques monadiques, avec confidence + rationale).
 
 import Foundation
 
@@ -7,79 +11,125 @@ import Foundation
 
 /// Payload envoyé à `hdom-session-agent` pour préparer une séance.
 /// Construit depuis `SessionState.toHDOMAgentInput(tracker:)`.
+///
+/// Schema aligné sur la section "Entrées Attendues" du system prompt v0.1.
 struct HDOMAgentInput: Codable {
-    let patientId: String
-    let sessionNum: String
-    let sessionProgramCode: String
-
-    /// SLA thérapeute (source de vérité pour le décodage).
+    let patienteId: String
     let sla: Int?
-    /// SLSA effectif (SA1 seul si pas de détail, sinon somme SA1–SA5).
     let slsa: Int?
-    let slsaS1: Int?
-    let slsaS2: Int?
-    let slsaS3: Int?
-    let slsaS4: Int?
-    let slsaS5: Int?
-
-    /// Heure de réveil de la patiente (ISO8601). Nil si non renseignée.
+    /// Pas encore présent dans `ScoresLumiere` — toujours nil en v0.1.
+    /// TODO: câbler quand le modèle iOS exposera SLPMO.
+    let slpmo: Int?
+    let slm: Int?
+    /// Format "HH:MM" (pas ISO, pour matcher le system prompt).
     let heureReveil: String?
-    /// HH:mm local — extrait de heureReveil pour confort de lecture côté agent.
-    let heureReveilLocal: String?
-
-    /// Événements "Rose des Vents" loggés dans le tracker de session.
-    let roseDesVents: [RoseEvent]
-
-    /// Horodatage de construction du payload (ISO8601).
-    let generatedAt: String
-
-    /// Version du schéma pour permettre une évolution côté agent.
-    let schemaVersion: Int
-
-    struct RoseEvent: Codable {
-        let timestamp: String   // ISO8601
-        let timeLocal: String   // HH:mm
-        let label: String
-        let detail: String?
-        let niveau: String?
-    }
+    /// Directions cardinales extraites des events tracker.roseDesVentsEvents.
+    /// Toujours présent (empty array si aucun event).
+    let roseDesVents: [String]
+    /// Notes libres de la séance précédente — non câblé en v0.1.
+    let notesSeancePrecedente: String?
+    /// Flags profil patient — non câblés en v0.1 (restent nil).
+    let profilEndometriose: Bool?
+    let profilFerritineBasse: Bool?
 
     enum CodingKeys: String, CodingKey {
-        case patientId = "patient_id"
-        case sessionNum = "session_num"
-        case sessionProgramCode = "session_program_code"
-        case sla
-        case slsa
-        case slsaS1 = "slsa_s1"
-        case slsaS2 = "slsa_s2"
-        case slsaS3 = "slsa_s3"
-        case slsaS4 = "slsa_s4"
-        case slsaS5 = "slsa_s5"
+        case patienteId = "patiente_id"
+        case sla, slsa, slpmo, slm
         case heureReveil = "heure_reveil"
-        case heureReveilLocal = "heure_reveil_local"
         case roseDesVents = "rose_des_vents"
-        case generatedAt = "generated_at"
-        case schemaVersion = "schema_version"
+        case notesSeancePrecedente = "notes_seance_precedente"
+        case profilEndometriose = "profil_endometriose"
+        case profilFerritineBasse = "profil_ferritine_basse"
     }
 }
 
 // MARK: - Output (agent → iOS)
 
 /// Résultat structuré retourné par `hdom-session-agent`.
-/// L'agent s'engage à produire du JSON strict avec ces 3 clés
-/// (voir `docs/skills-templates/hdom-decoder.SKILL.md`).
+/// L'agent s'engage à produire du JSON strict avec ces clés
+/// (voir system prompt v0.1 — section "Format de sortie JSON strict").
 struct HDOMPreparationResult: Codable, Equatable {
-    /// Bloc markdown : décodage hDOM du jour.
+    /// Bloc markdown : décodage hDOM + signature diagnostique.
     let decodage: String
-    /// Bloc markdown : protocole de séance recommandé.
+    /// Bloc markdown : protocole proposé phase par phase.
     let protocole: String
-    /// Bloc markdown : chromothérapie.
+    /// Bloc markdown : chromothérapie suggérée.
     let chromotherapie: String
-    /// Métadonnées optionnelles (méridien actif, cluster détecté, etc.).
+    /// Propositions à valider par radiesthésie — Types A et B.
+    /// Vide = pas de propositions (peut arriver si l'agent bloque sur sécurité praticienne).
+    let propositions: [Proposition]
+    /// Métadonnées libres (meridien du jour, skills actifs, etc.).
     let metadata: [String: String]?
 
+    init(
+        decodage: String,
+        protocole: String,
+        chromotherapie: String,
+        propositions: [Proposition] = [],
+        metadata: [String: String]? = nil
+    ) {
+        self.decodage = decodage
+        self.protocole = protocole
+        self.chromotherapie = chromotherapie
+        self.propositions = propositions
+        self.metadata = metadata
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        decodage = try c.decode(String.self, forKey: .decodage)
+        protocole = try c.decode(String.self, forKey: .protocole)
+        chromotherapie = try c.decode(String.self, forKey: .chromotherapie)
+        propositions = try c.decodeIfPresent([Proposition].self, forKey: .propositions) ?? []
+        metadata = try c.decodeIfPresent([String: String].self, forKey: .metadata)
+    }
+
     enum CodingKeys: String, CodingKey {
-        case decodage, protocole, chromotherapie, metadata
+        case decodage, protocole, chromotherapie, propositions, metadata
+    }
+
+    // MARK: - Proposition à valider par radiesthésie
+
+    struct Proposition: Codable, Equatable, Identifiable {
+        let type: PropositionType
+        let label: String
+        /// Score 0.0 — 1.0. Si < 0.95, `rationale` est obligatoire.
+        let confidence: Double
+        /// Raison explicite de la confiance réduite (requise si confidence < 0.95).
+        let rationale: String?
+        /// Champs spécifiques au type de proposition (dict string libre).
+        let details: [String: String]?
+
+        /// Identifiant stable pour SwiftUI (pas de collision UI).
+        var id: String { "\(type.rawValue)::\(label)" }
+
+        /// true si la proposition est au-dessus du seuil de confiance VLBH.
+        var isHighConfidence: Bool { confidence >= 0.95 }
+
+        /// true si la proposition devrait afficher son rationale.
+        var requiresRationale: Bool { !isHighConfidence }
+
+        /// Confiance en pourcentage entier (0–100).
+        var confidencePercent: Int { Int((confidence * 100).rounded()) }
+    }
+
+    enum PropositionType: String, Codable, CaseIterable {
+        case pathologieChromatique = "pathologie_chromatique"
+        case lymphatiqueMonadique = "lymphatique_monadique"
+
+        var displayName: String {
+            switch self {
+            case .pathologieChromatique: return "Pathologie chromatique"
+            case .lymphatiqueMonadique: return "Guérissabilité lymphatique monadique"
+            }
+        }
+
+        var iconName: String {
+            switch self {
+            case .pathologieChromatique: return "paintpalette.fill"
+            case .lymphatiqueMonadique: return "drop.circle.fill"
+            }
+        }
     }
 }
 
@@ -89,6 +139,7 @@ enum HDOMParseError: LocalizedError {
     case emptyResponse
     case jsonNotFound(raw: String)
     case decodingFailed(String, raw: String)
+    case rationaleRequired(label: String)
 
     var errorDescription: String? {
         switch self {
@@ -98,6 +149,8 @@ enum HDOMParseError: LocalizedError {
             return "Aucun JSON trouvé dans la réponse. Extrait: \(raw.prefix(200))"
         case .decodingFailed(let msg, let raw):
             return "Décodage échoué: \(msg). Extrait: \(raw.prefix(200))"
+        case .rationaleRequired(let label):
+            return "Proposition « \(label) » avec confidence < 95 % mais aucun rationale fourni — rejet côté iOS."
         }
     }
 }
@@ -110,7 +163,8 @@ extension HDOMPreparationResult {
     /// 2. Bloc ```json ... ``` extrait du texte
     /// 3. Premier `{` → dernier `}` du texte
     ///
-    /// Si rien ne marche → `HDOMParseError.jsonNotFound`.
+    /// Après décodage réussi : valide la règle « confidence < 95 % ⇒ rationale requis ».
+    /// Toute proposition qui viole cette règle → `HDOMParseError.rationaleRequired`.
     static func parse(from text: String) throws -> HDOMPreparationResult {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { throw HDOMParseError.emptyResponse }
@@ -125,14 +179,23 @@ extension HDOMPreparationResult {
         for candidate in candidates {
             guard let data = candidate.data(using: .utf8) else { continue }
             if let result = try? decoder.decode(HDOMPreparationResult.self, from: data) {
+                try validateRationales(result.propositions)
                 return result
             }
         }
         throw HDOMParseError.jsonNotFound(raw: trimmed)
     }
 
+    /// Vérifie que chaque proposition < 95 % a bien un rationale non-vide.
+    private static func validateRationales(_ propositions: [Proposition]) throws {
+        for p in propositions where p.confidence < 0.95 {
+            guard let rat = p.rationale, !rat.trimmingCharacters(in: .whitespaces).isEmpty else {
+                throw HDOMParseError.rationaleRequired(label: p.label)
+            }
+        }
+    }
+
     private static func extractFencedJSON(from text: String) -> String? {
-        // Cherche ```json ... ``` ou ``` ... ``` contenant du JSON
         let patterns = ["```json\\s*([\\s\\S]*?)```", "```\\s*([\\s\\S]*?)```"]
         for pattern in patterns {
             guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }

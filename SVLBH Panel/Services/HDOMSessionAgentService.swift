@@ -71,14 +71,30 @@ final class HDOMSessionAgentService: ObservableObject {
         }
 
         let userMessage = """
-        Prépare la séance pour la patiente suivante.
+        Prépare la séance pour la patiente suivante en suivant ta séquence d'exécution :
+        Étape 0 (sécurité praticienne) → Étape 1 (Zi Wu Liu via heure_reveil) →
+        Étape 2 (scores) → Étape 3 (propositions Type A chromatiques) →
+        Étape 4 (propositions Type B lymphatiques monadiques) → Étape 5 (bloc final).
 
         Payload JSON :
         ```json
         \(payloadJSON)
         ```
 
-        Produis ta réponse en JSON strict avec les clés `decodage`, `protocole`, `chromotherapie`, `metadata`.
+        Tu dois impérativement retourner ta réponse au format JSON strict avec les clés :
+        - `decodage` : markdown du décodage hDOM + signature diagnostique
+        - `protocole` : markdown du protocole proposé phase par phase
+        - `chromotherapie` : markdown de la chromothérapie suggérée
+        - `propositions` : tableau de propositions (Type A + Type B) — chaque item :
+            { "type": "pathologie_chromatique" | "lymphatique_monadique",
+              "label": "résumé court",
+              "confidence": Double 0.0-1.0,
+              "rationale": String (OBLIGATOIRE si confidence < 0.95, sinon null),
+              "details": dict string → string (champs spécifiques au type) }
+        - `metadata` : dict optionnel (meridien du jour, skills actifs, sécurité praticienne...)
+
+        Règle ABSOLUE : toute proposition avec confidence < 0.95 DOIT avoir un rationale
+        non vide. L'iOS rejette la réponse sinon. Ne jamais reformuler pour masquer l'incertitude.
         """
 
         // 4. Appel agent

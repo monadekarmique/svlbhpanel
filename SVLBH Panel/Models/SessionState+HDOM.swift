@@ -1,8 +1,9 @@
 // SVLBHPanel — Models/SessionState+HDOM.swift
 // Phase 1 Managed Agents — conversion SessionState → HDOMAgentInput.
 //
-// Note : la méthode prend `tracker` en paramètre car les événements
-// Rose des Vents vivent dans `SessionTracker`, pas dans `SessionState`.
+// Schema aligné sur hdom-session-agent v0.1.
+// Les événements Rose des Vents vivent dans `SessionTracker` (pas dans
+// `SessionState`), d'où le paramètre `tracker`.
 
 import Foundation
 
@@ -11,47 +12,31 @@ extension SessionState {
     /// Construit le payload envoyé à `hdom-session-agent`.
     /// Utilise les scores du thérapeute (`scoresTherapist`) par défaut.
     func toHDOMAgentInput(tracker: SessionTracker) -> HDOMAgentInput {
-        let iso = ISO8601DateFormatter()
-        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let hmFormatter = DateFormatter()
+        hmFormatter.dateFormat = "HH:mm"
+        hmFormatter.locale = Locale(identifier: "fr_FR")
 
-        let hmFormatter: DateFormatter = {
-            let f = DateFormatter()
-            f.dateFormat = "HH:mm"
-            f.locale = Locale(identifier: "fr_FR")
-            return f
-        }()
+        let heureReveilStr = heureReveil.map { hmFormatter.string(from: $0) }
+
+        // Extraire les directions cardinales uniques depuis les events tracker
+        let directions = tracker.roseDesVentsEvents
+            .compactMap(extractCardinalDirection(from:))
+        // Dédoublonnage en préservant l'ordre d'apparition
+        var seen = Set<String>()
+        let uniqueDirections = directions.filter { seen.insert($0).inserted }
 
         let scores = scoresTherapist
-
-        let heureReveilISO = heureReveil.map { iso.string(from: $0) }
-        let heureReveilLocal = heureReveil.map { hmFormatter.string(from: $0) }
-
-        let rose = tracker.roseDesVentsEvents.map { event in
-            HDOMAgentInput.RoseEvent(
-                timestamp: iso.string(from: event.timestamp),
-                timeLocal: hmFormatter.string(from: event.timestamp),
-                label: event.label,
-                detail: event.detail,
-                niveau: event.niveau
-            )
-        }
-
         return HDOMAgentInput(
-            patientId: patientId,
-            sessionNum: sessionNum,
-            sessionProgramCode: sessionProgramCode,
+            patienteId: patientId,
             sla: scores.sla,
             slsa: scores.slsaEffective,
-            slsaS1: scores.slsaS1,
-            slsaS2: scores.slsaS2,
-            slsaS3: scores.slsaS3,
-            slsaS4: scores.slsaS4,
-            slsaS5: scores.slsaS5,
-            heureReveil: heureReveilISO,
-            heureReveilLocal: heureReveilLocal,
-            roseDesVents: rose,
-            generatedAt: iso.string(from: Date()),
-            schemaVersion: 1
+            slpmo: nil,                         // TODO: pas encore dans ScoresLumiere
+            slm: scores.slm,
+            heureReveil: heureReveilStr,
+            roseDesVents: uniqueDirections,
+            notesSeancePrecedente: nil,         // TODO: à brancher depuis SessionHistory
+            profilEndometriose: nil,            // TODO: à brancher depuis profil patient
+            profilFerritineBasse: nil           // TODO: idem
         )
     }
 
@@ -63,4 +48,29 @@ extension SessionState {
         let hasHeure = heureReveil != nil
         return hasScore && hasHeure
     }
+}
+
+// MARK: - Extraction direction cardinale
+
+/// Cherche une direction cardinale (N / NNE / NE / ENE / E / ESE / SE / SSE / S / SSO / SO / OSO / O / ONO / NO / NNO)
+/// dans le label + detail d'un event Rose des Vents. Retourne la première trouvée,
+/// ou nil si aucune.
+///
+/// Les directions multi-caractères (NNE, NNO, etc.) sont testées AVANT les simples
+/// pour éviter un faux positif sur "N" dans "NNE".
+fileprivate func extractCardinalDirection(from event: SessionEvent) -> String? {
+    let haystack = [event.label, event.detail ?? ""].joined(separator: " ")
+    // Ordre : plus long d'abord.
+    let candidates = [
+        "NNE", "NNO", "ENE", "ESE", "SSE", "SSO", "OSO", "ONO",
+        "NE", "NO", "SE", "SO",
+        "N", "E", "S", "O"
+    ]
+    for dir in candidates {
+        let pattern = "\\b\(dir)\\b"
+        if haystack.range(of: pattern, options: .regularExpression) != nil {
+            return dir
+        }
+    }
+    return nil
 }

@@ -100,6 +100,126 @@ Format markdown structuré :
 **Durée d'exposition** : X minutes
 ```
 
+## Propositions Soumises à Validation Radiesthésique
+
+> Patrick valide par pendule DEUX types de propositions avant toute application.
+> L'IA propose avec un niveau de confiance. Patrick confirme ou invalide.
+
+---
+
+### Type A — Pathologie Chromatique
+
+**Définition** : Toute assignation d'une couleur/fréquence thérapeutique à un nœud hDOM spécifique
+(ex: "le chakra 9 de cette patiente requiert le gel Orange 620nm sur LR").
+
+**Format de proposition obligatoire :**
+
+```
+PATHOLOGIE CHROMATIQUE PROPOSÉE
+─────────────────────────────────────────
+Nœud      : [Chakra X / Méridien / Dimension]
+Couleur   : [Nom + nm si applicable]
+Intention : [Libérer / Activer / Neutraliser] + [Cible Gu ou Hash]
+Confiance : XX%
+[Si < 95%] Limite : "[Raison pour laquelle la confiance est réduite]"
+[VALIDATION RADIESTHÉSIQUE REQUISE ✦]
+─────────────────────────────────────────
+```
+
+**Seuils de confiance :**
+
+| Confiance | Signification | Comportement agent |
+|-----------|---------------|--------------------|
+| ≥ 95% | Signature chromatique claire, cohérente MTC + hDOM | Proposer directement |
+| 80–94% | Ambiguïté sur la dimension ou l'angle Rose des Vents | Proposer + expliquer la limite |
+| 60–79% | Données insuffisantes (SLA seul, pas de Rose des Vents) | Proposer + demander donnée manquante |
+| < 60% | Ne pas proposer — demander mesure complémentaire | Blocage — reformuler la question |
+
+**Raisons fréquentes de confiance réduite (< 95%) :**
+- Rose des Vents non fournie pour cette séance
+- Plusieurs méridiens candidats sur le même angle (ex: LR vs GB sur 225°)
+- SLA/SLSA incohérents entre eux (écart > 40 points)
+- Heure de réveil non fournie → Zi Wu Liu indéterminable
+- Profil transgénérationnel inconnu (première séance)
+
+---
+
+### Type B — Systèmes Lymphatiques Monadiques Guérissables
+
+**Définition** : Toute proposition affirmant qu'un système lymphatique monadique (S0→S8)
+est en état de recevoir le soin et que la guérison peut progresser à cette séance.
+
+**Pourquoi c'est critique** : Un système lymphatique monadique non préparé
+→ le soin rebondit, voire renforce le Gu. La Monade doit être apaisée AVANT (SLM = 100%).
+
+**Format de proposition obligatoire :**
+
+```
+GUÉRISSABILITÉ LYMPHATIQUE MONADIQUE
+─────────────────────────────────────────
+Niveau S    : S[0–8]
+Système     : [Lymphatique physique / Hématopoïétique / Monadique]
+Condition   : SLM = [valeur]% / Cordage = [présent/absent]
+Guérissable : [OUI provisoire / INCERTAIN]
+Confiance   : XX%
+[Si < 95%] Limite : "[Raison spécifique]"
+[VALIDATION RADIESTHÉSIQUE REQUISE ✦]
+─────────────────────────────────────────
+```
+
+**Conditions pour confiance ≥ 95% :**
+- SLM confirmé = 100% (Monade apaisée)
+- Cordage thérapeute→patient vérifié = absent
+- Sécurité praticienne 3×100% confirmée
+- Niveau S ciblé cohérent avec le SLA/SLSA mesuré
+
+**Raisons fréquentes de confiance réduite :**
+- SLM non mesuré en début de séance
+- Cordage non vérifié
+- Niveau S ambigu (S2 vs S3 selon le hash)
+- Première séance sur ce profil (pas d'historique comparatif)
+
+---
+
+### Règle Générale Agent
+
+```
+POUR TOUTE PROPOSITION (chromatique OU lymphatique monadique) :
+
+SI confiance < 95% :
+  → Inclure obligatoirement le champ "Limite"
+  → Finir par [VALIDATION RADIESTHÉSIQUE REQUISE ✦]
+  → Ne JAMAIS reformuler pour masquer l'incertitude
+
+SI confiance ≥ 95% :
+  → Proposer clairement
+  → Finir par [VALIDATION RADIESTHÉSIQUE REQUISE ✦]
+  → L'agent ne décide jamais — Patrick valide toujours
+
+L'agent ne présuppose JAMAIS que Patrick a validé.
+L'agent attend un retour explicite avant de continuer le protocole.
+```
+
+### Schema JSON pour le retour structuré au client iOS
+
+L'agent doit inclure les propositions dans un tableau `propositions` du JSON de sortie. Chaque item :
+
+```json
+{
+  "type": "pathologie_chromatique" | "lymphatique_monadique",
+  "label": "résumé court (ex: 'Chakra 9 — Orange 620nm sur LR')",
+  "confidence": 0.97,
+  "rationale": null,
+  "details": {
+    "noeud": "Chakra 9",
+    "couleur": "Orange 620nm",
+    "intention": "Libérer Gu LR"
+  }
+}
+```
+
+Si `confidence < 0.95` : `rationale` est OBLIGATOIRE et contient la raison explicite. Toute proposition sans rationale en <95% est rejetée côté iOS.
+
 ## Références croisées avec d'autres skills
 
 - Si l'heure de réveil tombe dans une plage **nocturne persistante** (réveils réguliers entre 23h et 05h pendant plusieurs jours) → charger aussi `sommeil-troubles-nuit` pour approfondir.
