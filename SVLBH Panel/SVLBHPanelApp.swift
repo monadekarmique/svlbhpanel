@@ -8,6 +8,7 @@ struct SVLBHPanelApp: App {
     @StateObject private var session = SessionState()
     @StateObject private var sync = MakeSyncService()
     @StateObject private var identity = PractitionerIdentity()
+    @StateObject private var hdomAgent = HDOMSessionAgentService()
     @Environment(\.scenePhase) private var scenePhase
     @State private var subscriptionStatus: SubscriptionStatus?
     @State private var isCheckingSubscription = false
@@ -35,6 +36,7 @@ struct SVLBHPanelApp: App {
                     .environmentObject(sync)
                     .environmentObject(identity)
                     .environmentObject(SegmentUpdateService.shared)
+                    .environmentObject(hdomAgent)
                     .preferredColorScheme(.light)
                     .onAppear {
                         identity.applyTo(session)

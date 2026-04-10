@@ -25,6 +25,7 @@ struct SVLBHTab: View {
     @State private var showClosure = false
     @State private var showHistory = false
     @State private var showResearchPrograms = false
+    @State private var showHDOMPrep = false
     @State private var visiteurCount: Int = 0
 
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
@@ -38,6 +39,7 @@ struct SVLBHTab: View {
     @State private var simulatedTier: PractitionerTier?
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var tracker: SessionTracker
+    @EnvironmentObject var hdomAgent: HDOMSessionAgentService
 
     var slaEstimate: Int {
         let n = session.validatedCount
@@ -437,6 +439,16 @@ struct SVLBHTab: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
+                        if session.role.isPatrick {
+                            Button {
+                                hdomAgent.reset()
+                                showHDOMPrep = true
+                            } label: {
+                                Label("Préparer la séance (hDOM)", systemImage: "sparkles")
+                            }
+                            .disabled(hdomAgent.isPreparing)
+                            Divider()
+                        }
                         Button {
                             showPasteImport = true
                         } label: {
@@ -474,6 +486,12 @@ struct SVLBHTab: View {
             }
             .sheet(isPresented: $showPasteImport) {
                 PasteImportView().environmentObject(session).environmentObject(sync)
+            }
+            .sheet(isPresented: $showHDOMPrep) {
+                HDOMPreparationSheet()
+                    .environmentObject(session)
+                    .environmentObject(tracker)
+                    .environmentObject(hdomAgent)
             }
             .sheet(isPresented: $showExportSheet) {
                 ExportView(text: exportedText)
