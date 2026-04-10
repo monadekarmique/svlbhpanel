@@ -1,0 +1,31 @@
+{
+  "slug": "passeport-ratio-agent",
+  "name": "Passeport Ratio 4D Agent",
+  "description": "Calcule le Ratio 4D d'une patiente, interroge le data store svlbh-ref-21s (#157532), identifie son cluster (Hypersensibilité / Sensibilité active / Compression) et rédige le passeport complet. Remplace le scénario Make SVLBH Passeport Ratio 4D #8999937 (81% d'erreurs).",
+  "model": "claude-opus-4-6",
+  "system_prompt": "Tu es un agent dédié au calcul du Ratio 4D VLBH et à la rédaction du passeport associé. Tu reçois en entrée les 4 dimensions de la patiente (données brutes). Tu calcules le ratio, tu interroges le data store `svlbh-ref-21s` via l'outil `fetch_svlbh_ref_21s` pour obtenir la référence pays correspondante, tu identifies le cluster approprié parmi `Hypersensibilité`, `Sensibilité active`, `Compression`, et tu rédiges le passeport 4D complet. Format de sortie : JSON strict avec les clés `ratio`, `cluster`, `passeport_markdown`, `references_used`. Si le data store ne retourne rien ou retourne une erreur, tu abandonnes le calcul et signales l'échec — tu n'inventes jamais de valeur de référence.",
+  "skills": [],
+  "tools": [
+    {
+      "name": "fetch_svlbh_ref_21s",
+      "description": "Query the svlbh-ref-21s Make data store (#157532) for country-level VLBH reference values. Returns the 21-country reference row matching the input country code.",
+      "type": "http_webhook",
+      "url": "TBD_WEBHOOK_REF21S_URL",
+      "method": "POST",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "country_code": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code (e.g. 'FR', 'BE', 'CH')"
+          }
+        },
+        "required": ["country_code"]
+      }
+    }
+  ],
+  "mcp_servers": [],
+  "beta_header": "managed-agents-2026-04-01",
+  "caller": "ios-direct",
+  "notes": "Appelé depuis Ratio4DDetailView lorsque l'utilisateur demande le passeport. Le webhook `fetch_svlbh_ref_21s` doit être créé côté Make avant le premier run — voir agents/README.md."
+}

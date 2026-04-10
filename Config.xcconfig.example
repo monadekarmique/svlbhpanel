@@ -1,0 +1,20 @@
+// Config.xcconfig.example
+//
+// Copier ce fichier en `Config.xcconfig` (la version réelle est gitignored
+// via .gitignore:42). Ce fichier inclut `secrets.xcconfig` et expose les
+// secrets sous forme de clés Info.plist consommées par AnthropicConfig.swift.
+//
+//     cp Config.xcconfig.example Config.xcconfig
+//
+// Ensuite, dans Xcode → Project Navigator → projet → Info → Configurations,
+// définir `Config.xcconfig` comme baseConfigurationReference pour Debug et
+// Release (target "SVLBH Panel"). Ou éditer directement `project.pbxproj`.
+
+#include? "secrets.xcconfig"
+
+// Anthropic API key — exposée à l'Info.plist généré (INFOPLIST_KEY_*).
+// AnthropicConfig.swift lit ces valeurs via Bundle.main.object(forInfoDictionaryKey:).
+INFOPLIST_KEY_ANTHROPIC_API_KEY = $(ANTHROPIC_API_KEY)
+INFOPLIST_KEY_ANTHROPIC_AGENT_HDOM_SESSION = $(ANTHROPIC_AGENT_HDOM_SESSION)
+INFOPLIST_KEY_ANTHROPIC_AGENT_PASSEPORT_RATIO = $(ANTHROPIC_AGENT_PASSEPORT_RATIO)
+INFOPLIST_KEY_ANTHROPIC_AGENT_WHATSAPP_VLBH = $(ANTHROPIC_AGENT_WHATSAPP_VLBH)

@@ -1,0 +1,31 @@
+{
+  "slug": "whatsapp-vlbh-agent",
+  "name": "WhatsApp VLBH Agent",
+  "description": "Reçoit un message WhatsApp entrant, consulte le profil de l'émettrice dans le data store svlbh-v2 (#155674), applique le routing par segment (lead / patient_actif / praticien) et répond avec la profondeur adaptée. Mémoire de session persistante par numéro de téléphone. Remplace le Router WhatsApp Make #8944541 (108 erreurs).",
+  "model": "claude-opus-4-6",
+  "system_prompt": "Tu es l'agent conversationnel WhatsApp du cabinet VLBH. Pour chaque message entrant, tu commences toujours par appeler `fetch_svlbh_v2_profile` avec le numéro de téléphone. Selon le champ `segment` retourné, tu adaptes ton niveau de réponse :\n\n- `lead` : accueil, qualification, proposition de RDV discovery. Ton empathique mais professionnel. Ne jamais donner de contenu thérapeutique.\n- `patient_actif` : suivi inter-séance, rappels protocole, questions pratiques. Ton familier, réponse courte et actionnable.\n- `praticien` : assistance technique sur les scores, les programmes, les outils de la pratique. Ton confraternel.\n\nTu disposes d'une mémoire de session persistante par numéro de téléphone — tu peux donc faire référence aux échanges précédents. Si le profil n'est pas trouvé, tu traites la patiente comme un `lead` par défaut. Tu ne donnes jamais d'avis médical. Tu n'inventes jamais de rendez-vous — pour toute prise de RDV, tu renvoies vers le lien de booking.",
+  "skills": [],
+  "tools": [
+    {
+      "name": "fetch_svlbh_v2_profile",
+      "description": "Query the svlbh-v2 Make data store (#155674) by phone number to retrieve the patient profile and segment.",
+      "type": "http_webhook",
+      "url": "TBD_WEBHOOK_SVLBH_V2_LOOKUP_URL",
+      "method": "POST",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "phone_e164": {
+            "type": "string",
+            "description": "E.164 phone number, e.g. '+33612345678'"
+          }
+        },
+        "required": ["phone_e164"]
+      }
+    }
+  ],
+  "mcp_servers": [],
+  "beta_header": "managed-agents-2026-04-01",
+  "caller": "make-proxy",
+  "notes": "Cet agent N'EST PAS appelé par l'iPad. Il est appelé par un scénario Make dédié qui reçoit les WhatsApp entrants via le webhook WABA, fait un POST /v1/sessions vers Anthropic, puis renvoie la réponse vers WhatsApp. L'iPad ne voit rien de ce flux."
+}

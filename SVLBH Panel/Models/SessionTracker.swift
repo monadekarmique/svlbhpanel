@@ -110,6 +110,12 @@ class SessionTracker: ObservableObject {
     @Published var sessionStart: Date = Date()
     @Published var isActive: Bool = false
 
+    /// Événements Rose des Vents de la séance en cours.
+    /// Consommé par `hdom-session-agent` pour le décodage hDOM.
+    var roseDesVentsEvents: [SessionEvent] {
+        events.filter { $0.category == .roseDesVents }
+    }
+
     private static let timeFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "HH:mm"

@@ -812,6 +812,9 @@ class SessionState: ObservableObject {
     @Published var sessionNum: String = "001"
     @Published var ratio4D: Double? = nil
     @Published var passeport = Passeport4DData()
+    /// Heure de réveil de la patiente (hDOM). Nil si non renseignée.
+    /// Consommée par `hdom-session-agent` via le payload de préparation de séance.
+    @Published var heureReveil: Date? = nil
     @Published var isSysteme: Bool = false
     @Published var sessionProgramCode: String = "00"  // F30 — "00" = non classifiée, "01" = Recherche
     var sessionId: String { "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(role.code)" }

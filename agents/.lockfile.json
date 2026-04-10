@@ -1,0 +1,5 @@
+{
+  "$schema": "./lockfile.schema.json",
+  "version": 1,
+  "agents": {}
+}
