@@ -4,11 +4,14 @@ import SwiftUI
 
 struct Ratio4DDetailView: View {
     @ObservedObject var passeport: Passeport4DData
+    @EnvironmentObject var session: SessionState
+    @EnvironmentObject var passeportAgent: PasseportRatioAgentService
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedPays: String = ""
     @State private var anneeTrauma: String = ""
     @State private var sltda4DInput: String = ""
+    @State private var showPasseportSheet = false
 
     // Table 21S embarquée
     static let ref21S: [(pays: String, slsaCh: Int, sltdaOrig: Int, sltdaCh: Int)] = [
@@ -70,6 +73,7 @@ struct Ratio4DDetailView: View {
                     if selectedEntry != nil {
                         baselineCard
                     }
+                    generatePasseportButton
                     referenceTable
                     explanationCard
                 }
@@ -84,7 +88,50 @@ struct Ratio4DDetailView: View {
                 }
             }
             .onAppear { restoreFromPasseport() }
+            .sheet(isPresented: $showPasseportSheet) {
+                PasseportRatioSheet(localCalcul: currentLocalCalcul)
+                    .environmentObject(session)
+                    .environmentObject(passeportAgent)
+            }
         }
+    }
+
+    // MARK: - Snapshot pour l'agent
+
+    private var currentLocalCalcul: Ratio4DLocalCalcul {
+        let entry = selectedEntry
+        return Ratio4DLocalCalcul(
+            pays: selectedPays,
+            anneeTrauma: anneeTrauma,
+            sltda4D: sltda4D,
+            baselineSlsaCh: entry?.slsaCh ?? 0,
+            baselineSltdaOrig: entry?.sltdaOrig ?? 0,
+            baselineSltdaCh: entry?.sltdaCh ?? 0,
+            ratio4D: ratio4D,
+            cluster: entry.map { clusterLabel($0.slsaCh) } ?? ""
+        )
+    }
+
+    private var canGeneratePasseport: Bool {
+        selectedEntry != nil && ratio4D != nil
+    }
+
+    private var generatePasseportButton: some View {
+        Button {
+            passeportAgent.reset()
+            showPasseportSheet = true
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "sparkles")
+                Text("Générer le passeport SVLBH")
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color(hex: "#8B3A62"))
+        .disabled(!canGeneratePasseport || passeportAgent.isPreparing)
     }
 
     // MARK: - Restore existing data
