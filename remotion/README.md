@@ -53,6 +53,22 @@ remotion/
 3. Use `useCurrentFrame()` + `interpolate()` / `spring()` to drive
    animations — never CSS transitions.
 
+## AI assistance
+
+Two Claude agents are configured for this sub-project, both driven by the
+same prompt in `.claude/agents/remotion.md`:
+
+- **Local Claude Code subagent** — auto-loaded when you run `claude` in
+  this repo. Invoke via `subagent_type: "remotion"` or just describe a
+  Remotion task.
+- **Managed Agent on the Anthropic Console** — optional mirror for REST
+  API use or for the Console UI. Create it with:
+  ```bash
+  export ANTHROPIC_API_KEY=sk-ant-...
+  node .claude/scripts/create-remotion-managed-agent.mjs
+  ```
+  See `.claude/scripts/README.md` for details.
+
 ## Licensing
 
 Remotion is free for individuals and small teams but requires a company
