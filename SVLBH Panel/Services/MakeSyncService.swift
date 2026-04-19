@@ -139,11 +139,16 @@ class MakeSyncService: ObservableObject {
                 if !targets.isEmpty {
                     Task { await writeInbox(pullKey: ownerPullKey, shamanes: targets) }
                 }
-                // SMS semi-auto : ouvrir le compositeur SMS pré-rempli avec le PIN
-                if !finalPin.isEmpty, let code = shamaneCode,
-                   let shamane = session.shamaneProfiles.first(where: { $0.codeFormatted == code }),
-                   !shamane.whatsapp.isEmpty {
-                    let phone = shamane.whatsapp
+                // SMS semi-auto : ouvrir le compositeur iMessage/SMS pré-rempli avec le PIN
+                if !finalPin.isEmpty {
+                    let phone: String
+                    if let code = shamaneCode,
+                       let shamane = session.shamaneProfiles.first(where: { $0.codeFormatted == code }),
+                       !shamane.whatsapp.isEmpty {
+                        phone = shamane.whatsapp
+                    } else {
+                        phone = ""  // owner ajoutera le destinataire manuellement
+                    }
                     let smsPin = finalPin
                     await MainActor.run { smsPhone = phone; self.smsPin = smsPin }
                 }
