@@ -36,6 +36,14 @@ enum ActiveRole: Equatable {
         if case .shamane(let s) = self { return s.tier == .superviseur }
         return false
     }
+
+    /// Owner = Patrick (455000). Seul l'owner voit la mécanique technique
+    /// (scan sources, broadcast, dropdown shamane, PIN generation, INBOX write).
+    /// Tous les autres rôles — y compris superviseur — ont une expérience transparente.
+    var isOwner: Bool {
+        if case .shamane(let s) = self { return s.code == 455000 }
+        return false
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -951,14 +959,14 @@ class SessionState: ObservableObject {
     }
 
     var pullKey: String {
-        if role.isSuperviseur, let src = pullSource {
-            // Superviseur pull depuis une shamane
+        if role.isOwner, let src = pullSource {
+            // Owner pull depuis une shamane
             return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(src.codeFormatted)"
-        } else if role.isSuperviseur {
-            // Superviseur self-pull (pas de pullSource)
+        } else if role.isOwner {
+            // Owner self-pull (pas de pullSource)
             return sessionId
         } else {
-            // Shamane pull depuis son superviseur
+            // Tous les autres (shamanes, superviseurs) pullent depuis l'owner
             return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(supervisorCode)"
         }
     }

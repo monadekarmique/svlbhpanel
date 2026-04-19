@@ -86,8 +86,8 @@ struct SyncBar: View {
                     .background(Color(hex: "#8B3A62").opacity(0.10))
                     .cornerRadius(7)
 
-                // Broadcast ciblé (certifiées / programme / groupe)
-                if session.role.isSuperviseur && !session.shamaneProfiles.isEmpty {
+                // Broadcast ciblé (certifiées / programme / groupe) — owner only
+                if session.role.isOwner && !session.shamaneProfiles.isEmpty {
                     Menu {
                         if !session.shamanesCertifiees.isEmpty {
                             Button {
@@ -168,8 +168,8 @@ struct SyncBar: View {
                         .cornerRadius(5)
                 }
 
-                // ── Recevoir : scan + badge + menu (Patrick) ou bouton simple (shamane) ──
-                if session.role.isSuperviseur {
+                // ── Recevoir : scan + badge + menu (owner) ou bouton simple (tous les autres) ──
+                if session.role.isOwner {
                     Menu {
                         Button {
                             Task { await sync.scanSources(session: session) }
@@ -232,7 +232,7 @@ struct SyncBar: View {
                 }
 
                 // ── Shamane dropdown (mode B "Décoder et Envoyer") ──
-                if session.role.isSuperviseur && !isRenvoyer {
+                if session.role.isOwner && !isRenvoyer {
                     let certifiees = session.shamaneProfiles.filter { $0.tier == .certifiee }
                     let formation = session.shamaneProfiles.filter { $0.tier == .formation }
                     Menu {
@@ -297,8 +297,8 @@ struct SyncBar: View {
                     Text(tierWarningMessage)
                 }
 
-                // ↺ Refaire — visible uniquement en mode relay (Patrick renvoie un soin)
-                if session.role.isSuperviseur && isRenvoyer {
+                // ↺ Refaire — visible uniquement en mode relay (owner renvoie un soin)
+                if session.role.isOwner && isRenvoyer {
                     Button {
                         Task { await doRelayRepeat() }
                     } label: {
@@ -322,7 +322,7 @@ struct SyncBar: View {
 
     private func checkTierAndPush() {
         // Vérifier si la shamane destinataire a un tier limité
-        if session.role.isSuperviseur, let shamane = selectedShamane {
+        if session.role.isOwner, let shamane = selectedShamane {
             let shamaneMax = shamane.tier.maxGenerations
             let patrickCount = session.visibleGenerations.filter(\.validated).count
             if patrickCount > shamaneMax {
@@ -337,7 +337,7 @@ struct SyncBar: View {
     /// Mode B requires a shamane selected; mode A (renvoyer) always allowed
     private var canSend: Bool {
         guard !sync.isSending && !sync.isReceiving else { return false }
-        if session.role.isSuperviseur && !isRenvoyer {
+        if session.role.isOwner && !isRenvoyer {
             return selectedShamane != nil
         }
         return true
@@ -345,7 +345,7 @@ struct SyncBar: View {
 
     private func doPush() async {
         // Mode B: override pullSource with selected shamane's profile
-        if session.role.isSuperviseur, !isRenvoyer, let shamane = selectedShamane {
+        if session.role.isOwner, !isRenvoyer, let shamane = selectedShamane {
             session.pullSource = shamane
         }
         _ = await sync.push(session: session, forShamaneCode: selectedShamane?.codeFormatted)

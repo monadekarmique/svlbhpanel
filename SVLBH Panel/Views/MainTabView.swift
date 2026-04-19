@@ -14,6 +14,7 @@ struct MainTabView: View {
     @State private var pendingPayload = ""
     @State private var showTimeline = false
     @State private var showPasserelleAccess = false
+    @State private var showSMSComposer = false
 
     /// Onglet Passerelle visible pour superviseur, Cornelia (0300), Anne (0302)
     private var showPasserelle: Bool {
@@ -123,9 +124,18 @@ struct MainTabView: View {
                 }
                 .ignoresSafeArea(.container, edges: .bottom)
                 .task {
-                    // Auto-scan au lancement si superviseur
-                    if session.role.isSuperviseur && sync.pendingSources.isEmpty && !sync.isScanning {
-                        await sync.scanSources(session: session)
+                    if session.role.isOwner {
+                        // Owner : auto-scan des sources shamanes
+                        if sync.pendingSources.isEmpty && !sync.isScanning {
+                            await sync.scanSources(session: session)
+                        }
+                    } else if session.role.isIdentified {
+                        // Non-owner : vérifier la boîte INBOX pour un soin en attente
+                        await sync.checkInbox(session: session)
+                        // Si une pullKey a été trouvée, pull automatique
+                        if sync.inboxPullKey != nil {
+                            await doPullFromInbox()
+                        }
                     }
                 }
             }
@@ -137,11 +147,26 @@ struct MainTabView: View {
             DiffLogView().environmentObject(sync)
         }
         .alert("🔐 PIN requis", isPresented: $showPINAlert) {
-            TextField("PIN 4 chiffres", text: $pinInput).keyboardType(.numberPad)
+            TextField("PIN 4 chiffres", text: $pinInput)
+                .keyboardType(.numberPad)
+                .textContentType(.oneTimeCode)  // iOS détecte le SMS et propose le code
             Button("Valider") { validatePIN() }
             Button("Annuler", role: .cancel) { pendingPayload = ""; pinInput = "" }
         } message: {
-            Text("Patrick a envoyé des données. Entrez le PIN reçu par iMessage.")
+            Text("Patrick a envoyé un soin. Entrez le PIN reçu par SMS.")
+        }
+        .sheet(isPresented: $showSMSComposer) {
+            if let phone = sync.smsPhone, let pin = sync.smsPin {
+                SMSComposerView(phone: phone, pin: pin) {
+                    sync.smsPhone = nil
+                    sync.smsPin = nil
+                }
+            }
+        }
+        .onChange(of: sync.smsPin) { newPin in
+            if newPin != nil && SMSComposerView.canSend {
+                showSMSComposer = true
+            }
         }
     }
 
@@ -159,6 +184,29 @@ struct MainTabView: View {
             }
         }
         pendingPayload = ""; pinInput = ""
+    }
+
+    /// Pull automatique déclenché par la découverte INBOX
+    private func doPullFromInbox() async {
+        guard let raw = await sync.pull(session: session, manual: true) else { return }
+        if raw == "PIN_PENDING" { return }
+        let pullKey = session.pullKey
+        if raw.hasPrefix("PIN:") {
+            // 2FA : le PIN arrive par SMS, la shamane le saisit manuellement
+            await MainActor.run {
+                pendingPayload = raw
+                pinInput = ""  // champ vide — 2FA via SMS
+                showPINAlert = true
+            }
+            await sync.markAsRead(sessionId: pullKey)
+        } else {
+            await MainActor.run {
+                sync.applyPayload(raw, to: session)
+                showDiffLog = true
+            }
+            await sync.markAsRead(sessionId: pullKey)
+        }
+        await MainActor.run { sync.inboxPullKey = nil }
     }
 }
 

@@ -56,3 +56,14 @@ Xcode-beta.app/
 *.xcuserstate
 .DS_Store
 DerivedData/
+
+# TestFlight post-upload venv
+scripts/.venv/
+
+# Testers detection (Niveau 1) — runtime state, never committed
+scripts/.testers_state.json
+scripts/.testers_state.json.tmp
+scripts/.testers_state.log
+scripts/.testers_notify_queue.jsonl
+scripts/.launchd_stdout.log
+scripts/.launchd_stderr.log

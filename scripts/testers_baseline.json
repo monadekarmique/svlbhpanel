@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-04-10T11:15:00+02:00",
+  "source": "check_testers_install.py one-shot",
+  "testers": [
+    {
+      "name": "Yvette Dayer Bersier",
+      "id": "3112801c-390d-4e9e-b32e-d57bed5e6ff4",
+      "email": "yvette.dayer@bluewin.ch",
+      "state": null,
+      "appDevices": null,
+      "linked_builds": 0,
+      "linked_groups": 1,
+      "verdict": "INVITED_NOT_INSTALLED"
+    },
+    {
+      "name": "Daphné Friederich",
+      "id": "c310b46d-5221-4dad-b2de-7f195eb76278",
+      "email": "daphnefriederich@icloud.com",
+      "state": null,
+      "appDevices": null,
+      "linked_builds": 0,
+      "linked_groups": 1,
+      "verdict": "INVITED_NOT_INSTALLED"
+    }
+  ],
+  "latest_builds": [
+    {"id": "0ff7038f-76cb-4650-b4b0-6b1e8fbfe5d4", "version": "85", "uploaded": "2026-04-10T01:45:30-07:00"},
+    {"id": "8b29deb3-4a83-4a99-9865-5ec9acdf11e0", "version": "86", "uploaded": "2026-04-09T01:26:01-07:00"},
+    {"id": "29cad3b2-140b-41dc-a7dd-56306d0b36ef", "version": "85", "uploaded": "2026-04-07T07:53:37-07:00"}
+  ]
+}

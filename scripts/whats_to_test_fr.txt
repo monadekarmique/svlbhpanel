@@ -1,0 +1,11 @@
+Merci de tester cette nouvelle version :
+
+- Onboarding et connexion avec vos identifiants personnels
+- Module d'évaluation du sommeil (saisie et lecture des données)
+- Module transgénérationnel (navigation, ajout de défunts, arbre)
+- Synchronisation avec votre wearable (Fitbit) si disponible
+- Stabilité générale et affichage sur votre appareil
+
+Signalez tout plantage, bouton qui ne réagit pas ou comportement inattendu via le bouton "Partager des commentaires" de TestFlight (capture d'écran + description).
+
+Merci de votre participation au groupe SVLBH Bash 3 à 5 !

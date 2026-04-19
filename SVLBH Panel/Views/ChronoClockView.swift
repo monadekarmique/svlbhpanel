@@ -15,6 +15,14 @@ struct ChronoClockView: View {
     private let innerR: CGFloat = 68
 
     var body: some View {
+        clockCanvas
+            .frame(width: size, height: size)
+            .overlay { centerText }
+            .overlay { tapTargets }
+    }
+
+    @ViewBuilder
+    private var clockCanvas: some View {
         Canvas { context, canvasSize in
             let cx = canvasSize.width / 2
             let cy = canvasSize.height / 2
@@ -97,37 +105,46 @@ struct ChronoClockView: View {
             let dotCircle = Path(ellipseIn: CGRect(x: cx - dotR, y: cy - dotR, width: dotR * 2, height: dotR * 2))
             context.fill(dotCircle, with: .color(.black))
         }
-        .frame(width: size, height: size)
-        .overlay {
-            // Center text
-            VStack(spacing: 0) {
-                let h = Int(currentHour)
-                let m = Int((currentHour - Double(h)) * 60)
-                Text(String(format: "%02d:%02d", h >= 24 ? h - 24 : h, m))
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.primary)
-                Text("六腑")
-                    .font(.system(size: 9))
-                    .foregroundColor(.secondary)
-            }
+    }
+
+    @ViewBuilder
+    private var centerText: some View {
+        let h = Int(currentHour)
+        let m = Int((currentHour - Double(h)) * 60)
+        let displayH = h >= 24 ? h - 24 : h
+        let timeString = String(format: "%02d:%02d", displayH, m)
+        VStack(spacing: 0) {
+            Text(timeString)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.primary)
+            Text("六腑")
+                .font(.system(size: 9))
+                .foregroundColor(.secondary)
         }
-        .overlay {
-            // Invisible tap targets for each organ arc
-            ForEach(organs) { organ in
-                let startH = Double(organ.startHour)
-                let endH = organ.startHour == 23 ? 25.0 : startH + 2.0
-                let midA = (hourAngle(startH) + hourAngle(endH)) / 2
-                let lr = (outerR + innerR) / 2
-                let cx = size / 2
-                let cy = size / 2
-                Circle()
-                    .fill(Color.clear)
-                    .frame(width: 30, height: 30)
-                    .contentShape(Circle())
-                    .position(x: cx + lr * cos(midA), y: cy + lr * sin(midA))
-                    .onTapGesture { onSelect(organ.id) }
-            }
+    }
+
+    @ViewBuilder
+    private var tapTargets: some View {
+        ForEach(organs) { organ in
+            tapTarget(for: organ)
         }
+    }
+
+    @ViewBuilder
+    private func tapTarget(for organ: FuOrgan) -> some View {
+        let startH = Double(organ.startHour)
+        let endH: Double = organ.startHour == 23 ? 25.0 : startH + 2.0
+        let midA = (hourAngle(startH) + hourAngle(endH)) / 2
+        let lr: CGFloat = (outerR + innerR) / 2
+        let halfSize: CGFloat = size / 2
+        let px: CGFloat = halfSize + lr * CGFloat(cos(midA))
+        let py: CGFloat = halfSize + lr * CGFloat(sin(midA))
+        Circle()
+            .fill(Color.clear)
+            .frame(width: 30, height: 30)
+            .contentShape(Circle())
+            .position(x: px, y: py)
+            .onTapGesture { onSelect(organ.id) }
     }
 
     private func hourAngle(_ hour: Double) -> Double {

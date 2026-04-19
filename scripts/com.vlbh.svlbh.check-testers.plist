@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.vlbh.svlbh.check-testers</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/patricktest/Developer/svlbhpanel-v5/scripts/.venv/bin/python3</string>
+        <string>/Users/patricktest/Developer/svlbhpanel-v5/scripts/check_testers_status.py</string>
+        <string>--once</string>
+        <string>--quiet</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>600</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/patricktest/Developer/svlbhpanel-v5/scripts/.launchd_stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/patricktest/Developer/svlbhpanel-v5/scripts/.launchd_stderr.log</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/patricktest/Developer/svlbhpanel-v5</string>
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

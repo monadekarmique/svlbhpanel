@@ -24,6 +24,9 @@ class MakeSyncService: ObservableObject {
     @Published var diffLog: [String] = []
     @Published var diffs: TabDiffs = TabDiffs()
     @Published var pendingSources: [ShamaneProfile] = []
+    /// SMS PIN semi-auto : phone et pin à envoyer après un push owner
+    @Published var smsPhone: String?
+    @Published var smsPin: String?
 
     struct TabDiffs {
         var decode: Int = 0
@@ -86,8 +89,8 @@ class MakeSyncService: ObservableObject {
 
         var pin = ""
         var payload = serializeSession(session)
-        // PIN pour superviseur ou superviseur simulant une shamane
-        if session.role.isSuperviseur || session.isSuperviseurSimulating {
+        // PIN uniquement pour l'owner (455000) ou owner simulant une shamane
+        if session.role.isOwner || session.isSuperviseurSimulating {
             pin = String(format: "%04d", Int.random(in: 1000...9999))
             payload = "PIN:\(pin)\n" + payload
         }
@@ -128,6 +131,23 @@ class MakeSyncService: ObservableObject {
                 practitionerCode: session.role.code,
                 headerLine: headerLine
             )
+
+            // Owner : écrire INBOX + préparer SMS PIN pour la shamane destinataire
+            if session.role.isOwner {
+                let ownerPullKey = cleanKey
+                let targets = session.shamaneProfiles.filter { $0.code != 455000 }
+                if !targets.isEmpty {
+                    Task { await writeInbox(pullKey: ownerPullKey, shamanes: targets) }
+                }
+                // SMS semi-auto : ouvrir le compositeur SMS pré-rempli avec le PIN
+                if !finalPin.isEmpty, let code = shamaneCode,
+                   let shamane = session.shamaneProfiles.first(where: { $0.codeFormatted == code }),
+                   !shamane.whatsapp.isEmpty {
+                    let phone = shamane.whatsapp
+                    let smsPin = finalPin
+                    await MainActor.run { smsPhone = phone; self.smsPin = smsPin }
+                }
+            }
 
             // Auto-dismiss toast après 3s
             Task { @MainActor in
@@ -245,7 +265,7 @@ class MakeSyncService: ObservableObject {
                 lines.removeFirst()
             }
             // Superviseur ne doit jamais valider ses propres PINs
-            let isSelfPull = session.role.isSuperviseur && key.hasSuffix("-\(session.role.code)")
+            let isSelfPull = session.role.isOwner && key.hasSuffix("-\(session.role.code)")
             if detectedPin != nil && !manual && !isSelfPull {
                 // Auto-scan avec PIN d'un tiers → NE PAS marquer READ (la shamane doit encore le lire)
                 return "PIN_PENDING"
@@ -282,9 +302,9 @@ class MakeSyncService: ObservableObject {
         }
     }
 
-    // MARK: - SCAN all shamane sources (Patrick only)
+    // MARK: - SCAN all shamane sources (Owner only)
     func scanSources(session: SessionState) async {
-        guard session.role.isSuperviseur else { return }
+        guard session.role.isOwner else { return }
         guard session.isPatientIdValid else {
             print("[MakeSyncService] Scan skipped: patientId '\(session.patientId)' invalid (min \(SessionState.minPatientId))")
             return
@@ -335,6 +355,80 @@ class MakeSyncService: ObservableObject {
             if pendingSources.count > previousCount && !pendingSources.isEmpty {
                 sendLocalNotification(count: pendingSources.count, names: pendingSources.map(\.displayName))
             }
+        }
+    }
+
+    // MARK: - INBOX (découverte automatique pour non-owner)
+
+    /// Clé INBOX publiée par l'owner après un push, pour que la shamane
+    /// découvre automatiquement la pullKey sans rien saisir.
+    @Published var inboxPullKey: String?
+
+    /// Owner écrit une entrée INBOX pour chaque shamane destinataire
+    func writeInbox(pullKey: String, shamanes: [ShamaneProfile]) async {
+        await withTaskGroup(of: Void.self) { group in
+            for shamane in shamanes {
+                group.addTask {
+                    let inboxKey = "INBOX-\(shamane.codeFormatted)"
+                    let body: [String: String] = ["session_id": inboxKey, "payload": pullKey]
+                    do {
+                        var req = URLRequest(url: Self.pushURL)
+                        req.httpMethod = "POST"
+                        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                        req.httpBody = try JSONSerialization.data(withJSONObject: body)
+                        req.timeoutInterval = 8
+                        let (_, response) = try await URLSession.shared.data(for: req)
+                        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+                        print("[MakeSyncService] writeInbox INBOX-\(shamane.codeFormatted) = \(pullKey) → \(status)")
+                    } catch {
+                        print("[MakeSyncService] writeInbox failed for \(shamane.codeFormatted): \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+
+    /// Non-owner : vérifie si l'owner a déposé une pullKey dans INBOX-<monCode>
+    func checkInbox(session: SessionState) async {
+        guard !session.role.isOwner, session.role.isIdentified else { return }
+        let myCode = session.role.code
+        guard !myCode.isEmpty else { return }
+        let inboxKey = "INBOX-\(myCode)"
+        do {
+            let text = try await pullSingleKey(inboxKey)
+            guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                print("[MakeSyncService] checkInbox \(inboxKey) — vide")
+                return
+            }
+            let pullKey = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            // Valider le format de la pullKey (GG-PPPPP-SSS-UUUUUU)
+            let parts = pullKey.split(separator: "-")
+            guard parts.count == 4 else {
+                print("[MakeSyncService] checkInbox \(inboxKey) — format invalide: \(pullKey)")
+                return
+            }
+            print("[MakeSyncService] checkInbox \(inboxKey) → pullKey = \(pullKey)")
+            // Appliquer la pullKey : mettre à jour sessionProgramCode, patientId, sessionNum
+            let prog = String(parts[0])
+            let patient = String(parts[1])
+            let sNum = String(parts[2])
+            await MainActor.run {
+                session.sessionProgramCode = prog
+                session.patientId = patient
+                session.sessionNum = sNum
+                inboxPullKey = pullKey
+            }
+            // Effacer l'INBOX après lecture
+            let clearBody: [String: String] = ["session_id": inboxKey, "payload": ""]
+            var req = URLRequest(url: Self.pushURL)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONSerialization.data(withJSONObject: clearBody)
+            req.timeoutInterval = 8
+            let (_, _) = try await URLSession.shared.data(for: req)
+            print("[MakeSyncService] checkInbox cleared \(inboxKey)")
+        } catch {
+            print("[MakeSyncService] checkInbox failed: \(error.localizedDescription)")
         }
     }
 
@@ -397,7 +491,7 @@ class MakeSyncService: ObservableObject {
     // MARK: - Apply received payload (MERGE mode)
     func applyPayload(_ text: String, to session: SessionState) {
         var log: [String] = []
-        let sender = session.role.isSuperviseur ? (session.pullSource?.displayName ?? "?") : "🔬 Patrick"
+        let sender = session.role.isOwner ? (session.pullSource?.displayName ?? "?") : "🔬 Patrick"
         let df = DateFormatter(); df.dateFormat = "HH:mm:ss"
         log.append("📥 Réception de \(sender) · \(df.string(from: Date()))")
         log.append("🔑 Pull key: \(session.pullKey)")

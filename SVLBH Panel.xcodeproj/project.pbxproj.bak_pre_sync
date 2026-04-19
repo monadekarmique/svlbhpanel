@@ -21,7 +21,6 @@
 		28EB1AD9A0748BC94C4DD714 /* PDLDecodageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466B9A9A612E10156CEB31C /* PDLDecodageView.swift */; };
 		299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386FAEF548C6AD12E862A293 /* EtApresTab.swift */; };
 		2E118F7C59FEBE02688D7A0B /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */; };
-		3275603C87AD724E3A0F8357 /* PDLHotlineSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FC4C7E47E64839A684A30A2 /* PDLHotlineSidebarView.swift */; };
 		368F0C0482345FBA6C00940D /* PDLDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BFBD89392457601A79A991 /* PDLDiagnosticView.swift */; };
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
@@ -77,7 +76,6 @@
 		D15TR1B0VIEW00010000001 /* DistributionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15TR1B0VIEW00010000002 /* DistributionView.swift */; };
 		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
 		DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D118F80AA4F347F0A9F10053 /* SyncBar.swift */; };
-		1F96A056B3684CF3A51E66FF /* SMSComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15F8AA3497645268AA4C93E /* SMSComposerView.swift */; };
 		DF02F1B950D17B7A58A2E421 /* PierreEnseignement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */; };
 		E052F34693FB488160E2DBC3 /* ChromotherapyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999AA9300D39853F73EB6AA8 /* ChromotherapyManager.swift */; };
 		E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A70032EXPORT0141BCCF02 /* ExportView.swift */; };
@@ -146,7 +144,6 @@
 		42822705CB334E3795AE1648 /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
 		4461FE1AC094DF7B9B6C76B5 /* DemandesModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemandesModels.swift; sourceTree = "<group>"; };
 		49B2B08BF080A80D78B9BFEF /* SubscriptionWallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubscriptionWallView.swift; sourceTree = "<group>"; };
-		4FC4C7E47E64839A684A30A2 /* PDLHotlineSidebarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PDLHotlineSidebarView.swift; path = "SVLBH Panel/PaletteDeLumiere/PDLHotlineSidebarView.swift"; sourceTree = "<group>"; };
 		51514D0E567348A2BB0BBE53 /* PasteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteParser.swift; sourceTree = "<group>"; };
 		548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlancheFloatingView.swift; sourceTree = "<group>"; };
 		54E0597D9F2210FDFF6FCEF6 /* ProvocationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProvocationView.swift; sourceTree = "<group>"; };
@@ -192,7 +189,6 @@
 		CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PorteEnergetiqueData.swift; sourceTree = "<group>"; };
 		CE016A20B4C74FA8B7654321 /* SessionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionExporter.swift; sourceTree = "<group>"; };
 		D118F80AA4F347F0A9F10053 /* SyncBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBar.swift; sourceTree = "<group>"; };
-		F15F8AA3497645268AA4C93E /* SMSComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMSComposerView.swift; sourceTree = "<group>"; };
 		D15TR1B0VIEW00010000002 /* DistributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionView.swift; sourceTree = "<group>"; };
 		D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PierreEnseignement.swift; sourceTree = "<group>"; };
 		D29202852DE5D9C6D4D507A8 /* PR09SclerosesTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR09SclerosesTab.swift; sourceTree = "<group>"; };
@@ -369,7 +365,6 @@
 			children = (
 				2CC3751FB08544D692E1C695 /* MainTabView.swift */,
 				D118F80AA4F347F0A9F10053 /* SyncBar.swift */,
-				F15F8AA3497645268AA4C93E /* SMSComposerView.swift */,
 				AB945055DBF440D689CC4DAA /* SVLBHTab.swift */,
 				A0C7A26CEE8A4E5F91325330 /* DiffLogView.swift */,
 				LEAD0001BBBB00000001BBBB /* LeadBubbleTab.swift */,
@@ -425,7 +420,6 @@
 				FCC62780EFD0123EA99D451C /* PDLPaletteView.swift */,
 				999AA9300D39853F73EB6AA8 /* ChromotherapyManager.swift */,
 				5B624BF15F1E9D5746210EA4 /* PaletteDeLumiereView.swift */,
-				4FC4C7E47E64839A684A30A2 /* PDLHotlineSidebarView.swift */,
 			);
 			name = PaletteDeLumiere;
 			path = PaletteDeLumiere;
@@ -579,7 +573,6 @@
 				07BC6F608F514688855FAE54 /* PasteParser.swift in Sources */,
 				856FF56CE14749B8A1930003 /* MainTabView.swift in Sources */,
 				DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */,
-				1F96A056B3684CF3A51E66FF /* SMSComposerView.swift in Sources */,
 				DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */,
 				913D0B0F8A6A45E1A742C1FC /* DiffLogView.swift in Sources */,
 				LEAD0001AAAA00000001AAAA /* LeadBubbleTab.swift in Sources */,
@@ -653,7 +646,6 @@
 				1E993679DD5FE9665A63474E /* ChronoClockView.swift in Sources */,
 				942321B1493E5893E8ED8ECA /* ChronoFuSidePanel.swift in Sources */,
 				4ACF1D2F09150639D5DA2CF3 /* SessionDecouverteView.swift in Sources */,
-				3275603C87AD724E3A0F8357 /* PDLHotlineSidebarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
