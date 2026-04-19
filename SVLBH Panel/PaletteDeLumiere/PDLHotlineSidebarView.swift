@@ -350,8 +350,10 @@ class HotlineSidebarVM: ObservableObject {
 
     func bindingForScore(_ score: ScoreDeLumiere) -> Binding<String> {
         switch score {
-        case .sla: return $sla; case .slsa: return $slsa
-        case .slpmo: return $slpmo; case .slm: return $slm
+        case .sla:   return Binding(get: { self.sla },   set: { self.sla = $0 })
+        case .slsa:  return Binding(get: { self.slsa },  set: { self.slsa = $0 })
+        case .slpmo: return Binding(get: { self.slpmo }, set: { self.slpmo = $0 })
+        case .slm:   return Binding(get: { self.slm },   set: { self.slm = $0 })
         }
     }
 

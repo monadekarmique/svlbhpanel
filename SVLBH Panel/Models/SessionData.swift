@@ -41,7 +41,7 @@ enum ActiveRole: Equatable {
     /// (scan sources, broadcast, dropdown shamane, PIN generation, INBOX write).
     /// Tous les autres rôles — y compris superviseur — ont une expérience transparente.
     var isOwner: Bool {
-        if case .shamane(let s) = self { return s.code == 455000 }
+        if case .shamane(let s) = self { return Int(s.code) == 455000 }
         return false
     }
 }

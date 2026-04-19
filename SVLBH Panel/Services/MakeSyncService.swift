@@ -135,7 +135,7 @@ class MakeSyncService: ObservableObject {
             // Owner : écrire INBOX + préparer SMS PIN pour la shamane destinataire
             if session.role.isOwner {
                 let ownerPullKey = cleanKey
-                let targets = session.shamaneProfiles.filter { $0.code != 455000 }
+                let targets = session.shamaneProfiles.filter { Int($0.code) != 455000 }
                 if !targets.isEmpty {
                     Task { await writeInbox(pullKey: ownerPullKey, shamanes: targets) }
                 }
