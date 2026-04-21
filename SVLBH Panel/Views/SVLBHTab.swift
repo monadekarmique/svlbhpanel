@@ -87,9 +87,6 @@ struct SVLBHTab: View {
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(spacing: 3) {
-                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")")
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundColor(Color(hex: "#C27894"))
                         // Sync status
                         HStack(spacing: 6) {
                             Circle()
@@ -182,6 +179,9 @@ struct SVLBHTab: View {
                                 Divider().frame(height: 28).padding(.horizontal, 8)
                                 if currentTier == .superviseur || currentTier == .certifiee {
                                     Ratio4DCardSection(passeport: session.passeport)
+                                    .frame(maxWidth: .infinity)
+                                    Divider().frame(height: 28).padding(.horizontal, 8)
+                                    RatioPlaneteCardSection(passeport: session.passeport)
                                     .frame(maxWidth: .infinity)
                                     Divider().frame(height: 28).padding(.horizontal, 8)
                                 }
@@ -563,7 +563,7 @@ struct ScoresKPICard: View {
         VStack(spacing: 6) {
             // Thérapeute
             VStack(alignment: .leading, spacing: 4) {
-                Text("Th\u{00e9}rapeute MyShamanFamily").font(.system(size:14, weight:.medium)).foregroundColor(.secondary)
+                Text("\u{2640} MyShaFa").font(.system(size:14, weight:.medium)).foregroundColor(.secondary)
                 ScoreRow(label:"SLA",    val:fmt(session.scoresTherapist.sla ?? session.slaTherapist), c:Color(hex:"#8B3A62"))
                 ScoreRow(label:"SLSA",   val:fmt(session.scoresTherapist.slsa),  c:Color(hex:"#8B3A62"))
                 ScoreRow(label:"SLM",    val:fmt(session.scoresTherapist.slm),   c:Color(hex:"#8B3A62"))

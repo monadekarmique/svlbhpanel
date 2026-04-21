@@ -132,12 +132,19 @@ class MakeSyncService: ObservableObject {
                 headerLine: headerLine
             )
 
-            // Owner : écrire INBOX + préparer SMS PIN pour la shamane destinataire
+            // Owner : écrire INBOX pour la shamane destinataire (clé = code shamane)
             if session.role.isOwner {
-                let ownerPullKey = cleanKey
-                let targets = session.shamaneProfiles.filter { Int($0.code) != 455000 }
+                let pushedKey = cleanKey
+                // Si on simule une shamane, n'écrire INBOX que pour elle
+                let targets: [ShamaneProfile]
+                if session.isSuperviseurSimulating,
+                   let target = session.shamaneProfiles.first(where: { $0.codeFormatted == session.role.code }) {
+                    targets = [target]
+                } else {
+                    targets = session.shamaneProfiles.filter { Int($0.code) != 455000 }
+                }
                 if !targets.isEmpty {
-                    Task { await writeInbox(pullKey: ownerPullKey, shamanes: targets) }
+                    Task { await writeInbox(pullKey: pushedKey, shamanes: targets) }
                 }
                 // SMS semi-auto : ouvrir le compositeur iMessage/SMS pré-rempli avec le PIN
                 if !finalPin.isEmpty {
@@ -496,7 +503,7 @@ class MakeSyncService: ObservableObject {
     // MARK: - Apply received payload (MERGE mode)
     func applyPayload(_ text: String, to session: SessionState) {
         var log: [String] = []
-        let sender = session.role.isOwner ? (session.pullSource?.displayName ?? "?") : "🔬 Patrick"
+        let sender = session.role.isOwner ? (session.pullSource?.displayName ?? "?") : "Patrick"
         let df = DateFormatter(); df.dateFormat = "HH:mm:ss"
         log.append("📥 Réception de \(sender) · \(df.string(from: Date()))")
         log.append("🔑 Pull key: \(session.pullKey)")
@@ -553,14 +560,15 @@ class MakeSyncService: ObservableObject {
 
 
     // MARK: - Broadcast ciblé (Patrick → certifiées / programme / groupe)
+    // Chaque shamane reçoit une copie sous sa propre clé (-code) + PIN + INBOX
     func broadcastPush(session: SessionState, target: BroadcastTarget = .allCertifiees) async -> Bool {
-        let keys = session.broadcastKeys(target: target)
-        guard !keys.isEmpty else { return false }
+        let entries = session.broadcastKeys(target: target)
+        guard !entries.isEmpty else { return false }
         await MainActor.run { isSending = true; lastError = nil }
         let payload = serializeSession(session)
         var allOk = true
-        for key in keys {
-            let body: [String: String] = ["session_id": key, "payload": payload]
+        for entry in entries {
+            let body: [String: String] = ["session_id": entry.key, "payload": payload]
             do {
                 var req = URLRequest(url: Self.pushURL)
                 req.httpMethod = "POST"
@@ -569,6 +577,8 @@ class MakeSyncService: ObservableObject {
                 let (_, response) = try await URLSession.shared.data(for: req)
                 if (response as? HTTPURLResponse)?.statusCode != 200 { allOk = false }
             } catch { allOk = false }
+            // INBOX individuel pour que la shamane découvre sa clé au pull
+            await writeInbox(pullKey: entry.key, shamanes: [entry.shamane])
         }
         await MainActor.run { isSending = false }
         return allOk

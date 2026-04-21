@@ -2,6 +2,25 @@
 // v4.0.4 — Fix SA1 : champ propre slsaS1, plus d'isAutoCalc, SA1 éditable indépendamment
 
 import SwiftUI
+import UIKit
+
+// MARK: - Select-all on focus (curseur après le nombre)
+private struct SelectAllOnFocus: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { notif in
+                if let tf = notif.object as? UITextField {
+                    DispatchQueue.main.async {
+                        tf.selectedTextRange = tf.textRange(from: tf.endOfDocument, to: tf.endOfDocument)
+                    }
+                }
+            }
+    }
+}
+
+private extension View {
+    func selectAllOnFocus() -> some View { modifier(SelectAllOnFocus()) }
+}
 
 struct SLMTab: View {
     @EnvironmentObject var session: SessionState
@@ -25,7 +44,7 @@ struct SLMTab: View {
                     if session.role.isSuperviseur {
                         // ── Patrick actif : scores shamane (read-only) + scores Patrick (éditable) ──
                         ScoreBlock(
-                            title: session.pullSource?.displayName ?? "Th\u{00e9}rapeute MyShamanFamily",
+                            title: session.pullSource?.displayName ?? "\u{2640} MyShaFa",
                             color: Color(hex: "#8B3A62"),
                             scores: $session.scoresTherapist,
                             readOnly: true
@@ -33,7 +52,7 @@ struct SLMTab: View {
                         .padding(.horizontal, 16)
 
                         ScoreBlock(
-                            title: "🔬 Patrick",
+                            title: "Patrick",
                             color: Color(hex: "#185FA5"),
                             scores: $session.scoresPatrick,
                             readOnly: false
@@ -50,7 +69,7 @@ struct SLMTab: View {
                         .padding(.horizontal, 16)
 
                         ScoreBlock(
-                            title: "🔬 Patrick",
+                            title: "Patrick",
                             color: Color(hex: "#185FA5"),
                             scores: $session.scoresPatrick,
                             readOnly: true
@@ -210,6 +229,7 @@ struct ScoreField: View {
                             let newDraft = v.map(String.init) ?? ""
                             if newDraft != draft { draft = newDraft }
                         }
+                        .selectAllOnFocus()
                     Text("%").font(.caption).foregroundColor(.secondary)
                 }
             }
@@ -311,6 +331,7 @@ struct SLSACellField: View {
                     let newDraft = v.map(String.init) ?? ""
                     if newDraft != draft { draft = newDraft }
                 }
+                .selectAllOnFocus()
             Text("%")
                 .font(.system(size: 9))
                 .foregroundColor(color.opacity(0.7))

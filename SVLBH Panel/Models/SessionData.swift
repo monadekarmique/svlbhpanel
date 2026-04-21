@@ -950,10 +950,10 @@ class SessionState: ObservableObject {
 
     // ── Clés sync ──
     var pushKey: String {
-        // Superviseur simulant une shamane → déposer sous clé superviseur
-        // (car la shamane pull toujours avec supervisorCode)
+        // Superviseur simulant une shamane → déposer sous la clé de la shamane simulée
+        // (la shamane pull avec son propre code)
         if isSuperviseurSimulating {
-            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(supervisorCode)"
+            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(role.code)"
         }
         return sessionId
     }
@@ -966,8 +966,8 @@ class SessionState: ObservableObject {
             // Owner self-pull (pas de pullSource)
             return sessionId
         } else {
-            // Tous les autres (shamanes, superviseurs) pullent depuis l'owner
-            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(supervisorCode)"
+            // Tous les autres pullent avec leur propre code
+            return "\(sessionProgramCode)-\(patientId)-\(sessionNum)-\(role.code)"
         }
     }
 
@@ -1030,10 +1030,11 @@ class SessionState: ObservableObject {
 
     // ── Broadcast ciblé ──
 
-    func broadcastKeys(target: BroadcastTarget = .allCertifiees) -> [String] {
+    func broadcastKeys(target: BroadcastTarget = .allCertifiees) -> [(key: String, shamane: ShamaneProfile)] {
         let recipients = shamanes(for: target)
         guard !recipients.isEmpty else { return [] }
-        return [pushKey]
+        let base = "\(sessionProgramCode)-\(patientId)-\(sessionNum)"
+        return recipients.map { (key: "\(base)-\(($0.codeFormatted))", shamane: $0) }
     }
 
     func shamanes(for target: BroadcastTarget) -> [ShamaneProfile] {

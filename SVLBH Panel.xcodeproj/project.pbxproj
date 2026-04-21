@@ -16,12 +16,14 @@
 		13F0D9057A7BE15C32DE3E89 /* DemandesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4461FE1AC094DF7B9B6C76B5 /* DemandesModels.swift */; };
 		1E07724F0783F8E7AD0D01A4 /* ChronoFuTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1246E79CA1D5B36BA35D043F /* ChronoFuTab.swift */; };
 		1E993679DD5FE9665A63474E /* ChronoClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C61C4C3EC788B3B3434497A /* ChronoClockView.swift */; };
+		1F96A056B3684CF3A51E66FF /* SMSComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15F8AA3497645268AA4C93E /* SMSComposerView.swift */; };
 		23F16F573377288F2377E419 /* MakeSyncService+Passeport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097E2D3E06754E48FFD91EF8 /* MakeSyncService+Passeport.swift */; };
 		28A2B21D3ED282E9005B5731 /* ToreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3686F35AA8D240ED2F0C2C75 /* ToreService.swift */; };
 		28EB1AD9A0748BC94C4DD714 /* PDLDecodageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466B9A9A612E10156CEB31C /* PDLDecodageView.swift */; };
 		299DC41AD395D3AA5F35997A /* EtApresTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386FAEF548C6AD12E862A293 /* EtApresTab.swift */; };
 		2E118F7C59FEBE02688D7A0B /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */; };
 		3275603C87AD724E3A0F8357 /* PDLHotlineSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FC4C7E47E64839A684A30A2 /* PDLHotlineSidebarView.swift */; };
+		366F17B9DE643F0512DEE7A0 /* LingguiBafaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996375378AA884EF1B045ED1 /* LingguiBafaView.swift */; };
 		368F0C0482345FBA6C00940D /* PDLDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BFBD89392457601A79A991 /* PDLDiagnosticView.swift */; };
 		36E1BA5FFE356FA0F1A270F2 /* PlancheFloatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548F4090476FACBAEDAD5FB3 /* PlancheFloatingView.swift */; };
 		3895653ABD944D9980D993FE /* DecodageTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3900240D6A13450BA9326F25 /* DecodageTab.swift */; };
@@ -77,7 +79,6 @@
 		D15TR1B0VIEW00010000001 /* DistributionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15TR1B0VIEW00010000002 /* DistributionView.swift */; };
 		DB5903C0810C456ABC7FEBB6 /* SVLBHTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB945055DBF440D689CC4DAA /* SVLBHTab.swift */; };
 		DD3D9550AD11405F97934FB7 /* SyncBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D118F80AA4F347F0A9F10053 /* SyncBar.swift */; };
-		1F96A056B3684CF3A51E66FF /* SMSComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15F8AA3497645268AA4C93E /* SMSComposerView.swift */; };
 		DF02F1B950D17B7A58A2E421 /* PierreEnseignement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */; };
 		E052F34693FB488160E2DBC3 /* ChromotherapyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999AA9300D39853F73EB6AA8 /* ChromotherapyManager.swift */; };
 		E1A70032EXPORT0141BCCF01 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A70032EXPORT0141BCCF02 /* ExportView.swift */; };
@@ -171,6 +172,7 @@
 		8E7964E92F6E4D120051060A /* SVLBH_PanelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITests.swift; sourceTree = "<group>"; };
 		8E7964EB2F6E4D120051060A /* SVLBH_PanelUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVLBH_PanelUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		94BFD78FD5CAB27584C839F3 /* INTEGRATION_PATCHES.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = INTEGRATION_PATCHES.swift; sourceTree = "<group>"; };
+		996375378AA884EF1B045ED1 /* LingguiBafaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LingguiBafaView.swift; sourceTree = "<group>"; };
 		999AA9300D39853F73EB6AA8 /* ChromotherapyManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChromotherapyManager.swift; sourceTree = "<group>"; };
 		9D0FFBAA031EBC812F4DEF47 /* SessionClosureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionClosureView.swift; sourceTree = "<group>"; };
 		9D75077909103EBB8EFC9C2D /* SubscriptionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
@@ -192,7 +194,6 @@
 		CB4DACFC8E6B2DD8D0BCA56A /* PorteEnergetiqueData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PorteEnergetiqueData.swift; sourceTree = "<group>"; };
 		CE016A20B4C74FA8B7654321 /* SessionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionExporter.swift; sourceTree = "<group>"; };
 		D118F80AA4F347F0A9F10053 /* SyncBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBar.swift; sourceTree = "<group>"; };
-		F15F8AA3497645268AA4C93E /* SMSComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMSComposerView.swift; sourceTree = "<group>"; };
 		D15TR1B0VIEW00010000002 /* DistributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionView.swift; sourceTree = "<group>"; };
 		D175F2BCE30C90B7C0FC8888 /* PierreEnseignement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PierreEnseignement.swift; sourceTree = "<group>"; };
 		D29202852DE5D9C6D4D507A8 /* PR09SclerosesTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PR09SclerosesTab.swift; sourceTree = "<group>"; };
@@ -202,6 +203,7 @@
 		E1A70032EXPORT0141BCCF02 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		F0C2CD7102E63969B835268F /* PierresSheetButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PierresSheetButton.swift; sourceTree = "<group>"; };
 		F14B0010C5BF4E3980BC7DC6 /* PasteImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteImportView.swift; sourceTree = "<group>"; };
+		F15F8AA3497645268AA4C93E /* SMSComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMSComposerView.swift; sourceTree = "<group>"; };
 		F55BDB302F39A5E1266DF1F5 /* PasserelleTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PasserelleTab.swift; sourceTree = "<group>"; };
 		F7E355ECBD1CAE455889E613 /* Chromotherapy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Chromotherapy.swift; sourceTree = "<group>"; };
 		F8BFBD89392457601A79A991 /* PDLDiagnosticView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PDLDiagnosticView.swift; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				5C61C4C3EC788B3B3434497A /* ChronoClockView.swift */,
 				199EC7AD8891869EA327CFE6 /* ChronoFuSidePanel.swift */,
 				41D0D4AAD3558AABC6A4D078 /* SessionDecouverteView.swift */,
+				996375378AA884EF1B045ED1 /* LingguiBafaView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -654,6 +657,7 @@
 				942321B1493E5893E8ED8ECA /* ChronoFuSidePanel.swift in Sources */,
 				4ACF1D2F09150639D5DA2CF3 /* SessionDecouverteView.swift in Sources */,
 				3275603C87AD724E3A0F8357 /* PDLHotlineSidebarView.swift in Sources */,
+				366F17B9DE643F0512DEE7A0 /* LingguiBafaView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -723,6 +727,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 87;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -740,6 +745,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 11.2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -781,6 +787,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 87;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -792,6 +799,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 11.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -806,7 +814,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 86;
+				CURRENT_PROJECT_VERSION = 87;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -826,7 +834,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 8.0.1;
+				MARKETING_VERSION = 11.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -845,7 +853,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SVLBH Panel/SVLBH_Panel.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 86;
+				CURRENT_PROJECT_VERSION = 87;
 				DEVELOPMENT_ASSET_PATHS = "\"SVLBH Panel/Preview Content\"";
 				DEVELOPMENT_TEAM = NKJ86L447D;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -865,7 +873,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.7;
-				MARKETING_VERSION = 8.0.1;
+				MARKETING_VERSION = 11.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "M100-LS100-DM85.SVLBH-Panel";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

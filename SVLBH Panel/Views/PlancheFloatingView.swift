@@ -13,6 +13,7 @@ struct PlancheFloatingView: View {
     @State private var showDistribution = false
     @State private var showVisiteurs = false
     @State private var showRoutine = false
+    @State private var showHotline = false
 
     var body: some View {
         if isVisible && (session.role.isSuperviseur || session.currentTier == .certifiee) {
@@ -48,6 +49,18 @@ struct PlancheFloatingView: View {
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(Color(hex: "#D4A017").opacity(0.1))
                             .cornerRadius(6)
+                        }
+                        if session.role.isSuperviseur || ["0300", "0301", "0302"].contains(session.role.code) {
+                            Button { showHotline = true } label: {
+                                HStack(spacing: 3) {
+                                    Image(systemName: "bolt.circle.fill").font(.system(size: 10))
+                                    Text("Hotline").font(.system(size: 10, weight: .medium))
+                                }
+                                .foregroundColor(Color(hex: "#8B3A62"))
+                                .padding(.horizontal, 8).padding(.vertical, 4)
+                                .background(Color(hex: "#8B3A62").opacity(0.1))
+                                .cornerRadius(6)
+                            }
                         }
                         Spacer()
                     }
@@ -140,6 +153,9 @@ struct PlancheFloatingView: View {
             .transition(.move(edge: .leading).combined(with: .opacity))
             .sheet(isPresented: $showRoutine) {
                 RoutineMatinTab().environmentObject(session)
+            }
+            .sheet(isPresented: $showHotline) {
+                PDLHotlineSidebarView(isOpen: $showHotline)
             }
             .sheet(isPresented: $showTherapists) {
                 TherapistManagerView().environmentObject(session)

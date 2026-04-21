@@ -102,6 +102,17 @@ struct ChronoFuTab: View {
             .navigationTitle("Chrono 六腑")
             .navigationBarTitleDisplayMode(.inline)
             .onReceive(timer) { now = $0 }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        LingguiBafaView()
+                    } label: {
+                        Text("灵龟八法")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Color(hex: "#185FA5"))
+                    }
+                }
+            }
         }
         .navigationViewStyle(.stack)
     }

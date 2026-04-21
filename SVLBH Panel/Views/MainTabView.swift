@@ -62,17 +62,14 @@ struct MainTabView: View {
                     .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
                     .tag(5)
                 ToresLumiereTab()
-                    .tabItem { Label("Tores", systemImage: "hurricane") }
+                    .tabItem { Label("PR 03 Endom\u{00e9}triose", systemImage: "hurricane") }
                     .tag(13)
                 if showPasserelle {
-                    ToreGlycemieScleroseView()
-                        .tabItem { Label("Tore", systemImage: "hurricane") }
-                        .tag(13)
                     PasserelleTab()
                         .tabItem { Label("PR 03 Dyspepsie", systemImage: "arrow.left.arrow.right") }
                         .tag(6)
-                    PR03EndometreTab()
-                        .tabItem { Label("PR 03 Endom\u{00e8}tre", systemImage: "arrow.left.arrow.right") }
+                    ToreGlycemieScleroseView()
+                        .tabItem { Label("PR 05 Glyc\u{00e9}mies", systemImage: "hurricane") }
                         .tag(7)
                     PR05GlycemiesTab()
                         .tabItem { Label("PR 05 Glyc\u{00e9}mies", systemImage: "arrow.left.arrow.right") }
@@ -132,7 +129,6 @@ struct MainTabView: View {
                     } else if session.role.isIdentified {
                         // Non-owner : vérifier la boîte INBOX pour un soin en attente
                         await sync.checkInbox(session: session)
-                        // Si une pullKey a été trouvée, pull automatique
                         if sync.inboxPullKey != nil {
                             await doPullFromInbox()
                         }
