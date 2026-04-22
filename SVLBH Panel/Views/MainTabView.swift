@@ -34,88 +34,74 @@ struct MainTabView: View {
         return true
     }
 
+    @State private var showImport = false
+    @State private var showExport = false
+    @State private var exportedText = ""
+
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
-                // ── Tabs ──
+                // ── 4 Tabs seulement ──
                 TabView(selection: $selectedTab) {
                     SVLBHTab(selectedTab: $selectedTab)
                         .tabItem { Label("SVLBH", systemImage: "atom") }
                         .tag(0)
-                if isUnlistedUser {
-                    LeadBubbleTab()
-                        .tabItem { Label("Comment faire ?", systemImage: "person.wave.2") }
-                        .tag(12)
+
+                    DecodageTab()
+                        .tabItem { Label("\u{00c9}puisement", systemImage: "list.bullet.rectangle") }
+                        .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
+                        .tag(2)
+
+                    // Impo — d\u{00e9}clenche le sheet import
+                    Color.clear
+                        .tabItem { Label("Impo", systemImage: "doc.on.clipboard") }
+                        .tag(100)
+                        .onAppear {
+                            if selectedTab == 100 {
+                                showImport = true
+                                selectedTab = 0
+                            }
+                        }
+
+                    // Expo — d\u{00e9}clenche le sheet export
+                    Color.clear
+                        .tabItem { Label("Expo", systemImage: "square.and.arrow.up") }
+                        .tag(101)
+                        .onAppear {
+                            if selectedTab == 101 {
+                                exportedText = SessionExporter.export(session)
+                                showExport = true
+                                selectedTab = 0
+                            }
+                        }
                 }
-                DecodageTab()
-                    .tabItem { Label("Épuisement", systemImage: "list.bullet.rectangle") }
-                    .badge(sync.diffs.decode > 0 ? sync.diffs.decode : 0)
-                    .tag(2)
-                SLMTab()
-                    .tabItem { Label("SLM", systemImage: "light.max") }
-                    .tag(3)
-                ChronoFuTab()
-                    .tabItem { Label("Chrono 六腑", systemImage: "clock.arrow.circlepath") }
-                    .tag(4)
-                ChakrasTab()
-                    .tabItem { Label("Conditions", systemImage: "circle.hexagongrid") }
-                    .badge(sync.diffs.chakras > 0 ? sync.diffs.chakras : 0)
-                    .tag(5)
-                ToresLumiereTab()
-                    .tabItem { Label("PR 03 Endom\u{00e9}triose", systemImage: "hurricane") }
-                    .tag(13)
-                if showPasserelle {
-                    PasserelleTab()
-                        .tabItem { Label("PR 03 Dyspepsie", systemImage: "arrow.left.arrow.right") }
-                        .tag(6)
-                    ToreGlycemieScleroseView()
-                        .tabItem { Label("PR 05 Glyc\u{00e9}mies", systemImage: "hurricane") }
-                        .tag(7)
-                    PR05GlycemiesTab()
-                        .tabItem { Label("PR 05 Glyc\u{00e9}mies", systemImage: "arrow.left.arrow.right") }
-                        .tag(8)
-                    PR07HistoriquesTab()
-                        .tabItem { Label("PR 07 Historiques", systemImage: "arrow.left.arrow.right") }
-                        .tag(9)
-                    PR09SclerosesTab()
-                        .tabItem { Label("PR 09 Scl\u{00e9}roses", systemImage: "arrow.left.arrow.right") }
-                        .tag(10)
-                    EtApresTab()
-                        .tabItem { Label("Et apr\u{00e8}s ?", systemImage: "sparkles") }
-                        .tag(11)
-                }
-            }
-            .modifier(TabBarOnlyModifier())
-            .environmentObject(session)
-            .environmentObject(sync)
-            .environmentObject(tracker)
-            }  // close VStack (breadcrumb + tabs)
+                .environmentObject(session)
+                .environmentObject(sync)
+                .environmentObject(tracker)
+            }  // close VStack
 
             // ── Timeline panel (rétractable) ──
             SessionTimelinePanel(isVisible: $showTimeline)
                 .environmentObject(tracker)
 
             .onChange(of: selectedTab) { tab in
-                switch tab {
-                case 1: break  // Comment faire ? — pas de badge
-                case 2: sync.diffs.decode = 0
-                case 3: break  // SLM
-                case 4: sync.diffs.pierres = 0
-                case 5: sync.diffs.chakras = 0
-                default: break
-                }
+                if tab == 2 { sync.diffs.decode = 0 }
             }
 
-            // SyncBar uniquement sur l'onglet SVLBH
+            // SyncBar uniquement sur l'onglet SVLBH — positionnée juste au-dessus de la tab bar
             if selectedTab == 0 {
-                VStack {
-                    Spacer()
-                    SyncBar(showDiffLog: $showDiffLog,
-                            showPINAlert: $showPINAlert,
-                            pendingPayload: $pendingPayload)
-                        .environmentObject(session)
-                        .environmentObject(sync)
+                GeometryReader { geo in
+                    VStack(spacing: 0) {
+                        Spacer()
+                        SyncBar(showDiffLog: $showDiffLog,
+                                showPINAlert: $showPINAlert,
+                                pendingPayload: $pendingPayload)
+                            .environmentObject(session)
+                            .environmentObject(sync)
+                    }
+                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 34) + 50)
                 }
+                .ignoresSafeArea(.container, edges: .bottom)
                 .task {
                     if session.role.isOwner {
                         // Owner : auto-scan des sources shamanes
@@ -134,6 +120,12 @@ struct MainTabView: View {
         }
         .onAppear {
             tracker.startSession()
+        }
+        .sheet(isPresented: $showImport) {
+            PasteImportView().environmentObject(session).environmentObject(sync)
+        }
+        .sheet(isPresented: $showExport) {
+            ExportView(text: exportedText)
         }
         .sheet(isPresented: $showDiffLog) {
             DiffLogView().environmentObject(sync)
@@ -203,12 +195,3 @@ struct MainTabView: View {
 }
 
 // MARK: - Force bottom tab bar on iPad (iOS 18+)
-struct TabBarOnlyModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 18.0, *) {
-            content.tabViewStyle(.tabBarOnly)
-        } else {
-            content
-        }
-    }
-}

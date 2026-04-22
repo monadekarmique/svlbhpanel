@@ -42,6 +42,7 @@ struct PDLHotlineSidebarView: View {
                             scoresSection
                             johreiSection
                             wuShenSection
+                            matriceDesordreSection
                             sephirothSection
                             protocoleSection
                         }
@@ -317,6 +318,75 @@ struct PDLHotlineSidebarView: View {
         .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
     }
 
+    // MARK: - 3b. Matrice de Désordre n × m
+    private var matriceDesordreSection: some View {
+        let eons = ["5D", "4D", "3D"]
+        let lots = [
+            ("L1", "1-5"), ("L2", "6-10"), ("L3", "11-15"),
+            ("L4", "16-20"), ("L5", "21-25")
+        ]
+
+        return VStack(alignment: .leading, spacing: 10) {
+            Label("Matrice de D\u{00e9}sordre n \u{00d7} m", systemImage: "chart.bar.fill")
+                .font(.subheadline).fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+                .background(LinearGradient(colors: [Color(hex: "#6B2D50"), Color(hex: "#8B3A62")], startPoint: .leading, endPoint: .trailing))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            Text("Cliquer sur les cellules o\u{00f9} H3 \u{2260} 0 (charge active mesurable).")
+                .font(.system(size: 10)).foregroundStyle(.secondary)
+
+            // Header row
+            HStack(spacing: 0) {
+                Text("").frame(width: 30)
+                ForEach(lots, id: \.0) { lot in
+                    VStack(spacing: 1) {
+                        Text(lot.0).font(.system(size: 10, weight: .bold))
+                        Text(lot.1).font(.system(size: 8)).foregroundStyle(.secondary).italic()
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+
+            // Grid rows
+            ForEach(eons, id: \.self) { eon in
+                HStack(spacing: 4) {
+                    Text(eon)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color(hex: "#8B3A62"))
+                        .frame(width: 30)
+
+                    ForEach(lots, id: \.0) { lot in
+                        let key = "\(eon)-\(lot.0)"
+                        let isActive = vm.matriceCells.contains(key)
+                        Button { vm.toggleMatriceCell(key) } label: {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(isActive ? Color(hex: "#4A1528") : Color(.systemGray6))
+                                .frame(height: 50)
+                                .overlay(
+                                    Text(isActive ? "\u{25a0}" : "\u{00b7}")
+                                        .font(isActive ? .caption : .title3)
+                                        .foregroundStyle(isActive ? .white : .secondary)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+
+            // Summary
+            Text("Matrice : n = \(vm.matriceEons) \u{00e9}ons \u{00d7} m = \(vm.matriceLots) lots")
+                .font(.system(size: 11)).foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
     // MARK: - 4. Sephiroth — Code 3 Chiffres
     private var sephirothSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -481,6 +551,17 @@ class HotlineSidebarVM: ObservableObject {
     var egoDilution: Double? {
         guard let p = egoPuissance, p > 0 else { return nil }
         return 1.0 / p
+    }
+
+    // Matrice de Desordre
+    @Published var matriceCells: Set<String> = []  // ex: "5D-L1"
+
+    var matriceEons: Int { Set(matriceCells.map { $0.split(separator: "-").first.map(String.init) ?? "" }).count }
+    var matriceLots: Int { Set(matriceCells.map { $0.split(separator: "-").last.map(String.init) ?? "" }).count }
+
+    func toggleMatriceCell(_ key: String) {
+        if matriceCells.contains(key) { matriceCells.remove(key) }
+        else { matriceCells.insert(key) }
     }
 
     var dilutionLabel: String {

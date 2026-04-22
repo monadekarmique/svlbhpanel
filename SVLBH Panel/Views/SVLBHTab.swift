@@ -10,26 +10,35 @@ struct SVLBHTab: View {
     @EnvironmentObject var sync: MakeSyncService
     @Environment(\.colorScheme) var colorScheme
     @State private var showSessionEdit = false
-    @State private var showPasteImport = false
     @State private var showNewPatient = false
     @State private var patientIdDraft = ""
     @State private var sessionNumDraft = ""
-    @State private var showExportSheet = false
     @State private var exportedText = ""
-    @State private var showTherapists = false
-    @State private var showDistribution = false
-    @State private var showReferenceSystems = false
     @State private var showLogoutConfirm = false
     @State private var showResetConfirm = false
     @State private var showPlanche = false
     @State private var showClosure = false
-    @State private var showHistory = false
-    @State private var showResearchPrograms = false
-    @State private var showPierres = false
+    @State private var activeSubPage: SubPage?
     @State private var visiteurCount: Int = 0
+
+    enum SubPage: String, Identifiable {
+        case slm, chrono, conditions, pr03, pr03Dyspepsie, pr05, pr07, pr09, etApres
+        case pierres, therapists, distribution, referenceSystems, researchPrograms
+        case pasteImport, exportSheet, history
+        var id: String { rawValue }
+    }
 
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
     private var isSubscriptionActive: Bool { true }
+
+    /// Passerelle visible pour superviseur, Cornelia (0300), Anne (0302)
+    private var showPasserelle: Bool {
+        if session.role.isSuperviseur { return true }
+        if case .shamane(let p) = session.role {
+            return ["0300", "0302"].contains(p.codeFormatted)
+        }
+        return false
+    }
 
     /// Comptes superviseur disponibles (Service API Key pattern : 1 compte = 1 fonction)
     private var supervisorAccounts: [ShamaneProfile] {
@@ -207,7 +216,7 @@ struct SVLBHTab: View {
                     // ── Historique + Programmes ──
                     HStack {
                         Button {
-                            showHistory = true
+                            activeSubPage = .history
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "clock.arrow.circlepath").font(.system(size: 12))
@@ -220,7 +229,7 @@ struct SVLBHTab: View {
                         Spacer()
                         if showResearchAccess {
                             Button {
-                                showResearchPrograms = true
+                                activeSubPage = .researchPrograms
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(systemName: "clock.arrow.circlepath").font(.system(size: 12))
@@ -301,7 +310,7 @@ struct SVLBHTab: View {
                     .padding(.horizontal, 16)
 
                     // ── Ligne 2 : Pierres sur deux colonnes ──
-                    Button { showPierres = true } label: {
+                    Button { activeSubPage = .pierres } label: {
                         PierresKPICard(session: session)
                     }
                     .buttonStyle(.plain)
@@ -354,6 +363,29 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
+                    // ── Custom Tab Bar — sous-pages ──
+                    VStack(spacing: 0) {
+                        Divider()
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 0) {
+                                customTabButton("SLM", icon: "light.max") { activeSubPage = .slm }
+                                customTabButton("Chrono \u{516d}\u{8151}", icon: "clock.arrow.circlepath") { activeSubPage = .chrono }
+                                customTabButton("Conditions", icon: "circle.hexagongrid") { activeSubPage = .conditions }
+                                customTabButton("Endom\u{00e9}triose", icon: "hurricane") { activeSubPage = .pr03 }
+                                if showPasserelle {
+                                    customTabButton("Dyspepsie", icon: "arrow.left.arrow.right") { activeSubPage = .pr03Dyspepsie }
+                                    customTabButton("Glyc\u{00e9}mies", icon: "hurricane") { activeSubPage = .pr05 }
+                                    customTabButton("Historiques", icon: "arrow.left.arrow.right") { activeSubPage = .pr07 }
+                                    customTabButton("Scl\u{00e9}roses", icon: "arrow.left.arrow.right") { activeSubPage = .pr09 }
+                                    customTabButton("Et apr\u{00e8}s ?", icon: "sparkles") { activeSubPage = .etApres }
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                        }
+                        .padding(.vertical, 8)
+                        .background(Color(.secondarySystemBackground))
+                    }
+
                     Spacer().frame(height: 120)
                 }
             }
@@ -390,25 +422,25 @@ struct SVLBHTab: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Menu {
                         Button {
-                            showPasteImport = true
+                            activeSubPage = .pasteImport
                         } label: {
                             Label("Importer", systemImage: "doc.on.clipboard")
                         }
                         Button {
                             exportedText = SessionExporter.export(session)
-                            showExportSheet = true
+                            activeSubPage = .exportSheet
                         } label: {
                             Label("Exporter WhatsApp", systemImage: "square.and.arrow.up")
                         }
                         Button {
-                            showHistory = true
+                            activeSubPage = .history
                         } label: {
                             Label("Historique", systemImage: "clock.arrow.circlepath")
                         }
                         if session.role.isSuperviseur {
                             Divider()
                             Button {
-                                showReferenceSystems = true
+                                activeSubPage = .referenceSystems
                             } label: {
                                 Label("Syst\u{00e8}mes de r\u{00e9}f\u{00e9}rence", systemImage: "photo.on.rectangle.angled")
                             }
@@ -452,31 +484,30 @@ struct SVLBHTab: View {
                 let status = await PresenceService.shared.check()
                 visiteurCount = status.activeCount
             }
-            .sheet(isPresented: $showPasteImport) {
-                PasteImportView().environmentObject(session).environmentObject(sync)
-            }
-            .sheet(isPresented: $showExportSheet) {
-                ExportView(text: exportedText)
-            }
-            .sheet(isPresented: $showHistory) {
-                SessionHistoryView(session: session, syncService: sync)
-            }
-            .sheet(isPresented: $showResearchPrograms) {
-                ResearchProgramsView()
-                    .environmentObject(session)
-                    .environmentObject(sync)
-            }
-            .sheet(isPresented: $showTherapists) {
-                TherapistManagerView().environmentObject(session)
-            }
-            .sheet(isPresented: $showDistribution) {
-                DistributionView().environmentObject(session)
-            }
-            .sheet(isPresented: $showReferenceSystems) {
-                ReferenceSystemView().environmentObject(session).environmentObject(sync)
-            }
-            .sheet(isPresented: $showPierres) {
-                PierresTab().environmentObject(session).environmentObject(sync)
+            .sheet(item: $activeSubPage) { page in
+                Group {
+                    switch page {
+                    case .slm: SLMTab()
+                    case .chrono: ChronoFuTab()
+                    case .conditions: ChakrasTab()
+                    case .pr03: ToresLumiereTab()
+                    case .pr03Dyspepsie: PasserelleTab()
+                    case .pr05: ToreGlycemieScleroseView()
+                    case .pr07: PR07HistoriquesTab()
+                    case .pr09: PR09SclerosesTab()
+                    case .etApres: EtApresTab()
+                    case .pierres: PierresTab()
+                    case .therapists: TherapistManagerView()
+                    case .distribution: DistributionView()
+                    case .referenceSystems: ReferenceSystemView()
+                    case .researchPrograms: ResearchProgramsView()
+                    case .pasteImport: PasteImportView()
+                    case .exportSheet: ExportView(text: exportedText)
+                    case .history: SessionHistoryView(session: session, syncService: sync)
+                    }
+                }
+                .environmentObject(session)
+                .environmentObject(sync)
             }
             .fullScreenCover(isPresented: $showClosure) {
                 SessionClosureView(isPresented: $showClosure)
@@ -488,6 +519,20 @@ struct SVLBHTab: View {
                 .environmentObject(session)
         }
         .navigationViewStyle(.stack)
+    }
+
+    // MARK: - Custom Tab Button
+    private func customTabButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 3) {
+                Image(systemName: icon).font(.system(size: 16))
+                Text(title).font(.system(size: 9, weight: .medium)).lineLimit(1)
+            }
+            .foregroundColor(Color(hex: "#8B3A62"))
+            .frame(width: 70)
+            .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
         .alert("Reset session ?", isPresented: $showResetConfirm) {
             Button("Reset", role: .destructive) { session.resetForShamane() }
             Button("Annuler", role: .cancel) {}
