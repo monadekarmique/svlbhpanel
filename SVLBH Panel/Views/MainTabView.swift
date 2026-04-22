@@ -108,18 +108,14 @@ struct MainTabView: View {
 
             // SyncBar uniquement sur l'onglet SVLBH
             if selectedTab == 0 {
-                GeometryReader { geo in
-                    VStack(spacing: 0) {
-                        Spacer()
-                        SyncBar(showDiffLog: $showDiffLog,
-                                showPINAlert: $showPINAlert,
-                                pendingPayload: $pendingPayload)
-                            .environmentObject(session)
-                            .environmentObject(sync)
-                    }
-                    .padding(.bottom, geo.safeAreaInsets.bottom + 49)
+                VStack {
+                    Spacer()
+                    SyncBar(showDiffLog: $showDiffLog,
+                            showPINAlert: $showPINAlert,
+                            pendingPayload: $pendingPayload)
+                        .environmentObject(session)
+                        .environmentObject(sync)
                 }
-                .ignoresSafeArea(.container, edges: .bottom)
                 .task {
                     if session.role.isOwner {
                         // Owner : auto-scan des sources shamanes

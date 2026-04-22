@@ -146,27 +146,7 @@ struct SyncBar: View {
                         .transition(.opacity)
                         .animation(.easeInOut, value: sync.pushSuccess)
                 }
-                // PINs de la shamane sélectionnée
-                if let code = selectedShamane?.codeFormatted,
-                   let pins = sync.pinsByShamane[code], !pins.isEmpty {
-                    let df = DateFormatter()
-                    let _ = df.dateFormat = "HH:mm"
-                    ForEach(Array(pins.enumerated()), id: \.offset) { _, entry in
-                        Text("📌 \(entry.pin) · \(df.string(from: entry.date))")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 5).padding(.vertical, 2)
-                            .background(Color(hex: "#8B3A62"))
-                            .cornerRadius(4)
-                    }
-                } else if let pin = sync.lastPin, !pin.isEmpty, selectedShamane == nil {
-                    Text("📌 \(pin)")
-                        .font(.caption.bold())
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 7).padding(.vertical, 3)
-                        .background(Color(hex: "#8B3A62"))
-                        .cornerRadius(5)
-                }
+                // PINs supprimés de l'affichage (v11.2.1)
 
                 // ── Recevoir : scan + badge + menu (owner) ou bouton simple (tous les autres) ──
                 if session.role.isOwner {

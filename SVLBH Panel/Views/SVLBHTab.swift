@@ -25,6 +25,7 @@ struct SVLBHTab: View {
     @State private var showClosure = false
     @State private var showHistory = false
     @State private var showResearchPrograms = false
+    @State private var showPierres = false
     @State private var visiteurCount: Int = 0
 
     /// Abonnement actif — pour l'instant toujours true (isCheckingSubscription)
@@ -87,27 +88,9 @@ struct SVLBHTab: View {
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(spacing: 3) {
-                        // Sync status
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(sync.isSending || sync.isReceiving
-                                      ? Color(hex: "#BA7517") : Color(hex: "#1D9E75"))
-                                .frame(width: 7, height: 7)
-                            Text(sync.isSending ? "Envoi…" : sync.isReceiving ? "Réception…" : "Sync prêt")
-                                .font(.system(size: 10)).foregroundColor(.secondary)
-                            if let err = sync.lastError {
-                                Text("⚠ \(err)").font(.system(size: 9)).foregroundColor(.red).lineLimit(1)
-                                    .onAppear {
-                                        Task { @MainActor in
-                                            try? await Task.sleep(nanoseconds: 5_000_000_000)
-                                            sync.lastError = nil
-                                        }
-                                    }
-                            }
-                        }
-                        Text("◈ SVLBH Panel")
+                        Text("\u{25c8} SVLBH Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique")
                             .font(.title2.bold()).foregroundColor(Color(hex: "#8B3A62"))
-                        Text("hDOM · Corps de Lumière")
+                        Text("hDOM \u{00b7} Corps de Lumi\u{00e8}re")
                             .font(.caption).foregroundColor(.secondary)
                     }
                     .padding(.top, 14)
@@ -126,130 +109,102 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // ── Clé électromagnétique / Programmes de recherche ──
-                    HStack {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique")
-                                .font(.caption.bold()).foregroundColor(.secondary)
-                            Text("Patient / Syst\u{00e8}me")
-                                .font(.caption.bold()).foregroundColor(.secondary)
+                    // ── Carte session (bande rose pleine largeur) ──
+                    Button {
+                        sessionNumDraft = session.sessionNum
+                        showSessionEdit = true
+                    } label: {
+                        VStack(spacing: 8) {
+                        // ── En-t\u{00ea}te : Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique ──
+                        HStack {
+                            Text("Cl\u{00e9} \u{00e9}lectromagn\u{00e9}tique \u{00b7} Consultante / Syst\u{00e8}me")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(Color(hex: "#8B3A62").opacity(0.7))
+                            Spacer()
                         }
-                        Spacer()
-                        if showResearchAccess {
-                            Button {
-                                showResearchPrograms = true
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "flask")
-                                    Text("Programmes de recherche")
+                        HStack(spacing: 12) {
+                            // ── Gauche : Cl\u{00e9} S\u{00e9}phirothique + num\u{00e9}ro ──
+                            VStack(spacing: 4) {
+                                HStack(spacing: 0) {
+                                    ForEach(["Cl\u{00e9} S\u{00e9}phirothique", "Syst\u{00e8}me"], id: \.self) { opt in
+                                        let isSys = opt == "Syst\u{00e8}me"
+                                        let active = isSys == session.isSysteme
+                                        Text(isSys ? "Syst\u{00e8}me" : "Cl\u{00e9} S\u{00e9}ph.")
+                                            .font(.system(size: 9, weight: active ? .bold : .regular))
+                                            .foregroundColor(active ? .white : Color(hex: "#8B3A62"))
+                                            .padding(.horizontal, 5).padding(.vertical, 2)
+                                            .background(active ? Color(hex: "#8B3A62") : Color.clear)
+                                            .cornerRadius(4)
+                                            .onTapGesture { session.isSysteme = isSys }
+                                    }
                                 }
-                                .font(.caption.bold())
-                                .foregroundColor(Color(hex: "#5B2C8E"))
+                                .background(Color(hex: "#8B3A62").opacity(0.12))
+                                .cornerRadius(5)
+                                Text(tierSessionLabel)
+                                    .font(.title2.bold()).foregroundColor(Color(hex: "#8B3A62"))
                             }
-                        }
-                    }
-                    .padding(.horizontal, 16)
 
-                    // ── Carte session (badge tier à droite au-dessus du code) ──
-                    HStack(spacing: 8) {
-                        Button {
-                            sessionNumDraft = session.sessionNum
-                            showSessionEdit = true
-                        } label: {
-                            HStack(spacing: 0) {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack(spacing: 0) {
-                                        ForEach(["G\u{00e9}om\u{00e9}trie", "Syst\u{00e8}me"], id: \.self) { opt in
-                                            let active = (opt == "Syst\u{00e8}me") == session.isSysteme
-                                            Text(opt)
-                                                .font(.system(size: 9, weight: active ? .bold : .regular))
-                                                .foregroundColor(active ? .white : Color(hex: "#8B3A62"))
-                                                .padding(.horizontal, 5).padding(.vertical, 2)
-                                                .background(active ? Color(hex: "#8B3A62") : Color.clear)
-                                                .cornerRadius(4)
-                                                .onTapGesture { session.isSysteme = (opt == "Syst\u{00e8}me") }
-                                        }
-                                    }
-                                    .background(Color(hex: "#8B3A62").opacity(0.12))
-                                    .cornerRadius(5)
-                                    Text(tierSessionLabel)
-                                        .font(.headline.bold()).foregroundColor(Color(hex: "#8B3A62"))
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                Divider().frame(height: 28).padding(.horizontal, 8)
-                                if currentTier == .superviseur || currentTier == .certifiee {
+                            // ── Centre : Ratios empil\u{00e9}s ──
+                            if currentTier == .superviseur || currentTier == .certifiee {
+                                VStack(spacing: 6) {
                                     Ratio4DCardSection(passeport: session.passeport)
-                                    .frame(maxWidth: .infinity)
-                                    Divider().frame(height: 28).padding(.horizontal, 8)
                                     RatioPlaneteCardSection(passeport: session.passeport)
-                                    .frame(maxWidth: .infinity)
-                                    Divider().frame(height: 28).padding(.horizontal, 8)
                                 }
-                                VStack(alignment: .center, spacing: 2) {
-                                    Text(currentTier.label)
-                                        .font(.system(size: 8, weight: .bold))
-                                        .foregroundColor(.white)
-                                        .padding(.horizontal, 5).padding(.vertical, 2)
-                                        .background(Color(hex: currentTier.badgeColor))
-                                        .cornerRadius(3)
-                                    // Switch compte superviseur (Service API Key pattern)
-                                    if identity.isSuperviseur, supervisorAccounts.count > 1 {
-                                        Menu {
-                                            ForEach(supervisorAccounts, id: \.code) { acct in
-                                                Button("\(acct.codeFormatted) · \(acct.abonnement.isEmpty ? "Superviseur" : acct.abonnement)") {
-                                                    identity.identify(code: acct.code, name: acct.prenom)
-                                                    identity.applyTo(session)
-                                                }
-                                            }
-                                        } label: {
-                                            HStack(spacing: 2) {
-                                                Text(session.role.code)
-                                                    .font(.headline.bold())
-                                                Image(systemName: "arrow.left.arrow.right")
-                                                    .font(.system(size: 9, weight: .bold))
-                                            }
-                                            .foregroundColor(Color(hex: "#185FA5"))
-                                        }
-                                    } else {
-                                        Text(session.role.code)
-                                            .font(.headline.bold()).foregroundColor(Color(hex: "#185FA5"))
-                                    }
-                                }
-                                .frame(maxWidth: .infinity)
-                                Divider().frame(height: 28).padding(.horizontal, 8)
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text("Niveau").font(.caption2).foregroundColor(.secondary)
+                            }
+
+                            // ── Droite : Cat\u{00e9}gorie / Niveau / Code ──
+                            VStack(spacing: 4) {
+                                Text(currentTier.label)
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 5).padding(.vertical, 2)
+                                    .background(Color(hex: currentTier.badgeColor))
+                                    .cornerRadius(3)
+                                VStack(spacing: 1) {
+                                    Text("Niveau").font(.system(size: 8)).foregroundColor(.secondary)
                                     Text(session.sessionNum)
                                         .font(.headline.bold()).foregroundColor(Color(hex: "#BA7517"))
                                 }
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                if session.role.isSuperviseur {
-                                    Button {
-                                        showResetConfirm = true
+                                if identity.isSuperviseur, supervisorAccounts.count > 1 {
+                                    Menu {
+                                        ForEach(supervisorAccounts, id: \.code) { acct in
+                                            Button("\(acct.codeFormatted) \u{00b7} \(acct.abonnement.isEmpty ? "Superviseur" : acct.abonnement)") {
+                                                identity.identify(code: acct.code, name: acct.prenom)
+                                                identity.applyTo(session)
+                                            }
+                                        }
                                     } label: {
+                                        HStack(spacing: 2) {
+                                            Text(session.role.code)
+                                                .font(.system(size: 13, weight: .bold))
+                                            Image(systemName: "arrow.left.arrow.right")
+                                                .font(.system(size: 8, weight: .bold))
+                                        }
+                                        .foregroundColor(Color(hex: "#185FA5"))
+                                    }
+                                } else {
+                                    Text(session.role.code)
+                                        .font(.system(size: 13, weight: .bold)).foregroundColor(Color(hex: "#185FA5"))
+                                }
+                                if session.role.isSuperviseur {
+                                    Button { showResetConfirm = true } label: {
                                         ZStack {
-                                            Circle()
-                                                .stroke(Color(hex: "#E24B4A"), lineWidth: 1.5)
-                                                .frame(width: 26, height: 26)
-                                            Text("R")
-                                                .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                                .foregroundColor(Color(hex: "#E24B4A"))
+                                            Circle().stroke(Color(hex: "#E24B4A"), lineWidth: 1.5).frame(width: 22, height: 22)
+                                            Text("R").font(.system(size: 11, weight: .bold, design: .monospaced)).foregroundColor(Color(hex: "#E24B4A"))
                                         }
                                     }
-                                    .padding(.leading, 8)
-                                } else {
-                                    Image(systemName: "pencil.circle")
-                                        .foregroundColor(Color(hex: "#C27894")).padding(.leading, 8)
                                 }
                             }
-                            .padding(12)
-                            .background(Color(hex: "#8B3A62").opacity(colorScheme == .dark ? 0.2 : 0.08))
-                            .cornerRadius(10)
                         }
+                        } // close VStack (en-tête + HStack)
+                        .padding(12)
+                        .frame(maxWidth: .infinity)
+                        .background(Color(hex: "#8B3A62").opacity(colorScheme == .dark ? 0.2 : 0.08))
+                        .cornerRadius(10)
                     }
                     .padding(.horizontal, 16)
 
-                    // ── Historique ──
+                    // ── Historique + Programmes ──
                     HStack {
                         Button {
                             showHistory = true
@@ -263,6 +218,17 @@ struct SVLBHTab: View {
                         .disabled(!isSubscriptionActive)
                         .opacity(isSubscriptionActive ? 1.0 : 0.4)
                         Spacer()
+                        if showResearchAccess {
+                            Button {
+                                showResearchPrograms = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "clock.arrow.circlepath").font(.system(size: 12))
+                                    Text("Programmes").font(.caption.bold())
+                                }
+                                .foregroundColor(Color(hex: "#8B3A62"))
+                            }
+                        }
                     }
                     .padding(.horizontal, 16)
 
@@ -290,50 +256,7 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16).padding(.vertical, 4)
                     }
 
-                    // Sélecteur de segment (Superviseur only)
-                    if identity.isSuperviseur {
-                        HStack(spacing: 10) {
-                            Text("Segment")
-                                .font(.caption.bold()).foregroundColor(.secondary)
-                            Menu {
-                                Button("Superviseur (réel)") {
-                                    simulatedTier = nil
-                                    identity.applyTo(session)
-                                    session.isSuperviseurSimulating = false
-                                }
-                                Divider()
-                                ForEach(session.shamaneProfiles.filter { $0.tier != .superviseur }, id: \.code) { profile in
-                                    Button("\(profile.displayName) · \(profile.tier.label) (\(profile.codeFormatted))") {
-                                        simulatedTier = profile.tier
-                                        session.role = .shamane(profile)
-                                        session.isSuperviseurSimulating = true
-                                    }
-                                }
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Text(simulatedTier?.label ?? "SUPERVISEUR")
-                                        .font(.caption.bold())
-                                    Image(systemName: "chevron.up.chevron.down")
-                                        .font(.system(size: 8))
-                                }
-                                .foregroundColor(Color(hex: "#8B3A62"))
-                                .padding(.horizontal, 8).padding(.vertical, 5)
-                                .background(Color(hex: "#8B3A62").opacity(0.08))
-                                .cornerRadius(6)
-                            }
-                            if simulatedTier != nil {
-                                Button {
-                                    simulatedTier = nil
-                                    identity.applyTo(session)
-                                    session.isSuperviseurSimulating = false
-                                } label: {
-                                    Text("↩").font(.caption.bold()).foregroundColor(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.horizontal, 16).padding(.vertical, 4)
-                    }
+                    // Sélecteur de segment déplacé en haut de la carte
 
                     // Gui dominant + Méridien dominant + Fork (sous Programme)
                     VStack(spacing: 6) {
@@ -378,7 +301,7 @@ struct SVLBHTab: View {
                     .padding(.horizontal, 16)
 
                     // ── Ligne 2 : Pierres sur deux colonnes ──
-                    Button { selectedTab = 4 } label: {
+                    Button { showPierres = true } label: {
                         PierresKPICard(session: session)
                     }
                     .buttonStyle(.plain)
@@ -434,31 +357,37 @@ struct SVLBHTab: View {
                     Spacer().frame(height: 120)
                 }
             }
-            .navigationTitle("SVLBH")
             .navigationBarTitleDisplayMode(.inline)
-            .task {
-                let status = await PresenceService.shared.check()
-                visiteurCount = status.activeCount
-            }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundColor(Color(hex: "#C27894").opacity(0.7))
-                        .fixedSize()
-                }
-                if session.role.isSuperviseur || currentTier == .certifiee {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
+                ToolbarItem(placement: .principal) {
+                    if identity.isSuperviseur {
+                        Menu {
+                            Button("Superviseur (r\u{00e9}el)") {
+                                simulatedTier = nil
+                                identity.applyTo(session)
+                                session.isSuperviseurSimulating = false
+                            }
+                            Divider()
+                            ForEach(session.shamaneProfiles.filter { $0.tier != .superviseur }, id: \.code) { profile in
+                                Button("\(profile.displayName) \u{00b7} \(profile.tier.label) (\(profile.codeFormatted))") {
+                                    simulatedTier = profile.tier
+                                    session.role = .shamane(profile)
+                                    session.isSuperviseurSimulating = true
+                                }
+                            }
                         } label: {
-                            Image(systemName: "rectangle.on.rectangle.angled")
-                                .font(.system(size: 22, weight: .medium))
-                                .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : .accentColor)
+                            HStack(spacing: 4) {
+                                Text("SVLBH").font(.headline.bold())
+                                Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
+                            }
+                            .foregroundColor(.primary)
                         }
+                    } else {
+                        Text("SVLBH").font(.headline.bold())
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                // ── Leading : version + sync + menu (ex-"...") ──
+                ToolbarItem(placement: .navigationBarLeading) {
                     Menu {
                         Button {
                             showPasteImport = true
@@ -481,19 +410,47 @@ struct SVLBHTab: View {
                             Button {
                                 showReferenceSystems = true
                             } label: {
-                                Label("Systèmes de référence", systemImage: "photo.on.rectangle.angled")
+                                Label("Syst\u{00e8}mes de r\u{00e9}f\u{00e9}rence", systemImage: "photo.on.rectangle.angled")
                             }
                             Divider()
                             Button(role: .destructive) {
                                 showLogoutConfirm = true
                             } label: {
-                                Label("Changer d'utilisateur", systemImage: "person.crop.circle.badge.minus")
+                                Label("Changer d\u{2019}utilisateur", systemImage: "person.crop.circle.badge.minus")
                             }
                         }
                     } label: {
-                        Image(systemName: "ellipsis.circle").foregroundColor(Color(hex: "#8B3A62"))
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundColor(Color(hex: "#C27894").opacity(0.7))
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(sync.isSending || sync.isReceiving
+                                          ? Color(hex: "#BA7517") : Color(hex: "#1D9E75"))
+                                    .frame(width: 6, height: 6)
+                                Text(sync.isSending ? "Envoi\u{2026}" : sync.isReceiving ? "R\u{00e9}ception\u{2026}" : "Sync pr\u{00ea}t")
+                                    .font(.system(size: 9)).foregroundColor(.secondary)
+                            }
+                        }
                     }
                 }
+                // ── Trailing : Planche Tactique ──
+                if session.role.isSuperviseur || currentTier == .certifiee {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            withAnimation(.spring(response: 0.3)) { showPlanche.toggle() }
+                        } label: {
+                            Image(systemName: "rectangle.on.rectangle.angled")
+                                .font(.system(size: 22, weight: .medium))
+                                .foregroundColor(showPlanche ? Color(hex: "#8B3A62") : .accentColor)
+                        }
+                    }
+                }
+            }
+            .task {
+                let status = await PresenceService.shared.check()
+                visiteurCount = status.activeCount
             }
             .sheet(isPresented: $showPasteImport) {
                 PasteImportView().environmentObject(session).environmentObject(sync)
@@ -517,6 +474,9 @@ struct SVLBHTab: View {
             }
             .sheet(isPresented: $showReferenceSystems) {
                 ReferenceSystemView().environmentObject(session).environmentObject(sync)
+            }
+            .sheet(isPresented: $showPierres) {
+                PierresTab().environmentObject(session).environmentObject(sync)
             }
             .fullScreenCover(isPresented: $showClosure) {
                 SessionClosureView(isPresented: $showClosure)

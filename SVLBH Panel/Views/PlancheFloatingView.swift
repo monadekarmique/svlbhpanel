@@ -54,7 +54,7 @@ struct PlancheFloatingView: View {
                             Button { showHotline = true } label: {
                                 HStack(spacing: 3) {
                                     Image(systemName: "bolt.circle.fill").font(.system(size: 10))
-                                    Text("Hotline").font(.system(size: 10, weight: .medium))
+                                    Text("\u{00c9}nergies Sombres").font(.system(size: 10, weight: .medium))
                                 }
                                 .foregroundColor(Color(hex: "#8B3A62"))
                                 .padding(.horizontal, 8).padding(.vertical, 4)

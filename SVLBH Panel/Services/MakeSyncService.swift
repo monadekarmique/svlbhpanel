@@ -361,6 +361,10 @@ class MakeSyncService: ObservableObject {
             let previousCount = pendingSources.count
             pendingSources = found.sorted(by: { $0.code < $1.code })
             isScanning = false
+            // Effacer le PIN quand toutes les shamanes ont lu (plus de sources en attente)
+            if pendingSources.isEmpty && lastPin != nil {
+                lastPin = nil
+            }
             // Badge app
             UIApplication.shared.applicationIconBadgeNumber = pendingSources.count
             // Notification locale si nouveaux soins détectés

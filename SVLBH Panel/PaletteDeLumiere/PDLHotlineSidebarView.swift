@@ -24,7 +24,7 @@ struct PDLHotlineSidebarView: View {
                 VStack(spacing: 0) {
                     // Header
                     HStack {
-                        Text("⚡ Hotline DSL").font(.headline).foregroundStyle(Color(hex: "#8B3A62"))
+                        Text("\u{26a1} En cas d\u{2019}\u{00c9}nergies Sombres identifi\u{00e9}es").font(.subheadline.bold()).foregroundStyle(Color(hex: "#8B3A62"))
                         Spacer()
                         Button { withAnimation(.easeInOut(duration: 0.3)) { isOpen = false } } label: {
                             Image(systemName: "xmark.circle.fill").font(.title2).foregroundStyle(.secondary)
@@ -36,6 +36,9 @@ struct PDLHotlineSidebarView: View {
                     // Scrollable content
                     ScrollView {
                         VStack(spacing: 20) {
+                            securiteSection
+                            corpsEMSection
+                            transfertsSection
                             scoresSection
                             johreiSection
                             wuShenSection
@@ -53,6 +56,124 @@ struct PDLHotlineSidebarView: View {
                 .animation(.easeInOut(duration: 0.3), value: isOpen)
             }
         }
+    }
+
+    // MARK: - 0a. Sécurité 10⁸
+    private var securiteSection: some View {
+        VStack(spacing: 8) {
+            Text(vm.securiteValidee
+                 ? "\u{2705} S\u{00e9}curit\u{00e9} 10\u{2078} valid\u{00e9}e \u{2014} Protocole d\u{00e9}verrouill\u{00e9}"
+                 : "\u{1f512} S\u{00e9}curit\u{00e9} 10\u{2078} non valid\u{00e9}e \u{2014} Protocole verrouill\u{00e9}")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(vm.securiteValidee ? .green : Color(hex: "#8B3A62"))
+                .frame(maxWidth: .infinity)
+                .padding(10)
+                .background(vm.securiteValidee ? Color.green.opacity(0.08) : Color(hex: "#FFF0F0"))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+
+    // MARK: - 0b. Corps électromagnétiques
+    private var corpsEMSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Corps \u{00e9}lectromagn\u{00e9}tiques d\u{00e9}s\u{00e9}quilibr\u{00e9}s par des conflits")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+                .background(LinearGradient(colors: [Color(hex: "#4A6741"), Color(hex: "#6B8F62")], startPoint: .leading, endPoint: .trailing))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            HStack(spacing: 8) {
+                ForEach([
+                    ("Corps Mental", $vm.corpsMental),
+                    ("Corps \u{00c9}motionnel", $vm.corpsEmotionnel),
+                    ("Corps Bouddhique", $vm.corpsBouddhique)
+                ], id: \.0) { label, binding in
+                    Toggle(isOn: binding) {
+                        Text(label).font(.caption2.weight(.medium))
+                    }
+                    .toggleStyle(.button)
+                    .tint(Color(hex: "#4A6741"))
+                }
+            }
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#4A6741").opacity(0.1), radius: 5)
+    }
+
+    // MARK: - 0c. Libération des Transferts
+    private var transfertsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("\u{1f319} Lib\u{00e9}ration des Transferts")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(LinearGradient(colors: [Color(hex: "#6B2D50"), Color(hex: "#8B3A62")], startPoint: .leading, endPoint: .trailing))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            HStack(spacing: 16) {
+                // EGO — Puissance de Fragmentation
+                VStack(spacing: 4) {
+                    Text("EGO \u{2014} PUISSANCE DE FRAGMENTATION")
+                        .font(.system(size: 7, weight: .medium)).foregroundStyle(.secondary)
+                        .textCase(.uppercase).tracking(1)
+                    HStack(spacing: 4) {
+                        Text("5").font(.title2.weight(.bold)).foregroundStyle(Color(hex: "#B8965A"))
+                        TextField("n", text: $vm.egoN)
+                            .font(.system(size: 12, weight: .bold))
+                            .frame(width: 28, height: 22)
+                            .multilineTextAlignment(.center)
+                            .background(Color(.systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .keyboardType(.numberPad)
+                            .overlay(Text("n").font(.system(size: 8)).foregroundStyle(.secondary).opacity(vm.egoN.isEmpty ? 1 : 0))
+                        Text("=").foregroundStyle(.secondary)
+                        Text(vm.egoPuissance.map { formatLargeNumber($0) } ?? "\u{2014}")
+                            .font(.title3.weight(.bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                    }
+                    Text("Saisir n dans la Matrice")
+                        .font(.system(size: 8)).foregroundStyle(Color(hex: "#B8965A"))
+                }
+                .frame(maxWidth: .infinity)
+
+                // Dilution des comportements
+                VStack(spacing: 4) {
+                    Text("DILUTION DES COMPORTEMENTS")
+                        .font(.system(size: 7, weight: .medium)).foregroundStyle(.secondary)
+                        .textCase(.uppercase).tracking(1)
+                    HStack(spacing: 4) {
+                        Text("1 / 5").font(.caption.weight(.bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                        Text("n").font(.system(size: 9, weight: .bold)).foregroundStyle(Color(hex: "#8B3A62")).baselineOffset(6)
+                        Text("=").foregroundStyle(.secondary)
+                        Text(vm.egoDilution.map { String(format: "%.2e", $0) } ?? "\u{2014}")
+                            .font(.system(size: 13, weight: .bold, design: .monospaced)).foregroundStyle(Color(hex: "#8B3A62"))
+                            .lineLimit(1).minimumScaleFactor(0.6)
+                    }
+                    Text(vm.dilutionLabel.isEmpty ? "Intensit\u{00e9} r\u{00e9}siduelle par fragment" : vm.dilutionLabel)
+                        .font(.system(size: 8)).foregroundStyle(Color(hex: "#B8965A"))
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(12)
+            .background(Color(hex: "#B8965A").opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(hex: "#B8965A").opacity(0.3), lineWidth: 1))
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
+    // MARK: - Helper
+    private func formatLargeNumber(_ n: Double) -> String {
+        if n >= 1_000_000 { return String(format: "%.1e", n) }
+        if n >= 1_000 { return String(format: "%.0f", n) }
+        return String(format: "%.0f", n)
     }
 
     // MARK: - 1. Scores de Lumière
@@ -94,53 +215,54 @@ struct PDLHotlineSidebarView: View {
         .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
     }
 
-    // MARK: - 2. Johrei_25 Compass
+    // MARK: - 2. Johrei_25 — Référence
     private var johreiSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Johrei_25 — Screening", systemImage: "scope")
-                .font(.subheadline).fontWeight(.semibold)
-                .foregroundStyle(Color(hex: "#8B3A62"))
-
-            // Compass circle
+        VStack(spacing: 10) {
+            // Pattern concentrique avec directions
             ZStack {
-                Circle()
-                    .fill(RadialGradient(colors: [Color.purple.opacity(0.2), Color.purple.opacity(0.5)],
-                                         center: .center, startRadius: 0, endRadius: 80))
-                    .frame(width: 160, height: 160)
-                    .overlay(Circle().stroke(Color(hex: "#8B3A62"), lineWidth: 2))
+                // Fond violet clair
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.purple.opacity(0.15))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "#C27894"), lineWidth: 2))
 
-                // Quadrant buttons
-                ForEach(JohreiQuadrant.allCases, id: \.self) { q in
-                    Button { vm.selectedQuadrant = (vm.selectedQuadrant == q) ? nil : q } label: {
-                        quadrantWedge(q)
-                    }
+                // Carrés concentriques
+                ForEach(0..<8, id: \.self) { i in
+                    let size = CGFloat(180 - i * 20)
+                    let strokeColor = i % 2 == 0 ? Color(hex: "#4A1528") : Color(hex: "#8B3A62")
+                    RoundedRectangle(cornerRadius: CGFloat(2 + i))
+                        .stroke(strokeColor, lineWidth: CGFloat(3 - Double(i) * 0.2))
+                        .frame(width: size, height: size)
                 }
 
-                Circle().fill(Color(hex: "#8B3A62")).frame(width: 10, height: 10)
+                // Centre
+                Circle().fill(Color(hex: "#8B3A62").opacity(0.3)).frame(width: 16, height: 16)
+                Circle().fill(Color(hex: "#8B3A62")).frame(width: 6, height: 6)
 
-                // Labels N/S/E/O
-                Text("N").font(.caption2).fontWeight(.bold).foregroundStyle(Color(hex: "#8B3A62")).offset(y: -75)
-                Text("S").font(.caption2).fontWeight(.bold).foregroundStyle(Color(hex: "#8B3A62")).offset(y: 75)
-                Text("E").font(.caption2).fontWeight(.bold).foregroundStyle(Color(hex: "#8B3A62")).offset(x: 75)
-                Text("O").font(.caption2).fontWeight(.bold).foregroundStyle(Color(hex: "#8B3A62")).offset(x: -75)
+                // Directions
+                Text("NO").font(.system(size: 9, weight: .bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                    .position(x: 20, y: 16)
+                Text("NE").font(.system(size: 9, weight: .bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                    .position(x: 185, y: 16)
+                Text("SO").font(.system(size: 9, weight: .bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                    .position(x: 20, y: 190)
+                Text("SE").font(.system(size: 9, weight: .bold)).foregroundStyle(Color(hex: "#8B3A62"))
+                    .position(x: 185, y: 190)
             }
+            .frame(width: 205, height: 205)
             .frame(maxWidth: .infinity)
 
-            if let q = vm.selectedQuadrant {
-                Text(q.description)
-                    .font(.caption).foregroundStyle(.secondary)
-                    .padding(8).background(Color(hex: "#F5EDE4")).clipShape(RoundedRectangle(cornerRadius: 8))
-            }
+            Text("Johrei_25 \u{2014} R\u{00e9}f\u{00e9}rence")
+                .font(.caption).foregroundStyle(.secondary)
 
-            // Johrei options
+            // Options compactes
             VStack(alignment: .leading, spacing: 8) {
                 Text("Image").font(.caption).fontWeight(.semibold)
                 HStack(spacing: 8) {
-                    JohreiPill(label: "Unique ✓", selected: !vm.johreiDedoublee) { vm.johreiDedoublee = false }
-                    JohreiPill(label: "Dédoublée ✗", selected: vm.johreiDedoublee) { vm.johreiDedoublee = true }
+                    JohreiPill(label: "Unique \u{2713}", selected: !vm.johreiDedoublee) { vm.johreiDedoublee = false }
+                    JohreiPill(label: "D\u{00e9}doubl\u{00e9}e \u{2717}", selected: vm.johreiDedoublee) { vm.johreiDedoublee = true }
                 }
 
-                Text("Intensité").font(.caption).fontWeight(.semibold)
+                Text("Intensit\u{00e9}").font(.caption).fontWeight(.semibold)
                 HStack(spacing: 6) {
                     ForEach(JohreiIntensity.allCases, id: \.self) { i in
                         JohreiPill(label: i.label, selected: vm.johreiIntensity == i) { vm.johreiIntensity = i }
@@ -343,6 +465,31 @@ class HotlineSidebarVM: ObservableObject {
     @Published var sephCodeGauche = ""; @Published var sephCodeCentre = ""; @Published var sephCodeDroite = ""
     @Published var selectedSephirah: String?
     @Published var completedPhases: Set<String> = []
+    // Energies Sombres
+    @Published var corpsMental = false
+    @Published var corpsEmotionnel = false
+    @Published var corpsBouddhique = false
+    @Published var egoN: String = ""
+
+    var securiteValidee: Bool { corpsMental || corpsEmotionnel || corpsBouddhique }
+
+    var egoPuissance: Double? {
+        guard let n = Double(egoN), n > 0 else { return nil }
+        return pow(5.0, n)
+    }
+
+    var egoDilution: Double? {
+        guard let p = egoPuissance, p > 0 else { return nil }
+        return 1.0 / p
+    }
+
+    var dilutionLabel: String {
+        guard let n = Double(egoN) else { return "" }
+        if n <= 3 { return "Dilution faible \u{2014} comportement encore perceptible" }
+        if n <= 7 { return "Dilution moyenne \u{2014} influence r\u{00e9}siduelle" }
+        if n <= 12 { return "Dilution forte \u{2014} quasi imperceptible" }
+        return "Dilution extr\u{00ea}me \u{2014} trace infinit\u{00e9}simale"
+    }
 
     var scoreTotal: Int {
         (Int(sla) ?? 0) + (Int(slsa) ?? 0) + (Int(slpmo) ?? 0) + (Int(slm) ?? 0)
