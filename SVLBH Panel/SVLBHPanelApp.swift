@@ -16,42 +16,50 @@ struct SVLBHPanelApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if buildBlocked, let status = buildStatus {
-                BuildGateView(status: status)
-                    .preferredColorScheme(.light)
-            } else if !identity.isIdentified {
-                OnboardingView()
-                    .environmentObject(identity)
-                    .environmentObject(session)
-                    .preferredColorScheme(.light)
-            } else if identity.isClientMode {
-                DemandesView(patientId: identity.clientPatientId,
-                             patientName: identity.displayName)
-                    .environmentObject(identity)
-                    .preferredColorScheme(.light)
-            } else if let sub = subscriptionStatus, !sub.isActive {
-                SubscriptionWallView(status: sub) {
-                    Task { await checkSubscription() }
-                }
-                .preferredColorScheme(.light)
-            } else {
-                MainTabView()
-                    .environmentObject(session)
-                    .environmentObject(sync)
-                    .environmentObject(identity)
-                    .environmentObject(SegmentUpdateService.shared)
-                    .preferredColorScheme(.light)
-                    .onAppear {
-                        identity.applyTo(session)
-                        MakeSyncService.requestNotificationPermission()
+            Group {
+                if buildBlocked, let status = buildStatus {
+                    BuildGateView(status: status)
+                        .preferredColorScheme(.light)
+                } else if !identity.isIdentified {
+                    OnboardingView()
+                        .environmentObject(identity)
+                        .environmentObject(session)
+                        .preferredColorScheme(.light)
+                } else if identity.isClientMode {
+                    DemandesView(patientId: identity.clientPatientId,
+                                 patientName: identity.displayName)
+                        .environmentObject(identity)
+                        .preferredColorScheme(.light)
+                } else if let sub = subscriptionStatus, !sub.isActive {
+                    SubscriptionWallView(status: sub) {
+                        Task { await checkSubscription() }
                     }
-                    .task {
-                        await checkBuildGate()
-                        if subscriptionStatus == nil {
-                            await checkSubscription()
+                    .preferredColorScheme(.light)
+                } else {
+                    MainTabView()
+                        .environmentObject(session)
+                        .environmentObject(sync)
+                        .environmentObject(identity)
+                        .environmentObject(SegmentUpdateService.shared)
+                        .preferredColorScheme(.light)
+                        .onAppear {
+                            identity.applyTo(session)
+                            MakeSyncService.requestNotificationPermission()
                         }
-                        await SegmentUpdateService.shared.checkWhatsAppConnectivity()
-                    }
+                        .task {
+                            await checkBuildGate()
+                            if subscriptionStatus == nil {
+                                await checkSubscription()
+                            }
+                            await SegmentUpdateService.shared.checkWhatsAppConnectivity()
+                        }
+                }
+            }
+            .overlay(alignment: .bottomLeading) {
+                VersionBadge()
+                    .padding(.leading, 8)
+                    .padding(.bottom, 8)
+                    .allowsHitTesting(false)
             }
         }
         .onChange(of: scenePhase) { phase in
@@ -96,5 +104,25 @@ struct SVLBHPanelApp: App {
         }
         let status = await SubscriptionService.shared.check(code: code)
         await MainActor.run { subscriptionStatus = status }
+    }
+}
+
+// Affiche v<MARKETING_VERSION> (<CURRENT_PROJECT_VERSION>) en overlay sur tous les écrans.
+struct VersionBadge: View {
+    static var label: String {
+        let dict = Bundle.main.infoDictionary
+        let v = (dict?["CFBundleShortVersionString"] as? String) ?? "?"
+        let b = (dict?["CFBundleVersion"] as? String) ?? "?"
+        return "v\(v) (\(b))"
+    }
+
+    var body: some View {
+        Text(Self.label)
+            .font(.system(size: 9, weight: .medium, design: .monospaced))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(.ultraThinMaterial, in: Capsule())
+            .accessibilityLabel("Version \(Self.label)")
     }
 }

@@ -37,6 +37,21 @@ struct PlancheFloatingView: View {
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8)
 
+                // Utilisateur connecté
+                HStack(spacing: 8) {
+                    Text(session.role.displayName)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(hex: "#8B3A62"))
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(Color(hex: "#8B3A62").opacity(0.1))
+                        .cornerRadius(6)
+                    Text(session.role.code)
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundColor(Color(hex: "#185FA5"))
+                    Spacer()
+                }
+                .padding(.horizontal, 12).padding(.bottom, 4)
+
                 // Routine (certifiées + Patrick)
                 if session.currentTier.forkResolu || session.role.isSuperviseur {
                     HStack(spacing: 8) {

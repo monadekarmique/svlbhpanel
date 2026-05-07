@@ -11,8 +11,8 @@ enum PlancheCategory: Hashable, CaseIterable {
     case programme(ShamaneProgramme)
 
     static var allCases: [PlancheCategory] {
-        [.tier(.certifiee), .tier(.formation), .tier(.lead),
-         .programme(.leadChaud), .programme(.protection), .programme(.mySha), .programme(.formee), .programme(.myShaFa)]
+        [.tier(.formation),
+         .programme(.leadChaud), .programme(.protection), .programme(.mySha), .programme(.myShaFa)]
     }
 
     var label: String {

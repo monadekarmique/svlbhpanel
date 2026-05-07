@@ -19,25 +19,25 @@ class ChromotherapyManager: ObservableObject {
     let protocolesDefaut: [ProtocoleChromotherapie] = [
         ProtocoleChromotherapie(
             id: UUID(), nom: "Cycle des 5 Éléments",
-            description: "Parcours complet des 5 éléments pour un rééquilibrage global",
-            dureeMinutes: 25,
+            description: "Parcours complet des 5 éléments à 3 thérapeutes MyShaman PRO + Patrick — rééquilibrage global",
+            dureeMinutes: 15,
             couleurs: [
-                .init(couleurHex: "#4CAF50", dureeSecondes: 300, intensite: 0.8, transition: .fondu),
-                .init(couleurHex: "#F44336", dureeSecondes: 300, intensite: 0.8, transition: .fondu),
-                .init(couleurHex: "#FFC107", dureeSecondes: 300, intensite: 0.8, transition: .fondu),
-                .init(couleurHex: "#FFFFFF", dureeSecondes: 300, intensite: 0.6, transition: .fondu),
-                .init(couleurHex: "#2196F3", dureeSecondes: 300, intensite: 0.8, transition: .fondu)
+                .init(couleurHex: "#4CAF50", dureeSecondes: 180, intensite: 0.8, transition: .fondu),
+                .init(couleurHex: "#F44336", dureeSecondes: 180, intensite: 0.8, transition: .fondu),
+                .init(couleurHex: "#FFC107", dureeSecondes: 180, intensite: 0.8, transition: .fondu),
+                .init(couleurHex: "#FFFFFF", dureeSecondes: 180, intensite: 0.6, transition: .fondu),
+                .init(couleurHex: "#2196F3", dureeSecondes: 180, intensite: 0.8, transition: .fondu)
             ],
             elementsCibles: TCMElement.allCases, objectif: .equilibrage),
         ProtocoleChromotherapie(
             id: UUID(), nom: "Libération de la Colère",
-            description: "Protocole Bois pour libérer la colère et favoriser la créativité",
-            dureeMinutes: 15,
+            description: "Protocole Bois — libérer la colère et favoriser la créativité · 1 thérapeute PRO + Patrick",
+            dureeMinutes: 65,
             couleurs: [
-                .init(couleurHex: "#4CAF50", dureeSecondes: 180, intensite: 0.5, transition: .fondu),
-                .init(couleurHex: "#81C784", dureeSecondes: 240, intensite: 0.7, transition: .pulsation),
-                .init(couleurHex: "#4CAF50", dureeSecondes: 180, intensite: 0.8, transition: .fondu),
-                .init(couleurHex: "#2E7D32", dureeSecondes: 300, intensite: 0.6, transition: .fondu)
+                .init(couleurHex: "#4CAF50", dureeSecondes: 780, intensite: 0.5, transition: .fondu),
+                .init(couleurHex: "#81C784", dureeSecondes: 1040, intensite: 0.7, transition: .pulsation),
+                .init(couleurHex: "#4CAF50", dureeSecondes: 780, intensite: 0.8, transition: .fondu),
+                .init(couleurHex: "#2E7D32", dureeSecondes: 1300, intensite: 0.6, transition: .fondu)
             ],
             elementsCibles: [.bois], objectif: .liberation),
         ProtocoleChromotherapie(

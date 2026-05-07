@@ -26,6 +26,10 @@ struct DecodageTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
+                    // Menu de premier niveau Palette/Séance/Décodage (Patrick 2026-05-04)
+                    PDLLandingMenu()
+                    Divider().padding(.horizontal, 16)
+
                     // ── Bouton Pierres (haut) ──
                     PierresSheetButton(showPierres: $showPierres)
                         .padding(.horizontal, 16).padding(.vertical, 8)

@@ -143,7 +143,7 @@ struct Ratio4DDetailView: View {
                 Spacer()
                 Picker("", selection: $selectedPays) {
                     Text("\u{2014} S\u{00e9}lectionner \u{2014}").tag("")
-                    ForEach(Self.ref21S, id: \.pays) { entry in
+                    ForEach(Self.ref21S.sorted(by: { $0.pays < $1.pays }), id: \.pays) { entry in
                         Text(entry.pays).tag(entry.pays)
                     }
                 }
@@ -233,7 +233,7 @@ struct Ratio4DDetailView: View {
             .padding(.horizontal).padding(.vertical, 6)
             .background(Color(.tertiarySystemGroupedBackground))
 
-            ForEach(Self.ref21S, id: \.pays) { entry in
+            ForEach(Self.ref21S.sorted(by: { $0.sltdaCh > $1.sltdaCh }), id: \.pays) { entry in
                 let isSelected = entry.pays == selectedPays
                 HStack {
                     Text(entry.pays)

@@ -164,7 +164,15 @@ struct PDLProtocoleCard: View {
     var body: some View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: 12) {
-                HStack {
+                HStack(spacing: 8) {
+                    // Logo Cercle de Lumière AVANT le nom — pour Cycle 5 Éléments + Libération Colère.
+                    if protocole.nom.contains("5 Éléments") || protocole.nom.contains("Colère") {
+                        Image("cercle_de_lumiere")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 28, height: 28)
+                            .clipShape(Circle())
+                    }
                     Text(protocole.nom).font(.headline)
                     Spacer()
                     Text("\(protocole.dureeMinutes) min").font(.caption)

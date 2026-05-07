@@ -6,9 +6,27 @@
 <title>Tores de Lumière — hDOM</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; overflow-x:hidden; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#F5EDE4; -webkit-touch-callout:none; }
-#root { width:100%; }
+#root { width:100%; margin:0 auto; }
 </style>
+<script>
+/* Adapte le viewport pour fit la largeur du layout (1100px) sur l'écran iPad
+   en portrait OU paysage. Patrick 2026-05-04. */
+(function(){
+  const BASE_WIDTH = 1100;
+  function setMeta(){
+    let m = document.querySelector('meta[name="viewport"]');
+    if(!m){ m = document.createElement('meta'); m.name='viewport'; document.head.appendChild(m); }
+    const sw = window.screen.width;
+    const scale = Math.min(1, sw / BASE_WIDTH);
+    m.content = 'width=' + BASE_WIDTH + ', initial-scale=' + scale.toFixed(3) + ', maximum-scale=2.0, minimum-scale=' + scale.toFixed(3) + ', user-scalable=yes';
+  }
+  setMeta();
+  window.addEventListener('orientationchange', setMeta);
+  window.addEventListener('resize', setMeta);
+})();
+</script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -799,14 +817,25 @@ function App() {
           style={{width:64,height:64,objectFit:"contain",borderRadius:12,flexShrink:0}} alt=""/>
       </div>
 
-      <div style={{position:"relative",marginBottom:14}}>
-        <canvas ref={canvasRef} width={840} height={580}
-          style={{borderRadius:20,display:"block",maxWidth:"100%",cursor:"grab"}}
+      <div style={{position:"relative",marginBottom:14,width:"100%",maxWidth:1100}}>
+        <canvas ref={canvasRef} width={1080} height={620}
+          style={{borderRadius:20,display:"block",width:"100%",maxWidth:"100%",cursor:"grab"}}
           onMouseDown={e=>onDown(e.clientX,e.clientY)}
           onMouseMove={e=>onMove(e.clientX,e.clientY)}
           onMouseUp={onUp} onMouseLeave={onUp}
-          onTouchStart={e=>{e.preventDefault();onDown(e.touches[0].clientX,e.touches[0].clientY);}}
-          onTouchMove={e=>{e.preventDefault();onMove(e.touches[0].clientX,e.touches[0].clientY);}}
+          onTouchStart={e=>{
+            // 1 doigt = drag du tore. 2 doigts = pinch zoom de la PAGE (géré par viewport meta).
+            if(e.touches.length===1){
+              e.preventDefault();
+              onDown(e.touches[0].clientX,e.touches[0].clientY);
+            }
+          }}
+          onTouchMove={e=>{
+            if(e.touches.length===1){
+              e.preventDefault();
+              onMove(e.touches[0].clientX,e.touches[0].clientY);
+            }
+          }}
           onTouchEnd={onUp}
         />
         {/* SLA / SLSA / SLM badges */}
@@ -858,13 +887,13 @@ function App() {
         </div>
       </div>
 
-      <div style={{width:"100%",maxWidth:860,display:"grid",gridTemplateColumns:"1fr 420px 1fr",gap:12,alignItems:"start"}}>
+      <div style={{width:"100%",maxWidth:1100,display:"grid",gridTemplateColumns:"1fr 420px 1fr",gap:12,alignItems:"start"}}>
 
         <div>
           <PanelConception/>
           <PanelRayons/>
           <PanelDettes/>
-          <PanelScores sla={sla} slsa={slsa} slpmo={slpmo} slm={slm}/>
+          {/* EVEIL DE SHAMANE déplacé sous POSITIONS (Patrick 2026-05-04) */}
         </div>
 
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -966,6 +995,12 @@ function App() {
             </div>
           </div>
 
+          {/* Sous POSITIONS : EVEIL (gauche) + MONDES (droite) — Patrick 2026-05-04 */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,alignItems:"start"}}>
+            <PanelScores sla={sla} slsa={slsa} slpmo={slpmo} slm={slm}/>
+            <PanelMondes/>
+          </div>
+
           {/* Digital Shaman image */}
           <div style={{...card,padding:0,overflow:"hidden",marginTop:0}}>
             <img
@@ -979,7 +1014,7 @@ function App() {
 
         <div>
           <PanelEmotions/>
-          <PanelMondes/>
+          {/* MONDES PLAN METAUX déplacé sous POSITIONS (Patrick 2026-05-04) */}
         </div>
       </div>
 

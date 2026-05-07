@@ -27,7 +27,7 @@ struct PDLPaletteView: View {
                         .transition(.asymmetric(insertion: .scale.combined(with: .opacity), removal: .opacity))
                 }
 
-                quickColorPalette
+                WuXingPanel()
                 Spacer(minLength: 100)
             }
             .padding()

@@ -10,6 +10,16 @@ struct PDLDiagnosticView: View {
     @State private var currentBilan: BilanEnergetique?
 
     var body: some View {
+        GeometryReader { geo in
+            if geo.size.width > geo.size.height {
+                landscapeLayout
+            } else {
+                portraitLayout
+            }
+        }
+    }
+
+    private var portraitLayout: some View {
         ScrollView {
             VStack(spacing: 24) {
                 if let bilan = currentBilan ?? elementManager.bilans.last {
@@ -23,12 +33,33 @@ struct PDLDiagnosticView: View {
             }
             .padding()
         }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { withAnimation { currentBilan = elementManager.creerNouveauBilan() } } label: {
-                    Image(systemName: "plus.circle.fill")
+    }
+
+    private var landscapeLayout: some View {
+        HStack(alignment: .top, spacing: 16) {
+            // Colonne gauche — sliders / recommandations / historique (scrollables)
+            ScrollView {
+                VStack(spacing: 16) {
+                    if currentBilan != nil { elementSlidersSection }
+                    if !elementManager.bilans.isEmpty { recommendationsSection }
+                    historySection
                 }
+                .padding()
             }
+            .frame(maxWidth: .infinity)
+
+            // Colonne droite — artefact radar (sticky)
+            VStack {
+                if let bilan = currentBilan ?? elementManager.bilans.last {
+                    PDLEnergyRadarChart(bilan: bilan)
+                        .aspectRatio(1, contentMode: .fit)
+                        .padding()
+                } else {
+                    emptyStateView
+                }
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 

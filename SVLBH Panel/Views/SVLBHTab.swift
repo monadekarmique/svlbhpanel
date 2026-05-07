@@ -363,24 +363,16 @@ struct SVLBHTab: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // ── Custom Tab Bar — sous-pages ──
+                    // ── Custom Tab Bar — sous-pages (même taille que menu haut) ──
                     VStack(spacing: 0) {
                         Divider()
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 0) {
-                                customTabButton("SLM", icon: "light.max") { activeSubPage = .slm }
-                                customTabButton("Chrono \u{516d}\u{8151}", icon: "clock.arrow.circlepath") { activeSubPage = .chrono }
-                                customTabButton("Conditions", icon: "circle.hexagongrid") { activeSubPage = .conditions }
-                                customTabButton("Endom\u{00e9}triose", icon: "hurricane") { activeSubPage = .pr03 }
-                                if showPasserelle {
-                                    customTabButton("Dyspepsie", icon: "arrow.left.arrow.right") { activeSubPage = .pr03Dyspepsie }
-                                    customTabButton("Glyc\u{00e9}mies", icon: "hurricane") { activeSubPage = .pr05 }
-                                    customTabButton("Historiques", icon: "arrow.left.arrow.right") { activeSubPage = .pr07 }
-                                    customTabButton("Scl\u{00e9}roses", icon: "arrow.left.arrow.right") { activeSubPage = .pr09 }
-                                    customTabButton("Et apr\u{00e8}s ?", icon: "sparkles") { activeSubPage = .etApres }
-                                }
-                            }
-                            .padding(.horizontal, 8)
+                        HStack(spacing: 0) {
+                            customTabButton("Historique", icon: "clock.arrow.circlepath") { activeSubPage = .history }
+                            customTabButton("Conditions", icon: "circle.hexagongrid") { activeSubPage = .conditions }
+                            customTabButton("Endom\u{00e9}triose", icon: "hurricane") { activeSubPage = .pr03 }
+                            customTabButton("Dyspepsie", icon: "arrow.left.arrow.right") { activeSubPage = .pr03Dyspepsie }
+                            customTabButton("Scl\u{00e9}roses", icon: "arrow.left.arrow.right") { activeSubPage = .pr09 }
+                            customTabButton("Et apr\u{00e8}s", icon: "sparkles") { activeSubPage = .etApres }
                         }
                         .padding(.vertical, 8)
                         .background(Color(.secondarySystemBackground))
@@ -525,11 +517,11 @@ struct SVLBHTab: View {
     private func customTabButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 3) {
-                Image(systemName: icon).font(.system(size: 16))
-                Text(title).font(.system(size: 9, weight: .medium)).lineLimit(1)
+                Image(systemName: icon).font(.system(size: 14))
+                Text(title).font(.system(size: 8, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
             }
             .foregroundColor(Color(hex: "#8B3A62"))
-            .frame(width: 70)
+            .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
         }
         .buttonStyle(.plain)

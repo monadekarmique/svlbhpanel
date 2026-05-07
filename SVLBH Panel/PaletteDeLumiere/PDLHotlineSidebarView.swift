@@ -9,9 +9,41 @@ import SwiftUI
 // MARK: - Sidebar Container
 struct PDLHotlineSidebarView: View {
     @Binding var isOpen: Bool
+    /// Si true, rend en pleine page (utilisé par l'onglet Hotline en niveau 1).
+    var embedded: Bool = false
     @StateObject private var vm = HotlineSidebarVM()
 
     var body: some View {
+        if embedded {
+            // Rendu pleine page pour l'onglet top-level Hotline (Patrick 2026-05-04).
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("\u{26a1} En cas d\u{2019}\u{00c9}nergies Sombres identifi\u{00e9}es")
+                        .font(.title3.bold())
+                        .foregroundStyle(Color(hex: "#8B3A62"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    securiteSection
+                    corpsEMSection
+                    transfertsSection
+                    scoresSection
+                    johreiSection
+                    wuShenSection
+                    matriceDesordreSection
+                    mandalaSection
+                    fiveElementsSection
+                    glandesSection
+                    mandelbrotSection
+                    sephirothSection
+                    protocoleSection
+                }
+                .padding()
+            }
+        } else {
+            sidebarOverlay
+        }
+    }
+
+    private var sidebarOverlay: some View {
         GeometryReader { geo in
             ZStack(alignment: .trailing) {
                 // Dimmed background
@@ -43,6 +75,10 @@ struct PDLHotlineSidebarView: View {
                             johreiSection
                             wuShenSection
                             matriceDesordreSection
+                            mandalaSection
+                            fiveElementsSection
+                            glandesSection
+                            mandelbrotSection
                             sephirothSection
                             protocoleSection
                         }
@@ -381,6 +417,181 @@ struct PDLHotlineSidebarView: View {
             Text("Matrice : n = \(vm.matriceEons) \u{00e9}ons \u{00d7} m = \(vm.matriceLots) lots")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
+    // MARK: - 3c. Mandala énergétique
+    private var mandalaSection: some View {
+        VStack(spacing: 8) {
+            mandalaDrawing
+            Text("Mandala \u{00e9}nerg\u{00e9}tique \u{2014} R\u{00e9}f\u{00e9}rence")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
+    private var mandalaDrawing: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12).fill(Color(hex: "#1E1A2E"))
+            ForEach(0..<6, id: \.self) { i in
+                Circle()
+                    .stroke(Color(hex: "#C27894").opacity(0.5), lineWidth: 2)
+                    .frame(width: CGFloat(160 - i * 24), height: CGFloat(160 - i * 24))
+            }
+            ForEach(0..<4, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(Color(hex: "#B8965A").opacity(0.3), lineWidth: 1.5)
+                    .frame(width: CGFloat(120 - i * 28), height: CGFloat(120 - i * 28))
+                    .rotationEffect(.degrees(Double(i) * 22.5))
+            }
+            Circle().fill(Color.white.opacity(0.4)).frame(width: 20, height: 20)
+        }
+        .frame(height: 200)
+    }
+
+    // MARK: - 3d. Cinq Éléments / Méridiens
+    private var fiveElementsSection: some View {
+        VStack(spacing: 8) {
+            Text("5 \u{00c9}l\u{00e9}ments \u{2014} M\u{00e9}ridiens").font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color(hex: "#8B3A62"))
+
+            fiveElementsDiagram
+
+            Text("Engendrement \u{2192} / Contr\u{00f4}le \u{2192}")
+                .font(.system(size: 9)).foregroundStyle(.secondary)
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
+    private var fiveElementsDiagram: some View {
+        let data: [(String, String, String, Double)] = [
+            ("Feu", "C\u{0153}ur", "#C53030", -90),
+            ("Terre", "Rate", "#B8965A", -18),
+            ("M\u{00e9}tal", "Poumon", "#AAAAAA", 54),
+            ("Eau", "Rein", "#2F6FB5", 126),
+            ("Bois", "Foie", "#66B032", 198)
+        ]
+        return ZStack {
+            ForEach(0..<5, id: \.self) { i in
+                let a: Double = data[i].3 * .pi / 180
+                let c: Color = Color(hex: data[i].2)
+                VStack(spacing: 1) {
+                    Text(data[i].0).font(.system(size: 9, weight: .bold)).foregroundStyle(.white)
+                    Text(data[i].1).font(.system(size: 7)).foregroundStyle(.white.opacity(0.8))
+                }
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(c))
+                .offset(x: cos(a) * 60, y: sin(a) * 60)
+            }
+        }
+        .frame(width: 180, height: 180)
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - 3e. Glandes cérébrales
+    private var glandesSection: some View {
+        VStack(spacing: 10) {
+            Text("Glandes c\u{00e9}r\u{00e9}brales").font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color(hex: "#8B3A62"))
+
+            let glandes: [(name: String, icon: String)] = [
+                ("Hypothalamus", "brain"),
+                ("Pituitaire", "brain.head.profile"),
+                ("Pin\u{00e9}ale", "moon.stars"),
+                ("Amygdale", "bolt.heart"),
+                ("Thalamus", "circle.hexagongrid")
+            ]
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(Array(glandes.enumerated()), id: \.offset) { i, g in
+                    VStack(spacing: 6) {
+                        ZStack {
+                            Circle()
+                                .fill(Color(hex: "#F5C6D0").opacity(0.5))
+                                .frame(width: 56, height: 56)
+                            Image(systemName: g.icon)
+                                .font(.system(size: 22))
+                                .foregroundStyle(Color(hex: "#798EF6"))
+                        }
+                        Text(g.name)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(Color(hex: "#4A1528"))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
+
+            Text("Axe hypophysaire \u{2194} pin\u{00e9}al \u{2014} R\u{00e9}sonance hDOM")
+                .font(.system(size: 9)).foregroundStyle(.secondary)
+        }
+        .padding().background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color(hex: "#8B3A62").opacity(0.1), radius: 5)
+    }
+
+    // MARK: - 3f. Fractale Mandelbrot (approximation SwiftUI)
+    private var mandelbrotSection: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                // Fond noir
+                RoundedRectangle(cornerRadius: 12).fill(Color.black)
+
+                // Approximation fractale avec cercles
+                ForEach(0..<12, id: \.self) { i in
+                    let angle = Double(i) * 30.0
+                    let radius = 20.0 + Double(i) * 5.0
+                    let size = CGFloat(40 - i * 2)
+                    Circle()
+                        .fill(RadialGradient(
+                            colors: [
+                                Color(hex: "#FF4500").opacity(0.9 - Double(i) * 0.06),
+                                Color(hex: "#8B0000").opacity(0.6)
+                            ],
+                            center: .center, startRadius: 0, endRadius: size / 2
+                        ))
+                        .frame(width: size, height: size)
+                        .offset(
+                            x: cos(angle * .pi / 180) * radius,
+                            y: sin(angle * .pi / 180) * radius
+                        )
+                }
+
+                // Spirales
+                ForEach(0..<20, id: \.self) { i in
+                    let t = Double(i) * 0.5
+                    let x = cos(t * 1.5) * t * 8
+                    let y = sin(t * 1.5) * t * 8
+                    Circle()
+                        .fill(Color(hex: "#FF6B00").opacity(0.7 - Double(i) * 0.03))
+                        .frame(width: CGFloat(8 - Double(i) * 0.3), height: CGFloat(8 - Double(i) * 0.3))
+                        .offset(x: x, y: y)
+                }
+
+                // Grand cercle central
+                Circle()
+                    .fill(Color.black)
+                    .frame(width: 50, height: 50)
+                    .offset(x: -20, y: 20)
+
+                Circle()
+                    .fill(Color.black)
+                    .frame(width: 30, height: 30)
+                    .offset(x: 25, y: -10)
+            }
+            .frame(height: 200)
+
+            Text("Fractale de Mandelbrot \u{2014} Auto-similarit\u{00e9} transg\u{00e9}n\u{00e9}rationnelle")
+                .font(.caption).foregroundStyle(.secondary)
         }
         .padding().background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))

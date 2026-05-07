@@ -8,11 +8,14 @@ import SwiftUI
 struct PaletteDeLumiereView: View {
     @StateObject private var chromoManager = ChromotherapyManager()
     @StateObject private var elementManager = FiveElementsManager()
-    @State private var selectedTab: PDLTab = .palette
-    @State private var showHotlineSidebar = false
+    @State private var selectedTab: PDLTab
 
     enum PDLTab: String, CaseIterable {
         case palette, diagnostic, seance, decodage
+    }
+
+    init(initialTab: PDLTab = .palette) {
+        _selectedTab = State(initialValue: initialTab)
     }
 
     var body: some View {
@@ -37,18 +40,6 @@ struct PaletteDeLumiereView: View {
             .tint(chromoManager.currentElement.color)
             .navigationTitle("Palette de Lumière")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { withAnimation(.easeInOut(duration: 0.3)) { showHotlineSidebar.toggle() } } label: {
-                        Image(systemName: "bolt.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(Color(hex: "#8B3A62"))
-                    }
-                }
-            }
-            .overlay {
-                PDLHotlineSidebarView(isOpen: $showHotlineSidebar)
-            }
         }
         .environmentObject(chromoManager)
         .environmentObject(elementManager)

@@ -54,6 +54,10 @@ struct RoutineMatinTab: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 16) {
+                    // Menu de premier niveau Palette/Séance/Décodage (Patrick 2026-05-04)
+                    PDLLandingMenu()
+                    Divider()
+
                     if isLoading && allQuotas.isEmpty {
                         Spacer().frame(height: 80)
                         ProgressView("Chargement du Cercle de Lumière...")
@@ -77,19 +81,9 @@ struct RoutineMatinTab: View {
                         }
                         Spacer()
                     } else {
-                        cercleDeLumiere
-                        Divider()
-                        tableauCertifiees
-                        Divider()
-                        checksSection
-
-                        if let t = lastRefresh {
-                            let df = DateFormatter()
-                            let _ = df.dateFormat = "HH:mm:ss"
-                            Text("Mis à jour à \(df.string(from: t))")
-                                .font(.caption2).foregroundColor(.secondary)
-                                .padding(.top, 8)
-                        }
+                        // Cercle de Lumière + tableau certifiées + checks supprimés
+                        // (Patrick 2026-05-05) — accessible désormais via Palette tab top-level.
+                        EmptyView()
                     }
                 }
                 .padding(16)

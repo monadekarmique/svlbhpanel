@@ -1,5 +1,6 @@
 // SVLBHPanel — Views/OnboardingView.swift
-// v4.8.0 — Identification praticien + Sign in with Apple (Patrick)
+// Refonte 2026-05-06 : Apple Sign-In + Google placeholder uniquement.
+// Aucune saisie texte. Pas d'auto-sign-in : l'utilisateur doit cliquer.
 
 import SwiftUI
 import AuthenticationServices
@@ -7,26 +8,8 @@ import AuthenticationServices
 struct OnboardingView: View {
     @EnvironmentObject var identity: PractitionerIdentity
     @EnvironmentObject var session: SessionState
-    @State private var codeDraft = ""
-    @State private var nameDraft = ""
-    @State private var error = ""
-    @State private var isCheckingPresence = false
-    @State private var presenceBlocked = false
-    @State private var pendingAppleUserID: String?
-    @State private var showAppleLinkAlert = false
-    @State private var showClientAccess = false
-    @State private var clientIdDraft = ""
-    @State private var clientNameDraft = ""
 
-    private var codeInt: Int? { Int(codeDraft) }
-    private var isValid: Bool {
-        guard let n = codeInt else { return false }
-        return n >= 1
-    }
-    private var tierPreview: PractitionerTier? {
-        guard let n = codeInt else { return nil }
-        return PractitionerTier.from(code: n)
-    }
+    @State private var error = ""
 
     var body: some View {
         VStack(spacing: 24) {
@@ -40,120 +23,70 @@ struct OnboardingView: View {
             }
 
             VStack(spacing: 16) {
-                Text("Identification")
+                Text("Connexion")
                     .font(.headline).foregroundColor(Color(hex: "#8B3A62"))
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Code praticien").font(.caption.bold()).foregroundColor(.secondary)
-                    TextField("Ex: 300", text: $codeDraft)
-                        .keyboardType(.numberPad)
-                        .font(.title2.bold().monospaced())
-                        .foregroundColor(isValid ? Color(hex: "#8B3A62") : .primary)
-                        .padding(12)
-                        .background(Color(hex: "#8B3A62").opacity(0.08))
-                        .cornerRadius(10)
-                }
-
-                if let tier = tierPreview {
-                    HStack {
-                        Text(tier.label)
-                            .font(.caption.bold())
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8).padding(.vertical, 4)
-                            .background(Color(hex: tier.badgeColor))
-                            .cornerRadius(5)
-                        Spacer()
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    switch result {
+                    case .success(let auth):
+                        guard let credential = auth.credential as? ASAuthorizationAppleIDCredential else { return }
+                        let userID = credential.user
+                        let email = credential.email
+                        let fullName = credential.fullName
+                        Task {
+                            await identity.identifyWithApple(
+                                userID: userID,
+                                email: email,
+                                fullName: fullName
+                            )
+                            await MainActor.run {
+                                if identity.isIdentified {
+                                    identity.applyTo(session)
+                                } else {
+                                    error = "Compte Apple non reconnu. Contactez Patrick pour activer votre accès."
+                                }
+                            }
+                        }
+                    case .failure(let err):
+                        error = err.localizedDescription
                     }
                 }
+                .signInWithAppleButtonStyle(.black)
+                .frame(height: 48)
+                .cornerRadius(10)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Prénom").font(.caption.bold()).foregroundColor(.secondary)
-                    TextField("Votre prénom", text: $nameDraft)
-                        .font(.body)
-                        .padding(12)
-                        .background(Color(hex: "#8B3A62").opacity(0.08))
-                        .cornerRadius(10)
+                // Google Sign-In : placeholder désactivé tant que l'OAuth iOS client ID
+                // n'est pas configuré dans Google Cloud Console.
+                Button {
+                    error = "Sign in with Google : configuration en cours."
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "g.circle.fill")
+                            .font(.title3)
+                        Text("Sign in with Google")
+                            .font(.headline)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background(Color.gray.opacity(0.5))
+                    .cornerRadius(10)
                 }
+                .disabled(true)
 
                 if !error.isEmpty {
                     Text(error)
                         .font(.caption.bold()).foregroundColor(.red)
+                        .multilineTextAlignment(.center)
                 }
-
-                Button {
-                    guard isValid else {
-                        error = "Code invalide"
-                        return
-                    }
-                    guard !nameDraft.trimmingCharacters(in: .whitespaces).isEmpty else {
-                        error = "Prénom requis"
-                        return
-                    }
-                    let name = nameDraft.trimmingCharacters(in: .whitespaces)
-                    let isLead = tierPreview == .lead
-                    if isLead {
-                        // Vérifier la capacité avant d'autoriser la connexion
-                        isCheckingPresence = true
-                        Task {
-                            let status = await PresenceService.shared.check()
-                            await MainActor.run { isCheckingPresence = false }
-                            if status.maxReached {
-                                await MainActor.run {
-                                    presenceBlocked = true
-                                    error = "Capacité maximale atteinte (\(status.activeCount)/\(status.maxAllowed) leads connectés)"
-                                }
-                            } else {
-                                let leadId = PresenceService.shared.leadId
-                                await PresenceService.shared.register(leadId: leadId, tier: "lead")
-                                await MainActor.run {
-                                    identity.identify(code: codeDraft, name: name)
-                                    identity.applyTo(session)
-                                }
-                            }
-                        }
-                    } else {
-                        identity.identify(code: codeDraft, name: name)
-                        identity.applyTo(session)
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        if isCheckingPresence { ProgressView().scaleEffect(0.7).tint(.white) }
-                        Text(isCheckingPresence ? "Vérification…" : "Entrer")
-                    }
-                    .font(.headline.bold())
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(isValid && !nameDraft.isEmpty && !presenceBlocked ? Color(hex: "#8B3A62") : Color.gray)
-                    .cornerRadius(12)
-                }
-                .disabled(!isValid || nameDraft.trimmingCharacters(in: .whitespaces).isEmpty || isCheckingPresence || presenceBlocked)
-
-                Text("Entrez votre code praticien et prénom, puis appuyez Entrer.\nOu utilisez la connexion rapide ci-dessous.")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 4)
-
-                // ── Sign in with Apple ──
-                appleSignInSection
-
-                // ── Accès Client (Demandes) ──
-                clientAccessSection
             }
             .padding(24)
             .background(Color(UIColor.systemBackground))
             .cornerRadius(16)
             .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
             .padding(.horizontal, 32)
-
-            if identity.isAutoIdentifying {
-                HStack(spacing: 8) {
-                    ProgressView().tint(Color(hex: "#8B3A62"))
-                    Text("Identification automatique…")
-                        .font(.caption).foregroundColor(.secondary)
-                }
-            }
 
             Spacer()
 
@@ -177,164 +110,5 @@ struct OnboardingView: View {
                           startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
         )
-        .task {
-            // Tenter l'auto-identification via vendorID au lancement
-            await identity.autoIdentify()
-            if identity.isIdentified { identity.applyTo(session) }
-        }
-        .alert("Lier votre compte Apple", isPresented: $showAppleLinkAlert) {
-            TextField("Code praticien", text: $codeDraft).keyboardType(.numberPad)
-            TextField("Prénom", text: $nameDraft)
-            Button("Lier") {
-                guard let userID = pendingAppleUserID,
-                      let code = Int(codeDraft), code >= 1,
-                      !nameDraft.trimmingCharacters(in: .whitespaces).isEmpty else {
-                    error = "Code invalide"
-                    return
-                }
-                let name = nameDraft.trimmingCharacters(in: .whitespaces)
-                // Sauvegarder l'association Apple userID → code/nom (UserDefaults + Keychain)
-                UserDefaults.standard.set(userID, forKey: "svlbh_apple_user_id")
-                UserDefaults.standard.set(codeDraft, forKey: "svlbh_apple_mapped_code")
-                UserDefaults.standard.set(name, forKey: "svlbh_apple_mapped_name")
-                PractitionerIdentity.keychainSave(userID: userID, code: codeDraft, name: name)
-                identity.identify(code: codeDraft, name: name)
-                identity.applyTo(session)
-                // Enregistrer sur Make pour lookup cross-device
-                let regCode = codeDraft; let regName = name; let regUserID = userID
-                Task { await identity.registerAppleUserIDFromLink(userID: regUserID, code: regCode, name: regName) }
-                pendingAppleUserID = nil
-            }
-            Button("Annuler", role: .cancel) { pendingAppleUserID = nil }
-        } message: {
-            Text("Votre compte Apple n'est pas encore lié. Entrez votre code praticien pour activer la connexion automatique.")
-        }
-    }
-
-    // MARK: - Sign in with Apple
-    private var appleSignInSection: some View {
-        VStack(spacing: 8) {
-            Divider().padding(.vertical, 4)
-            Text("Connexion rapide")
-                .font(.caption.bold()).foregroundColor(.secondary)
-
-            SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.fullName, .email]
-            } onCompletion: { result in
-                switch result {
-                case .success(let auth):
-                    guard let credential = auth.credential as? ASAuthorizationAppleIDCredential else { return }
-                    let userID = credential.user
-                    let email = credential.email
-                    let fullName = credential.fullName
-                    Task {
-                        await identity.identifyWithApple(
-                            userID: userID,
-                            email: email,
-                            fullName: fullName
-                        )
-                        await MainActor.run {
-                            if identity.isIdentified {
-                                identity.applyTo(session)
-                            } else {
-                                pendingAppleUserID = userID
-                                showAppleLinkAlert = true
-                            }
-                        }
-                    }
-                case .failure(let err):
-                    error = err.localizedDescription
-                }
-            }
-            .signInWithAppleButtonStyle(.black)
-            .frame(height: 44)
-            .cornerRadius(10)
-        }
-    }
-
-    // MARK: - Accès Client (Demandes)
-    private var clientAccessSection: some View {
-        VStack(spacing: 8) {
-            Divider().padding(.vertical, 4)
-            Text("Accès Patient / Client")
-                .font(.caption.bold()).foregroundColor(.secondary)
-
-            Button {
-                showClientAccess = true
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "doc.text.fill")
-                    Text("Mes Demandes / Factures")
-                }
-                .font(.subheadline.bold())
-                .foregroundColor(Color(hex: "#8B3A62"))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color(hex: "#8B3A62").opacity(0.1))
-                .cornerRadius(10)
-            }
-        }
-        .sheet(isPresented: $showClientAccess) {
-            NavigationView {
-                VStack(spacing: 20) {
-                    Text("Accès Client")
-                        .font(.title2.bold())
-                        .foregroundColor(Color(hex: "#8B3A62"))
-
-                    Text("Entrez votre identifiant patient et votre nom pour accéder à vos factures et demandes.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("ID Patient").font(.caption.bold()).foregroundColor(.secondary)
-                        TextField("Ex: 14968", text: $clientIdDraft)
-                            .keyboardType(.numberPad)
-                            .font(.title2.bold().monospaced())
-                            .foregroundColor(Color(hex: "#8B3A62"))
-                            .padding(12)
-                            .background(Color(hex: "#8B3A62").opacity(0.08))
-                            .cornerRadius(10)
-                    }
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Votre nom").font(.caption.bold()).foregroundColor(.secondary)
-                        TextField("Prénom Nom", text: $clientNameDraft)
-                            .font(.body)
-                            .padding(12)
-                            .background(Color(hex: "#8B3A62").opacity(0.08))
-                            .cornerRadius(10)
-                    }
-
-                    Button {
-                        let id = clientIdDraft.trimmingCharacters(in: .whitespaces)
-                        let name = clientNameDraft.trimmingCharacters(in: .whitespaces)
-                        guard !id.isEmpty, !name.isEmpty else { return }
-                        identity.identifyAsClient(patientId: id, name: name)
-                        showClientAccess = false
-                    } label: {
-                        Text("Accéder à mes demandes")
-                            .font(.headline.bold())
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(!clientIdDraft.isEmpty && !clientNameDraft.isEmpty
-                                        ? Color(hex: "#8B3A62") : .gray)
-                            .cornerRadius(12)
-                    }
-                    .disabled(clientIdDraft.trimmingCharacters(in: .whitespaces).isEmpty ||
-                              clientNameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                    Spacer()
-                }
-                .padding(24)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Fermer") { showClientAccess = false }
-                    }
-                }
-            }
-        }
     }
 }

@@ -7,6 +7,10 @@ struct MainTabView: View {
     @EnvironmentObject var session: SessionState
     @EnvironmentObject var sync: MakeSyncService
     @StateObject private var tracker = SessionTracker()
+    // PDL managers lifted to top-level pour partager entre Palette/Diagnostic/Séance/Décodage
+    // promus en onglets de premier niveau (Patrick 2026-05-04).
+    @StateObject private var pdlChromo = ChromotherapyManager()
+    @StateObject private var pdlElements = FiveElementsManager()
     @State private var selectedTab = 0
     @State private var showDiffLog = false
     @State private var showPINAlert = false
@@ -37,15 +41,55 @@ struct MainTabView: View {
     @State private var showImport = false
     @State private var showExport = false
     @State private var exportedText = ""
+    @State private var showHotline = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
-                // ── 4 Tabs seulement ──
+                // ── 3 onglets : Routine du Matin + Tores + Épuisement ──
+                // (refonte 2026-05-03 : SVLBHTab/Planche Tactique retirés ; SVLBHTab
+                //  sera migré vers SVLBH Clé Electromagnétique dans une prochaine release.
+                //  Onglet Tores ré-exposé directement 2026-05-04 sur demande Patrick.)
                 TabView(selection: $selectedTab) {
-                    SVLBHTab(selectedTab: $selectedTab)
-                        .tabItem { Label("SVLBH", systemImage: "atom") }
+                    RoutineMatinTab()
+                        .tabItem { Label("Routine du matin", systemImage: "sunrise.fill") }
                         .tag(0)
+
+                    NavigationStack { PDLPaletteView()
+                        .navigationTitle("Palette 5 \u{00e9}l\u{00e9}ments")
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .environmentObject(pdlChromo).environmentObject(pdlElements)
+                    .tabItem { Label("Palette", systemImage: "paintpalette.fill") }
+                    .tag(3)
+
+                    NavigationStack { PDLDiagnosticView()
+                        .navigationTitle("Diagnostic")
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .environmentObject(pdlChromo).environmentObject(pdlElements)
+                    .tabItem { Label("Diagnostic", systemImage: "waveform.path.ecg") }
+                    .tag(4)
+
+                    NavigationStack { PDLSessionView()
+                        .navigationTitle("S\u{00e9}ance")
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .environmentObject(pdlChromo).environmentObject(pdlElements)
+                    .tabItem { Label("S\u{00e9}ance", systemImage: "rays") }
+                    .tag(5)
+
+                    NavigationStack { PDLDecodageView()
+                        .navigationTitle("D\u{00e9}codage")
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .environmentObject(pdlChromo).environmentObject(pdlElements)
+                    .tabItem { Label("D\u{00e9}codage", systemImage: "tree") }
+                    .tag(6)
+
+                    ToresLumiereTab()
+                        .tabItem { Label("Tores", systemImage: "hurricane") }
+                        .tag(1)
 
                     DecodageTab()
                         .tabItem { Label("\u{00c9}puisement", systemImage: "list.bullet.rectangle") }
@@ -80,6 +124,42 @@ struct MainTabView: View {
                 .environmentObject(tracker)
             }  // close VStack
 
+            // ── Bouton ⚡ Hotline flottant (Patrick 2026-05-04) ──
+            // Ouvre le sidebar PDLHotlineSidebarView (style overlay slide-in)
+            // depuis la home, comme dans Palette de Lumière.
+            // sheet() au lieu d'overlay car WKWebView (Tores) écrase les overlays SwiftUI
+            // (problème de z-order connu sur iOS 18).
+            VStack {
+                HStack {
+                    Spacer()
+                    // Lien praticiennes (logo Cercle de Lumière → svlbh-com.onrender.com/praticiennes)
+                    Link(destination: URL(string: "https://svlbh-com.onrender.com/praticiennes")!) {
+                        Image("cercle_de_lumiere")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 36, height: 36)
+                            .clipShape(Circle())
+                            .background(Circle().fill(Color(.systemBackground).opacity(0.95)).padding(-3))
+                            .shadow(color: .black.opacity(0.15), radius: 4)
+                    }
+                    .padding(.trailing, 8)
+                    .padding(.top, 8)
+                    // Bouton ⚡ Hotline
+                    Button { showHotline = true } label: {
+                        Image(systemName: "bolt.circle.fill")
+                            .font(.title)
+                            .foregroundStyle(Color(hex: "#8B3A62"))
+                            .padding(8)
+                            .background(Circle().fill(Color(.systemBackground).opacity(0.95)))
+                            .shadow(color: .black.opacity(0.15), radius: 4)
+                    }
+                    .padding(.trailing, 16)
+                    .padding(.top, 8)
+                }
+                Spacer()
+            }
+            .zIndex(1000)
+
             // ── Timeline panel (rétractable) ──
             SessionTimelinePanel(isVisible: $showTimeline)
                 .environmentObject(tracker)
@@ -87,39 +167,21 @@ struct MainTabView: View {
             .onChange(of: selectedTab) { tab in
                 if tab == 2 { sync.diffs.decode = 0 }
             }
-
-            // SyncBar uniquement sur l'onglet SVLBH — positionnée juste au-dessus de la tab bar
-            if selectedTab == 0 {
-                GeometryReader { geo in
-                    VStack(spacing: 0) {
-                        Spacer()
-                        SyncBar(showDiffLog: $showDiffLog,
-                                showPINAlert: $showPINAlert,
-                                pendingPayload: $pendingPayload)
-                            .environmentObject(session)
-                            .environmentObject(sync)
-                    }
-                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 34) + 50)
-                }
-                .ignoresSafeArea(.container, edges: .bottom)
-                .task {
-                    if session.role.isOwner {
-                        // Owner : auto-scan des sources shamanes
-                        if sync.pendingSources.isEmpty && !sync.isScanning {
-                            await sync.scanSources(session: session)
-                        }
-                    } else if session.role.isIdentified {
-                        // Non-owner : vérifier la boîte INBOX pour un soin en attente
-                        await sync.checkInbox(session: session)
-                        if sync.inboxPullKey != nil {
-                            await doPullFromInbox()
-                        }
-                    }
-                }
-            }
         }
         .onAppear {
             tracker.startSession()
+        }
+        .sheet(isPresented: $showHotline) {
+            NavigationStack {
+                PDLHotlineSidebarView(isOpen: $showHotline, embedded: true)
+                    .navigationTitle("Hotline")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Fermer") { showHotline = false }
+                        }
+                    }
+            }
         }
         .sheet(isPresented: $showImport) {
             PasteImportView().environmentObject(session).environmentObject(sync)

@@ -112,6 +112,21 @@ private struct MoonPhaseInfo {
         return MoonPhaseInfo(phase: phase, ageDays: ageDays, phaseName: name, illumination: illumination)
     }
 
+    /// Prochaine pleine lune
+    var nextFullMoon: (date: Date, daysUntil: Int) {
+        let synodicMonth = 29.53058770576
+        let refNew = Date(timeIntervalSince1970: 947182440)
+        let now = Date()
+        let daysSinceRef = now.timeIntervalSince(refNew) / 86400.0
+        let cycles = daysSinceRef / synodicMonth
+        let currentPhase = cycles - floor(cycles)
+        // Pleine lune = phase 0.5
+        var daysToFull = (0.5 - currentPhase) * synodicMonth
+        if daysToFull < 0 { daysToFull += synodicMonth }
+        let fullDate = now.addingTimeInterval(daysToFull * 86400)
+        return (fullDate, Int(ceil(daysToFull)))
+    }
+
     /// Emoji de la phase lunaire
     var emoji: String {
         switch phase {
@@ -226,22 +241,48 @@ struct RatioPlaneteDetailView: View {
 
     // MARK: - Moon Phase Card
 
-    private var moonCard: some View {
-        HStack(spacing: 16) {
-            Text(moonPhase.emoji)
-                .font(.system(size: 44))
+    private var fullMoonDateFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "d MMMM yyyy"
+        df.locale = Locale(identifier: "fr_CH")
+        return df
+    }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(moonPhase.phaseName)
-                    .font(.subheadline.bold())
-                    .foregroundColor(Color(hex: "#798EF6"))
-                Text("Illumination : \(moonPhase.illumination)%")
-                    .font(.caption).foregroundColor(.secondary)
-                Text(String(format: "\u{00c2}ge : %.1f jours", moonPhase.ageDays))
-                    .font(.caption).foregroundColor(.secondary)
+    private var moonCard: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 16) {
+                Text(moonPhase.emoji)
+                    .font(.system(size: 44))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(moonPhase.phaseName)
+                        .font(.subheadline.bold())
+                        .foregroundColor(Color(hex: "#798EF6"))
+                    Text("Illumination : \(moonPhase.illumination)%")
+                        .font(.caption).foregroundColor(.secondary)
+                    Text(String(format: "\u{00c2}ge : %.1f jours", moonPhase.ageDays))
+                        .font(.caption).foregroundColor(.secondary)
+                }
+
+                Spacer()
             }
 
-            Spacer()
+            // Prochaine pleine lune
+            let fullMoon = moonPhase.nextFullMoon
+            HStack(spacing: 8) {
+                Text("\u{1F315}").font(.title3)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Prochaine pleine lune 100%")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(Color(hex: "#798EF6"))
+                    Text("\(fullMoonDateFormatter.string(from: fullMoon.date)) \u{2014} dans \(fullMoon.daysUntil) jour\(fullMoon.daysUntil > 1 ? "s" : "")")
+                        .font(.caption).foregroundColor(.secondary)
+                }
+                Spacer()
+            }
+            .padding(8)
+            .background(Color(hex: "#798EF6").opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
